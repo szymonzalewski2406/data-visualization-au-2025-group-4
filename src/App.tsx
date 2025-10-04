@@ -1,26 +1,30 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {Navigate, Route, Routes} from "react-router-dom";
+import {Box, createTheme, ThemeProvider} from "@mui/material";
+import Dashboard from "./pages/Dashboard";
+
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#ffffff',
+            light: '#7851A9',
+            dark: '#3D195B',
+        },
+    },
+})
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <ThemeProvider theme={theme}>
+            <Box sx={{width: "100%"}}>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                </Routes>
+            </Box>
+        </ThemeProvider>
+    );
 }
 
 export default App;
