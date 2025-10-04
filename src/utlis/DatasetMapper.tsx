@@ -69,34 +69,65 @@ export const parseCSVData = (csvString: string, seasonName: string): MatchData[]
     return data;
 };
 
-export async function loadAllData(): Promise<{ allData: MatchData[], initialSeasons: string[] }> {
+async function getCsvFilenames(dataFolder: string): Promise<string[]> {
+    let packagePath: string;
+    let isYaml = false;
+
+    if (dataFolder === 'premier-league') {
+        packagePath = `/datasets/${dataFolder}/datapackage.yaml`;
+        isYaml = true;
+    } else {
+        packagePath = `/datasets/${dataFolder}/datapackage.json`;
+    }
+
+    const packageResponse = await fetch(packagePath);
+    if (!packageResponse.ok) {
+        throw new Error(`Could not load datapackage from: ${packagePath}`);
+    }
+
+    if (isYaml) {
+        const packageYaml = await packageResponse.text();
+        const filenameRegex = /path: (season-\d{4}\.csv)/g;
+        let match: RegExpExecArray | null;
+        const ALL_CSV_FILENAMES: string[] = [];
+        while ((match = filenameRegex.exec(packageYaml)) !== null) {
+            ALL_CSV_FILENAMES.push(match[1]);
+        }
+        return ALL_CSV_FILENAMES;
+    } else {
+        const packageJson = await packageResponse.json();
+        if (packageJson.resources && Array.isArray(packageJson.resources)) {
+            return packageJson.resources
+                .map((resource: any) => resource.path)
+                .filter((path: string) => path && path.endsWith('.csv'));
+        }
+        throw new Error(`Invalid datapackage.json structure for ${dataFolder}.`);
+    }
+}
+
+export async function loadAllData(dataFolder: string): Promise<{ allData: MatchData[], initialSeasons: string[] }> {
     let combinedData: MatchData[] = [];
     const seasonNames = new Set<string>();
 
-    const packageResponse = await fetch('/dataset/datapackage.yaml');
-    if (!packageResponse.ok) {
-        throw new Error('Could not load datapackage.yaml');
+    let ALL_CSV_FILENAMES: string[];
+    try {
+        ALL_CSV_FILENAMES = await getCsvFilenames(dataFolder);
+    } catch (error) {
+        throw new Error(`Error getting CSV filenames for ${dataFolder}: ${error}`);
     }
 
-    const packageYaml = await packageResponse.text();
-    const filenameRegex = /path: (season-\d{4}\.csv)/g;
-    let match: RegExpExecArray | null;
-    const ALL_CSV_FILENAMES: string[] = [];
-    while ((match = filenameRegex.exec(packageYaml)) !== null) {
-        ALL_CSV_FILENAMES.push(match[1]);
-    }
 
     if (ALL_CSV_FILENAMES.length === 0) {
-        throw new Error('CSV filenames not found');
+        throw new Error(`CSV filenames not found in ${dataFolder}`);
     }
 
     const fetchPromises = ALL_CSV_FILENAMES.map(filename => {
-        const path = `/dataset/${filename}`;
+        const path = `/datasets/${dataFolder}/${filename}`;
 
         return fetch(path)
             .then(response => {
                 if (!response.ok) {
-                    console.warn(`File ${path} not found. State: ${response.status}. Skipped.`);
+                    console.warn(`File ${path} not found for ${dataFolder}. State: ${response.status}. Skipped.`);
                     return null;
                 }
                 return response.text();

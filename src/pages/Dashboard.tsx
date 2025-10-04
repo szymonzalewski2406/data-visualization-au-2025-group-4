@@ -20,12 +20,19 @@ import {
     Select,
     ThemeProvider,
     Toolbar,
-    Typography
+    Typography,
+    IconButton,
+    Menu,
+    Theme,
 } from "@mui/material";
-import {Theme} from "../constants/Theme";
-import premierLeagueLogo from "../static/images/pl_logo.png"
+import {DEFAULT_LEAGUE, LEAGUES, LeagueConfig} from "../interfaces/Leagues";
+import PublicIcon from '@mui/icons-material/Public';
+
 
 export default function Dashboard() {
+    const [selectedLeague, setSelectedLeague] = useState<LeagueConfig>(DEFAULT_LEAGUE);
+    const currentTheme: Theme = selectedLeague.theme as Theme;
+
     const [allMatchData, setAllMatchData] = useState<MatchData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
@@ -41,14 +48,26 @@ export default function Dashboard() {
         referees: [],
     });
 
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
     useEffect(() => {
         const fetchAndParseData = async () => {
+            setLoading(true);
+            setLoadingError(null);
+            setDataLoaded(false);
+
             try {
-                const {allData, initialSeasons} = await loadAllData();
+                const {allData, initialSeasons} = await loadAllData(selectedLeague.dataFolder);
 
                 if (allData.length > 0) {
                     setAllMatchData(allData);
-
                     setCurrentFilterOptions(prev => ({
                         ...prev,
                         seasons: initialSeasons,
@@ -60,12 +79,12 @@ export default function Dashboard() {
                     setDataLoaded(true);
                     setLoadingError(null);
                 } else {
-                    setLoadingError("Could not load matches.");
+                    setLoadingError(`Could not load matches for ${selectedLeague.name}.`);
                     setDataLoaded(false);
                 }
 
             } catch (error: any) {
-                setLoadingError(error.message || "Unexpected error.");
+                setLoadingError(error.message || `Unexpected error loading ${selectedLeague.name} data.`);
                 setDataLoaded(false);
             } finally {
                 setLoading(false);
@@ -73,7 +92,7 @@ export default function Dashboard() {
         };
 
         fetchAndParseData();
-    }, []);
+    }, [selectedLeague]);
 
     useEffect(() => {
         if (!selectedSeason || allMatchData.length === 0) {
@@ -95,6 +114,13 @@ export default function Dashboard() {
 
     }, [selectedSeason, allMatchData]);
 
+    const handleLeagueChange = (league: LeagueConfig) => {
+        if (league.id !== selectedLeague.id) {
+            setSelectedLeague(league);
+        }
+        handleMenuClose();
+    };
+
     const handleSeasonChange = (event: { target: { value: SetStateAction<string>; }; }) => {
         setSelectedSeason(event.target.value);
     };
@@ -113,7 +139,7 @@ export default function Dashboard() {
         return (
             <Box sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgress color="primary" />
-                <Typography sx={{ ml: 2, color: Theme.palette.primary.main }}>Loading data...</Typography>
+                <Typography sx={{ ml: 2, color: currentTheme.palette.primary.main }}>Loading {selectedLeague.name} data...</Typography>
             </Box>
         );
     }
@@ -123,31 +149,69 @@ export default function Dashboard() {
     const currentSeasonMatchCount = allMatchData.filter(m => m.season === selectedSeason).length;
 
     return (
-        <ThemeProvider theme={Theme}>
-            <Box sx={{ flexGrow: 1, backgroundColor: Theme.palette.background.default, minHeight: '100vh' }}>
-                <AppBar position="static" sx={{ bgcolor: Theme.palette.primary.light }}>
+        <ThemeProvider theme={currentTheme}>
+            <Box sx={{ flexGrow: 1, backgroundColor: currentTheme.palette.background.default, minHeight: '100vh' }}>
+                <AppBar position="static" sx={{ bgcolor: currentTheme.palette.primary.light }}>
                     <Toolbar sx={{ justifyContent: 'space-between' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Box
                                 component="img"
                                 sx={{ height: 40, mr: 2 }}
-                                alt="Premier League Logo"
-                                src={premierLeagueLogo}
+                                alt={`${selectedLeague.name} Logo`}
+                                src={selectedLeague.logoPath}
                             />
                             <Typography
                                 variant="h5"
-                                sx={{ fontWeight: 'bold', color: Theme.palette.primary.contrastText }}
+                                sx={{ fontWeight: 'bold', color: currentTheme.palette.primary.contrastText }}
                             >
-                                EPL Referee Influence Analysis
+                                {selectedLeague.name} Referee Influence Analysis
                             </Typography>
                         </Box>
-                        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-                            <Typography variant="subtitle1" sx={{ color: 'white' }}>
-                                Total Seasons: <Box component="span" sx={{ fontWeight: 'bold', color: Theme.palette.primary.contrastText }}>{totalSeasons}</Box>
-                            </Typography>
-                            <Typography variant="subtitle1" sx={{ color: 'white' }}>
-                                Total Matches Loaded: <Box component="span" sx={{ fontWeight: 'bold', color: Theme.palette.primary.contrastText }}>{totalMatches}</Box>
-                            </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <IconButton
+                                onClick={handleMenuClick}
+                                size="large"
+                                sx={{ color: currentTheme.palette.primary.contrastText }}
+                                aria-controls={open ? 'league-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                            >
+                                <PublicIcon />
+                            </IconButton>
+                            <Menu
+                                anchorEl={anchorEl}
+                                id="league-menu"
+                                open={open}
+                                onClose={handleMenuClose}
+                                onClick={handleMenuClose}
+                                PaperProps={{
+                                    sx: { width: 200 },
+                                }}
+                            >
+                                {LEAGUES.map((league) => (
+                                    <MenuItem
+                                        key={league.id}
+                                        onClick={() => handleLeagueChange(league)}
+                                        selected={league.id === selectedLeague.id}
+                                    >
+                                        <Box
+                                            component="img"
+                                            src={league.logoPath}
+                                            alt={`${league.name} Logo`}
+                                            sx={{ height: 20, width: 20, mr: 1 }}
+                                        />
+                                        <ListItemText primary={league.name} />
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
+                                <Typography variant="subtitle1" sx={{ color: 'white' }}>
+                                    Total Seasons: <Box component="span" sx={{ fontWeight: 'bold', color: currentTheme.palette.primary.contrastText }}>{totalSeasons}</Box>
+                                </Typography>
+                                <Typography variant="subtitle1" sx={{ color: 'white' }}>
+                                    Total Matches Loaded: <Box component="span" sx={{ fontWeight: 'bold', color: currentTheme.palette.primary.contrastText }}>{totalMatches}</Box>
+                                </Typography>
+                            </Box>
                         </Box>
                     </Toolbar>
                 </AppBar>
@@ -155,12 +219,12 @@ export default function Dashboard() {
                 <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
                     {loadingError && (
                         <Alert severity="error" sx={{ mb: 2 }}>
-                            Loading error! {loadingError}. Please check your `public/dataset/` files.
+                            Loading error! {loadingError}. Please check your `public/datasets/{selectedLeague.dataFolder}/` files.
                         </Alert>
                     )}
                     {!dataLoaded && !loadingError && (
                         <Alert severity="info" sx={{ mb: 2 }}>
-                            No data to display. Please ensure CSV files are correctly loaded.
+                            No data to display. Please ensure CSV files are correctly loaded for {selectedLeague.name}.
                         </Alert>
                     )}
                 </Container>
@@ -228,13 +292,12 @@ export default function Dashboard() {
                         </Grid>
                     </Container>
                 )}
-
                 {dataLoaded && (
                     <Container maxWidth="xl" sx={{ pt: 2, pb: 4 }}>
                         <Card elevation={4} sx={{ borderRadius: 2 }}>
                             <CardContent>
                                 <Typography variant="h6" gutterBottom color="primary">
-                                    Referee Performance Heatmap ({selectedSeason})
+                                    {selectedLeague.name} Referee Performance Heatmap ({selectedSeason})
                                 </Typography>
                                 <Box
                                     sx={{
@@ -243,16 +306,44 @@ export default function Dashboard() {
                                         flexDirection: 'column',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        border: `2px dashed ${Theme.palette.secondary.main}`,
+                                        border: `2px dashed ${currentTheme.palette.secondary.main}`,
                                         borderRadius: 1,
                                         p: 3,
                                     }}
                                 >
-                                    <Typography variant="h4" sx={{ color: Theme.palette.primary.main, mb: 1 }}>
+                                    <Typography variant="h4" sx={{ color: currentTheme.palette.primary.main, mb: 1 }}>
                                         {currentSeasonMatchCount} Matches Available
                                     </Typography>
                                     <Typography color="textSecondary" align="center">
                                         **TODO: Implement component to display the Referee vs. Statistic Heatmap.**
+                                        <br/>
+                                        Current Filters: Teams ({selectedTeams.length}), Referees ({selectedReferees.length})
+                                    </Typography>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                        <Card elevation={4} sx={{ borderRadius: 2 }}>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom color="primary">
+                                    {selectedLeague.name} Other chart... ({selectedSeason})
+                                </Typography>
+                                <Box
+                                    sx={{
+                                        height: 500,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: `2px dashed ${currentTheme.palette.secondary.main}`,
+                                        borderRadius: 1,
+                                        p: 3,
+                                    }}
+                                >
+                                    <Typography variant="h4" sx={{ color: currentTheme.palette.primary.main, mb: 1 }}>
+                                        {currentSeasonMatchCount} Matches Available
+                                    </Typography>
+                                    <Typography color="textSecondary" align="center">
+                                        **TODO: Implement other charts if needed.**
                                         <br/>
                                         Current Filters: Teams ({selectedTeams.length}), Referees ({selectedReferees.length})
                                     </Typography>
@@ -267,10 +358,10 @@ export default function Dashboard() {
                         py: 3,
                         px: 2,
                         mt: 'auto',
-                        backgroundColor: Theme.palette.primary.light,
+                        backgroundColor: currentTheme.palette.primary.light,
                         color: 'white',
                         textAlign: 'center',
-                        borderTop: `1px solid ${Theme.palette.primary.dark}`
+                        borderTop: `1px solid ${currentTheme.palette.primary.dark || currentTheme.palette.primary.main}`
                     }}
                 >
                     <Container maxWidth="xl">
@@ -278,7 +369,11 @@ export default function Dashboard() {
                             Data Visualization Course Project - Group 4, Aarhus University 2025
                         </Typography>
                         <Typography variant="caption" color="inherit">
-                            EPL Referee Influence Analysis Tool | Data Source: Football-Data.co.uk, https://github.com/datasets/football-datasets
+                            Top 5 European Football Leagues Referee Influence Analysis Tool | Data Source: https://github.com/datasets/football-datasets
+                        </Typography>
+                        <br/>
+                        <Typography variant="caption" color="inherit">
+                           NOTE: Some of the season have mocked-up referee data, since not all of them were available in the dataset! Please see full list in the dataset description.
                         </Typography>
                     </Container>
                 </Box>
