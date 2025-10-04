@@ -345,7 +345,10 @@ export default function Dashboard() {
                                     <Typography color="textSecondary" align="center">
                                         **TODO: Implement other charts if needed.**
                                         <br/>
-                                        Current Filters: Teams ({selectedTeams.length}), Referees ({selectedReferees.length})
+                                        Current Filters: Teams ({selectedTeams.length}), Referees
+                                        ({selectedReferees.length})
+                                        <br/>
+                                        Some seasons don't have full data regarding the yellow/red cards for example. If its the case we have to use only final score in the charts and display info about it
                                     </Typography>
                                 </Box>
                             </CardContent>
