@@ -165,11 +165,10 @@ export default function Dashboard() {
                     )}
                 </Container>
 
-
                 {dataLoaded && (
                     <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
                         <Grid container spacing={3} alignItems="center">
-                            <Grid>
+                            <Grid sx={{ minWidth: 150 }}>
                                 <FormControl fullWidth size="small" variant="outlined">
                                     <InputLabel id="season-select-label">Season</InputLabel>
                                     <Select
@@ -184,7 +183,7 @@ export default function Dashboard() {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid>
+                            <Grid sx={{ minWidth: 250 }}>
                                 <FormControl fullWidth size="small" variant="outlined" disabled={!selectedSeason}>
                                     <InputLabel id="team-select-label">Teams</InputLabel>
                                     <Select
@@ -205,7 +204,7 @@ export default function Dashboard() {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid>
+                            <Grid sx={{ minWidth: 250 }}>
                                 <FormControl fullWidth size="small" variant="outlined" disabled={!selectedSeason}>
                                     <InputLabel id="referee-select-label">Referees</InputLabel>
                                     <Select
@@ -262,6 +261,27 @@ export default function Dashboard() {
                         </Card>
                     </Container>
                 )}
+                <Box
+                    component="footer"
+                    sx={{
+                        py: 3,
+                        px: 2,
+                        mt: 'auto',
+                        backgroundColor: Theme.palette.primary.light,
+                        color: 'white',
+                        textAlign: 'center',
+                        borderTop: `1px solid ${Theme.palette.primary.dark}`
+                    }}
+                >
+                    <Container maxWidth="xl">
+                        <Typography variant="body2" sx={{ mb: 1 }}>
+                            Data Visualization Course Project - Group 4, Aarhus University 2025
+                        </Typography>
+                        <Typography variant="caption" color="inherit">
+                            EPL Referee Influence Analysis Tool | Data Source: Football-Data.co.uk, https://github.com/datasets/football-datasets
+                        </Typography>
+                    </Container>
+                </Box>
             </Box>
         </ThemeProvider>
     );
