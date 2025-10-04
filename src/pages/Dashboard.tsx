@@ -1,17 +1,39 @@
 import {FilterOptions} from "../interfaces/FilterOptions";
-import {useEffect, useState} from "react";
+import {SetStateAction, useEffect, useState} from "react";
 import {MatchData} from "../interfaces/MatchData";
-import {loadAllData} from "../utlis/DatasetMapper";
+import {extractSeasonalOptions, loadAllData} from "../utlis/DatasetMapper";
+import {
+    Alert,
+    AppBar,
+    Box,
+    Card,
+    CardContent,
+    Checkbox,
+    CircularProgress,
+    Container,
+    FormControl,
+    Grid,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    ThemeProvider,
+    Toolbar,
+    Typography
+} from "@mui/material";
+import {Theme} from "../constants/Theme";
+import premierLeagueLogo from "../static/images/pl_logo.png"
 
 export default function Dashboard() {
     const [allMatchData, setAllMatchData] = useState<MatchData[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [dataLoaded, setDataLoaded] = useState(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [loadingError, setLoadingError] = useState<string | null>(null);
 
     const [selectedSeason, setSelectedSeason] = useState<string>('');
-    const [selectedTeam, setSelectedTeam] = useState<string>('');
-    const [selectedReferee, setSelectedReferee] = useState<string>('');
+    const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+    const [selectedReferees, setSelectedReferees] = useState<string[]>([]);
 
     const [currentFilterOptions, setCurrentFilterOptions] = useState<FilterOptions>({
         seasons: [],
@@ -22,7 +44,7 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchAndParseData = async () => {
             try {
-                const { allData, initialSeasons } = await loadAllData();
+                const {allData, initialSeasons} = await loadAllData();
 
                 if (allData.length > 0) {
                     setAllMatchData(allData);
@@ -53,27 +75,194 @@ export default function Dashboard() {
         fetchAndParseData();
     }, []);
 
+    useEffect(() => {
+        if (!selectedSeason || allMatchData.length === 0) {
+            setCurrentFilterOptions(prev => ({...prev, teams: [], referees: []}));
+            return;
+        }
+
+        const seasonalData = allMatchData.filter(m => m.season === selectedSeason);
+        const {teams, referees} = extractSeasonalOptions(seasonalData);
+
+        setCurrentFilterOptions(prev => ({
+            ...prev,
+            teams: teams,
+            referees: referees,
+        }));
+
+        setSelectedTeams([]);
+        setSelectedReferees([]);
+
+    }, [selectedSeason, allMatchData]);
+
+    const handleSeasonChange = (event: { target: { value: SetStateAction<string>; }; }) => {
+        setSelectedSeason(event.target.value);
+    };
+
+    const handleTeamChange = (event: { target: { value: any; }; }) => {
+        const { target: { value } } = event;
+        setSelectedTeams(typeof value === 'string' ? value.split(',') : value);
+    };
+
+    const handleRefereeChange = (event: { target: { value: any; }; }) => {
+        const { target: { value } } = event;
+        setSelectedReferees(typeof value === 'string' ? value.split(',') : value);
+    };
 
     if (loading) {
-        return <p> Loading data from z public/dataset/... </p>;
+        return (
+            <Box sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <CircularProgress color="primary" />
+                <Typography sx={{ ml: 2, color: Theme.palette.primary.main }}>Loading data...</Typography>
+            </Box>
+        );
     }
 
-    if (loadingError) {
-        return <p style={{color: 'red'}}> Loading error! {loadingError} </p>;
-    }
-
-    if (!dataLoaded) {
-        return <p> No data to display. </p>;
-    }
-
+    const totalSeasons = currentFilterOptions.seasons.length;
+    const totalMatches = allMatchData.length;
     const currentSeasonMatchCount = allMatchData.filter(m => m.season === selectedSeason).length;
 
     return (
-        <div>
-            <p> Hello Dashboard! </p>
-            <p> Data loaded successfully! </p>
-            <p> Loaded {allMatchData.length} matches from {currentFilterOptions.seasons.length} seasons. </p>
-            <p> Currently selected season: {selectedSeason} with {currentSeasonMatchCount} matches </p>
-        </div>
+        <ThemeProvider theme={Theme}>
+            <Box sx={{ flexGrow: 1, backgroundColor: Theme.palette.background.default, minHeight: '100vh' }}>
+                <AppBar position="static" sx={{ bgcolor: Theme.palette.primary.light }}>
+                    <Toolbar sx={{ justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box
+                                component="img"
+                                sx={{ height: 40, mr: 2 }}
+                                alt="Premier League Logo"
+                                src={premierLeagueLogo}
+                            />
+                            <Typography
+                                variant="h5"
+                                sx={{ fontWeight: 'bold', color: Theme.palette.primary.contrastText }}
+                            >
+                                EPL Referee Influence Analysis
+                            </Typography>
+                        </Box>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
+                            <Typography variant="subtitle1" sx={{ color: 'white' }}>
+                                Total Seasons: <Box component="span" sx={{ fontWeight: 'bold', color: Theme.palette.primary.contrastText }}>{totalSeasons}</Box>
+                            </Typography>
+                            <Typography variant="subtitle1" sx={{ color: 'white' }}>
+                                Total Matches Loaded: <Box component="span" sx={{ fontWeight: 'bold', color: Theme.palette.primary.contrastText }}>{totalMatches}</Box>
+                            </Typography>
+                        </Box>
+                    </Toolbar>
+                </AppBar>
+
+                <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
+                    {loadingError && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            Loading error! {loadingError}. Please check your `public/dataset/` files.
+                        </Alert>
+                    )}
+                    {!dataLoaded && !loadingError && (
+                        <Alert severity="info" sx={{ mb: 2 }}>
+                            No data to display. Please ensure CSV files are correctly loaded.
+                        </Alert>
+                    )}
+                </Container>
+
+
+                {dataLoaded && (
+                    <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
+                        <Grid container spacing={3} alignItems="center">
+                            <Grid>
+                                <FormControl fullWidth size="small" variant="outlined">
+                                    <InputLabel id="season-select-label">Season</InputLabel>
+                                    <Select
+                                        labelId="season-select-label"
+                                        value={selectedSeason}
+                                        label="Season"
+                                        onChange={handleSeasonChange}
+                                        variant="outlined">
+                                        {currentFilterOptions.seasons.map((season) => (
+                                            <MenuItem key={season} value={season}>{season}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid>
+                                <FormControl fullWidth size="small" variant="outlined" disabled={!selectedSeason}>
+                                    <InputLabel id="team-select-label">Teams</InputLabel>
+                                    <Select
+                                        labelId="team-select-label"
+                                        multiple
+                                        value={selectedTeams}
+                                        onChange={handleTeamChange}
+                                        variant="outlined"
+                                        input={<OutlinedInput label="Teams" />}
+                                        renderValue={(selected) => (selected as string[]).join(', ')}
+                                    >
+                                        {currentFilterOptions.teams.map((team) => (
+                                            <MenuItem key={team} value={team}>
+                                                <Checkbox checked={selectedTeams.indexOf(team) > -1} />
+                                                <ListItemText primary={team} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid>
+                                <FormControl fullWidth size="small" variant="outlined" disabled={!selectedSeason}>
+                                    <InputLabel id="referee-select-label">Referees</InputLabel>
+                                    <Select
+                                        labelId="referee-select-label"
+                                        multiple
+                                        value={selectedReferees}
+                                        onChange={handleRefereeChange}
+                                        variant="outlined"
+                                        input={<OutlinedInput label="Referees" />}
+                                        renderValue={(selected) => (selected as string[]).join(', ')}
+                                    >
+                                        {currentFilterOptions.referees.map((referee) => (
+                                            <MenuItem key={referee} value={referee}>
+                                                <Checkbox checked={selectedReferees.indexOf(referee) > -1} />
+                                                <ListItemText primary={referee} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                )}
+
+                {dataLoaded && (
+                    <Container maxWidth="xl" sx={{ pt: 2, pb: 4 }}>
+                        <Card elevation={4} sx={{ borderRadius: 2 }}>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom color="primary">
+                                    Referee Performance Heatmap ({selectedSeason})
+                                </Typography>
+                                <Box
+                                    sx={{
+                                        height: 500,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: `2px dashed ${Theme.palette.secondary.main}`,
+                                        borderRadius: 1,
+                                        p: 3,
+                                    }}
+                                >
+                                    <Typography variant="h4" sx={{ color: Theme.palette.primary.main, mb: 1 }}>
+                                        {currentSeasonMatchCount} Matches Available
+                                    </Typography>
+                                    <Typography color="textSecondary" align="center">
+                                        **TODO: Implement component to display the Referee vs. Statistic Heatmap.**
+                                        <br/>
+                                        Current Filters: Teams ({selectedTeams.length}), Referees ({selectedReferees.length})
+                                    </Typography>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Container>
+                )}
+            </Box>
+        </ThemeProvider>
     );
 }

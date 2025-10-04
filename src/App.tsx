@@ -1,22 +1,12 @@
 import React from 'react';
 import {Navigate, Route, Routes} from "react-router-dom";
-import {Box, createTheme, ThemeProvider} from "@mui/material";
+import {Box, ThemeProvider} from "@mui/material";
 import Dashboard from "./pages/Dashboard";
-
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#ffffff',
-            light: '#7851A9',
-            dark: '#3D195B',
-        },
-    },
-})
+import {Theme} from "./constants/Theme";
 
 function App() {
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={Theme}>
             <Box sx={{width: "100%"}}>
                 <Routes>
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
