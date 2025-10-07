@@ -347,8 +347,6 @@ export default function Dashboard() {
                                         <br/>
                                         Current Filters: Teams ({selectedTeams.length}), Referees
                                         ({selectedReferees.length})
-                                        <br/>
-                                        Some seasons don't have full data regarding the yellow/red cards for example. If its the case we have to use only final score in the charts and display info about it
                                     </Typography>
                                 </Box>
                             </CardContent>
@@ -373,10 +371,6 @@ export default function Dashboard() {
                         </Typography>
                         <Typography variant="caption" color="inherit">
                             Top 5 European Football Leagues Referee Influence Analysis Tool | Data Source: https://github.com/datasets/football-datasets
-                        </Typography>
-                        <br/>
-                        <Typography variant="caption" color="inherit">
-                           NOTE: Some of the season have mocked-up referee data, since not all of them were available in the dataset! Please see full list in the dataset description.
                         </Typography>
                     </Container>
                 </Box>
