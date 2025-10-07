@@ -1,5 +1,5 @@
 import {FilterOptions} from "../interfaces/FilterOptions";
-import {SetStateAction, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {MatchData} from "../interfaces/MatchData";
 import {extractSeasonalOptions, loadAllData} from "../utlis/DatasetMapper";
 import {
@@ -18,6 +18,7 @@ import {
     MenuItem,
     OutlinedInput,
     Select,
+    SelectChangeEvent,
     ThemeProvider,
     Toolbar,
     Typography,
@@ -121,18 +122,34 @@ export default function Dashboard() {
         handleMenuClose();
     };
 
-    const handleSeasonChange = (event: { target: { value: SetStateAction<string>; }; }) => {
+    const handleSeasonChange = (event: SelectChangeEvent<string>) => { // ZMIANA: Lepsze typowanie
         setSelectedSeason(event.target.value);
     };
 
-    const handleTeamChange = (event: { target: { value: any; }; }) => {
+    const handleTeamChange = (event: SelectChangeEvent<string[]>) => {
         const { target: { value } } = event;
-        setSelectedTeams(typeof value === 'string' ? value.split(',') : value);
+        if (value.includes('all')) {
+            if (selectedTeams.length === currentFilterOptions.teams.length) {
+                setSelectedTeams([]);
+            } else {
+                setSelectedTeams(currentFilterOptions.teams);
+            }
+        } else {
+            setSelectedTeams(typeof value === 'string' ? value.split(',') : value);
+        }
     };
 
-    const handleRefereeChange = (event: { target: { value: any; }; }) => {
+    const handleRefereeChange = (event: SelectChangeEvent<string[]>) => {
         const { target: { value } } = event;
-        setSelectedReferees(typeof value === 'string' ? value.split(',') : value);
+        if (value.includes('all')) {
+            if (selectedReferees.length === currentFilterOptions.referees.length) {
+                setSelectedReferees([]);
+            } else {
+                setSelectedReferees(currentFilterOptions.referees);
+            }
+        } else {
+            setSelectedReferees(typeof value === 'string' ? value.split(',') : value);
+        }
     };
 
     if (loading) {
@@ -147,6 +164,9 @@ export default function Dashboard() {
     const totalSeasons = currentFilterOptions.seasons.length;
     const totalMatches = allMatchData.length;
     const currentSeasonMatchCount = allMatchData.filter(m => m.season === selectedSeason).length;
+
+    const areAllTeamsSelected = currentFilterOptions.teams.length > 0 && selectedTeams.length === currentFilterOptions.teams.length;
+    const areAllRefereesSelected = currentFilterOptions.referees.length > 0 && selectedReferees.length === currentFilterOptions.referees.length;
 
     return (
         <ThemeProvider theme={currentTheme}>
@@ -257,8 +277,15 @@ export default function Dashboard() {
                                         onChange={handleTeamChange}
                                         variant="outlined"
                                         input={<OutlinedInput label="Teams" />}
-                                        renderValue={(selected) => (selected as string[]).join(', ')}
+                                        renderValue={(selected) => {
+                                            if (areAllTeamsSelected) return 'All teams';
+                                            return selected.join(', ');
+                                        }}
                                     >
+                                        <MenuItem value="all">
+                                            <Checkbox checked={areAllTeamsSelected} />
+                                            <ListItemText primary="All teams" />
+                                        </MenuItem>
                                         {currentFilterOptions.teams.map((team) => (
                                             <MenuItem key={team} value={team}>
                                                 <Checkbox checked={selectedTeams.indexOf(team) > -1} />
@@ -278,8 +305,15 @@ export default function Dashboard() {
                                         onChange={handleRefereeChange}
                                         variant="outlined"
                                         input={<OutlinedInput label="Referees" />}
-                                        renderValue={(selected) => (selected as string[]).join(', ')}
+                                        renderValue={(selected) => {
+                                            if (areAllRefereesSelected) return 'All referees';
+                                            return selected.join(', ');
+                                        }}
                                     >
+                                        <MenuItem value="all">
+                                            <Checkbox checked={areAllRefereesSelected} />
+                                            <ListItemText primary="All referees" />
+                                        </MenuItem>
                                         {currentFilterOptions.referees.map((referee) => (
                                             <MenuItem key={referee} value={referee}>
                                                 <Checkbox checked={selectedReferees.indexOf(referee) > -1} />
@@ -292,6 +326,7 @@ export default function Dashboard() {
                         </Grid>
                     </Container>
                 )}
+                {/* ... (reszta kodu bez zmian) ... */}
                 {dataLoaded && (
                     <Container maxWidth="xl" sx={{ pt: 2, pb: 4 }}>
                         <Card elevation={4} sx={{ borderRadius: 2 }}>
