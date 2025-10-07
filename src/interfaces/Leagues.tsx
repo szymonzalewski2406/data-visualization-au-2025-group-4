@@ -5,7 +5,7 @@ import bundesligaLogo from "../static/images/bundesliga_logo.png";
 import laLigaLogo from "../static/images/la_liga_logo.png";
 import serieALogo from "../static/images/serie_a_logo.png";
 import Ligue1Logo from "../static/images/ligue_1_logo.png";
-import {bundesligaTheme, laLigaTheme, ligue1Theme, premierLeagueTheme, serieATheme} from "../constants/Themes";
+import {bundesligaTheme, laLigaTheme, ligue1Theme, premierLeagueTheme, serieATheme} from "./Themes";
 
 export interface LeagueConfig {
     id: number;
