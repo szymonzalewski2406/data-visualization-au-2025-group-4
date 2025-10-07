@@ -326,7 +326,6 @@ export default function Dashboard() {
                         </Grid>
                     </Container>
                 )}
-                {/* ... (reszta kodu bez zmian) ... */}
                 {dataLoaded && (
                     <Container maxWidth="xl" sx={{ pt: 2, pb: 4 }}>
                         <Card elevation={4} sx={{ borderRadius: 2 }}>
