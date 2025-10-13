@@ -2,6 +2,8 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 
+SEASONS = ["2021", "2022", "2023", "2024"]
+
 page_to_scrape = requests.get("https://www.transfermarkt.co.uk/uefa-champions-league/schiedsrichter/pokalwettbewerb/CL", headers={"User-Agent": "Mozilla/5.0"})
 soup = BeautifulSoup(page_to_scrape.text, "lxml")
 
