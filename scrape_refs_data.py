@@ -23,7 +23,7 @@ with open("uefa_total_overview.csv", "w", newline="", encoding="utf-8") as file:
 
         row_data = [name, nationality]
 
-        for i in range(2, 8):
+        for i in range(2, len(cells)):
             row_data = row_data + [cells[i].string]
         
         writer.writerow(row_data)
