@@ -1,31 +1,45 @@
 import requests
 import csv
 from bs4 import BeautifulSoup
+import os
 
-SEASONS = ["2021", "2022", "2023", "2024"]
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+# BASE = "https://www.transfermarkt.co.uk/uefa-champions-league/schiedsrichter/pokalwettbewerb/CL"
+# BASE = "https://www.transfermarkt.co.uk/uefa-europa-league/schiedsrichter/pokalwettbewerb/EL"
+BASE = "https://www.transfermarkt.co.uk/uefa-conference-league/schiedsrichter/pokalwettbewerb/UCOL"
+SEASONS = ("gesamt", "2021", "2022", "2023", "2024")
 
-page_to_scrape = requests.get("https://www.transfermarkt.co.uk/uefa-champions-league/schiedsrichter/pokalwettbewerb/CL", headers={"User-Agent": "Mozilla/5.0"})
-soup = BeautifulSoup(page_to_scrape.text, "lxml")
+os.makedirs("uefa_conference_data", exist_ok=True)
 
-with open("uefa_total_overview.csv", "w", newline="", encoding="utf-8") as file:
-    writer = csv.writer(file)
-    writer.writerow([
-        "name", "nationality", "age", "yellow_cards", "double_yellow_cards", "red_cards", "penalties", "appearances"
-    ])
+for season in SEASONS:
+    # Get last page from page 1
+    soup = BeautifulSoup(requests.get(f"{BASE}/page/1/?saison_id={season}", headers=HEADERS).text, "lxml")
+    last_page_title = soup.find("li", class_="tm-pagination__list-item tm-pagination__list-item--icon-last-page") \
+                        .find("a", class_="tm-pagination__link")["title"]
+    last_page = int(last_page_title.split("page ")[-1].split(")")[0])
 
-    container = soup.find("div", id="yw1")
-    rows = container.find_all("tr", attrs={"class": ["odd", "even"]})
+    with open(F"uefa_conference_data/uefa_{season}.csv", "w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow([
+            "name", "nationality", "age", "yellow_cards",
+            "double_yellow_cards", "red_cards", "penalties", "appearances"
+        ])
 
-    for row in rows:
-        name = row.find("td", attrs={"class": "links no-border-links hauptlink"}).string
-        
-        nationality = row.find("img", attrs={"class": "flaggenrahmen"})["title"]
+        for page in range(1, last_page + 1):
+            url = f"{BASE}/page/{page}/?saison_id={season}"
+            soup = BeautifulSoup(requests.get(url, headers=HEADERS).text, "lxml")
 
-        cells = row.find_all("td", attrs={"class": "zentriert"})
+            container = soup.find("div", id="yw1")
+            if not container:
+                continue
+            rows = container.find_all("tr", class_=["odd", "even"])
 
-        row_data = [name, nationality]
+            for row in rows:
+                name = row.find("td", class_="links no-border-links hauptlink").get_text(strip=True)
+                nationality = row.find("img", class_="flaggenrahmen")["title"]
 
-        for i in range(2, len(cells)):
-            row_data = row_data + [cells[i].string]
-        
-        writer.writerow(row_data)
+                cells = row.find_all("td", class_="zentriert")
+                # take all cells from index 2 onward (skip portrait + flag)
+                numbers = [td.get_text(strip=True) for td in cells[2:]]
+
+                writer.writerow([name, nationality] + numbers)
