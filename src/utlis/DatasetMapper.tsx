@@ -1,70 +1,49 @@
-import {MatchData} from "../interfaces/MatchData";
+import { RefereeData } from "../interfaces/RefereeData";
 
-export const HEADER_MAPPING: { [key: string]: keyof Omit<MatchData, 'season' | 'date'> } = {
-    'HomeTeam': 'homeTeam',
-    'AwayTeam': 'awayTeam',
-    'FTHG': 'fullTimeHomeGoals',
-    'FTAG': 'fullTimeAwayGoals',
-    'FTR': 'fullTimeResult',
-    'HTHG': 'halfTimeHomeGoals',
-    'HTAG': 'halfTimeAwayGoals',
-    'HTR': 'halfTimeResult',
-    'Referee': 'referee',
-    'HS': 'homeShots',
-    'AS': 'awayShots',
-    'HST': 'homeShotsOnTarget',
-    'AST': 'awayShotsOnTarget',
-    'HF': 'homeFouls',
-    'AF': 'awayFouls',
-    'HC': 'homeCorners',
-    'AC': 'awayCorners',
-    'HY': 'homeYellowCards',
-    'AY': 'awayYellowCards',
-    'HR': 'homeRedCards',
-    'AR': 'awayRedCards',
+export const HEADER_MAPPING: { [key: string]: keyof RefereeData } = {
+    'name': 'name',
+    'nationality': 'nationality',
+    'age': 'age',
+    'yellow_cards': 'yellow_cards',
+    'double_yellow_cards': 'double_yellow_cards',
+    'red_cards': 'red_cards',
+    'penalties': 'penalties',
+    'appearances': 'appearances',
 };
 
 export const INT_FIELDS = [
-    'FTHG', 'FTAG', 'HTHG', 'HTAG', 'HS', 'AS', 'HST', 'AST',
-    'HF', 'AF', 'HC', 'AC', 'HY', 'AY', 'HR', 'AR'
+    'age', 'yellow_cards', 'double_yellow_cards',
+    'red_cards', 'penalties', 'appearances'
 ];
 
-export const parseCSVData = (csvString: string, seasonName: string): MatchData[] => {
+export const parseCSVData = (csvString: string, seasonName: string): (RefereeData & { season: string })[] => {
     const lines = csvString.trim().split('\n');
     if (lines.length < 2) return [];
 
-    const headers = lines[0].split(',');
-    const data: MatchData[] = [];
+    const headers = lines[0].split(',').map(h => h.trim());
+    const data: (RefereeData & { season: string })[] = [];
 
     for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',');
+        const values = lines[i].split(',').map(v => v.trim());
         if (values.length !== headers.length) continue;
 
-        const match: any = { season: seasonName };
+        const refereeStat: any = { season: seasonName };
 
         headers.forEach((csvHeader, index) => {
-            const value = values[index].trim();
+            const value = values[index];
 
-            if (csvHeader === 'Date') {
-                const parts = value.split('/');
-                if (parts.length === 3) {
-                    const year = 2000 + parseInt(parts[2], 10);
-                    const month = parseInt(parts[1], 10) - 1;
-                    const day = parseInt(parts[0], 10);
-                    match.date = new Date(year, month, day);
-                }
-            } else if (HEADER_MAPPING[csvHeader]) {
+            if (HEADER_MAPPING[csvHeader]) {
                 const jsField = HEADER_MAPPING[csvHeader];
 
                 if (INT_FIELDS.includes(csvHeader)) {
-                    match[jsField] = parseInt(value, 10) || 0;
+                    refereeStat[jsField] = parseInt(value, 10) || 0;
                 } else {
-                    match[jsField] = value;
+                    refereeStat[jsField] = value;
                 }
             }
         });
 
-        data.push(match as MatchData);
+        data.push(refereeStat as (RefereeData & { season: string }));
     }
     return data;
 };
@@ -81,9 +60,8 @@ async function getCsvFilenames(dataFolder: string): Promise<string[]> {
     }
 }
 
-
-export async function loadAllData(dataFolder: string): Promise<{ allData: MatchData[], initialSeasons: string[] }> {
-    let combinedData: MatchData[] = [];
+export async function loadAllData(dataFolder: string): Promise<{ allData: (RefereeData & { season: string })[], initialSeasons: string[] }> {
+    let combinedData: (RefereeData & { season: string })[] = [];
     const seasonNames = new Set<string>();
 
     let ALL_CSV_FILENAMES: string[];
@@ -92,7 +70,6 @@ export async function loadAllData(dataFolder: string): Promise<{ allData: MatchD
     } catch (error) {
         throw new Error(`Error getting CSV filenames for ${dataFolder}: ${error}`);
     }
-
 
     if (ALL_CSV_FILENAMES.length === 0) {
         throw new Error(`CSV filenames not found in ${dataFolder}`);
@@ -128,42 +105,38 @@ export async function loadAllData(dataFolder: string): Promise<{ allData: MatchD
         }
     });
 
-    const sortedSeasons = Array.from(seasonNames).sort().reverse();
+    const sortedSeasons = Array.from(seasonNames).sort((a, b) => {
+        if (a.startsWith('Total')) return -1;
+        if (b.startsWith('Total')) return 1;
+        return b.localeCompare(a);
+    });
 
     return { allData: combinedData, initialSeasons: sortedSeasons };
 }
 
 export const getSeasonNameFromFile = (filename: string): string => {
-    const match = filename.match(/season-(\d{2})(\d{2})\.csv/);
-
-    if (match && match.length === 3) {
-        const startYearTwoDigit = parseInt(match[1], 10);
-        let fourDigitStartYear: number;
-
-        if (startYearTwoDigit >= 93) {
-            fourDigitStartYear = 1900 + startYearTwoDigit;
-        } else {
-            fourDigitStartYear = 2000 + startYearTwoDigit;
-        }
-
-        const fourDigitEndYear = fourDigitStartYear + 1;
-        return `${fourDigitStartYear}/${fourDigitEndYear}`;
+    const seasonMatch = filename.match(/_(\d{4})_(\d{4})\.csv$/);
+    if (seasonMatch && seasonMatch.length === 3) {
+        return `${seasonMatch[1]}/${seasonMatch[2]}`;
     }
+
+    const totalMatch = filename.match(/_total\.csv$/);
+    if (totalMatch) {
+        return "Total (All Seasons)";
+    }
+
     return filename.replace('.csv', '');
 };
 
-export const extractSeasonalOptions = (data: MatchData[]): { teams: string[], referees: string[] } => {
-    const teams = new Set<string>();
+export const extractRefereeOptions = (data: (RefereeData & { season: string })[]): { referees: string[] } => {
     const referees = new Set<string>();
 
-    data.forEach(match => {
-        teams.add(match.homeTeam);
-        teams.add(match.awayTeam);
-        referees.add(match.referee);
+    data.forEach(statLine => {
+        referees.add(statLine.name);
     });
 
     return {
-        teams: Array.from(teams).sort(),
         referees: Array.from(referees).sort(),
     };
 };
+

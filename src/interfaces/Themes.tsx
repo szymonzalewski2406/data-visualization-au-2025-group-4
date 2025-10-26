@@ -1,4 +1,4 @@
-import {createTheme, ThemeOptions} from "@mui/material";
+import { createTheme, ThemeOptions } from "@mui/material";
 
 const BASE_OPTIONS: ThemeOptions = {
     typography: {
@@ -11,77 +11,46 @@ const BASE_OPTIONS: ThemeOptions = {
     }
 };
 
-export const premierLeagueTheme = createTheme({
+export const championsLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#3D195B',
-            light: '#7851A9',
+            main: '#001a4b',
+            light: '#003c9e',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#7851A9',
+            main: '#00b4f0',
         },
         ...BASE_OPTIONS.palette,
     },
 });
 
-export const bundesligaTheme = createTheme({
+export const europaLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#D4002D',
-            light: '#980427',
-            contrastText: '#ffffff',
+            main: '#f26200',
+            light: '#ff8a3d',
+            contrastText: '#000000',
         },
         secondary: {
-            main: '#FFCC00',
+            main: '#000000',
         },
         ...BASE_OPTIONS.palette,
     },
 });
 
-
-export const serieATheme = createTheme({
+export const conferenceLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#008348',
-            light: '#3C9C69',
+            main: '#00842a',
+            light: '#339c55',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#0092BF',
-        },
-        ...BASE_OPTIONS.palette,
-    },
-});
-
-export const ligue1Theme = createTheme({
-    ...BASE_OPTIONS,
-    palette: {
-        primary: {
-            main: '#091530',
-            light: '#3d4969',
-            contrastText: '#ffffff',
-        },
-        secondary: {
-            main: '#FF0000',
-        },
-        ...BASE_OPTIONS.palette,
-    },
-});
-
-export const laLigaTheme = createTheme({
-    ...BASE_OPTIONS,
-    palette: {
-        primary: {
-            main: '#F44336',
-            light: '#f1968e',
-            contrastText: '#ffffff',
-        },
-        secondary: {
-            main: '#002D62',
+            main: '#000000',
         },
         ...BASE_OPTIONS.palette,
     },
