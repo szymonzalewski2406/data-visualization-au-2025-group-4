@@ -27,7 +27,7 @@ import {
     Theme,
 } from "@mui/material";
 import {DEFAULT_COMPETITION, COMPETITIONS, CompetitionConfig} from "../interfaces/Competitions";
-import PublicIcon from '@mui/icons-material/Public';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 
 
 export default function Dashboard() {
@@ -183,7 +183,7 @@ export default function Dashboard() {
                                 aria-haspopup="true"
                                 aria-expanded={open ? 'true' : undefined}
                             >
-                                <PublicIcon/>
+                                <SportsSoccerIcon/>
                             </IconButton>
                             <Menu
                                 anchorEl={anchorEl}

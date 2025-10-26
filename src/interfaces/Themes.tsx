@@ -46,8 +46,8 @@ export const europaLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#f26200',
-            light: '#ff8a3d',
+            main: '#ff8a3d',
+            light: '#f26200',
             contrastText: '#ffffff',
         },
         secondary: {
