@@ -156,20 +156,22 @@ export default function Dashboard() {
     return (
         <ThemeProvider theme={currentTheme}>
             <Box sx={{flexGrow: 1, backgroundColor: currentTheme.palette.background.default, minHeight: '100vh'}}>
-                <AppBar position="static" sx={{bgcolor: currentTheme.palette.primary.light}}>
+                <AppBar
+                    position="static"
+                    sx={{
+                        bgcolor: currentTheme.palette.primary.light,
+                        backgroundImage: currentTheme.custom.appBarBackground,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                    }}
+                >
                     <Toolbar sx={{justifyContent: 'space-between'}}>
                         <Box sx={{display: 'flex', alignItems: 'center'}}>
-                            <Box
-                                component="img"
-                                sx={{height: 40, mr: 2}}
-                                alt={`${selectedCompetition.name} Logo`}
-                                src={selectedCompetition.logoPath}
-                            />
                             <Typography
                                 variant="h5"
                                 sx={{fontWeight: 'bold', color: currentTheme.palette.primary.contrastText}}
                             >
-                                {selectedCompetition.name} Referee Statistics
+                                UEFA {selectedCompetition.name} Referee Analysis Tool
                             </Typography>
                         </Box>
                         <Box sx={{display: 'flex', alignItems: 'center', gap: 3}}>
@@ -358,10 +360,13 @@ export default function Dashboard() {
                         py: 3,
                         px: 2,
                         mt: 'auto',
-                        backgroundColor: currentTheme.palette.primary.light,
                         color: 'white',
                         textAlign: 'center',
-                        borderTop: `1px solid ${currentTheme.palette.primary.dark || currentTheme.palette.primary.main}`
+                        borderTop: `1px solid ${currentTheme.palette.primary.dark || currentTheme.palette.primary.main}`,
+                        bgcolor: currentTheme.palette.primary.light,
+                        backgroundImage: currentTheme.custom.appBarBackground,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
                     }}
                 >
                     <Container maxWidth="xl">
