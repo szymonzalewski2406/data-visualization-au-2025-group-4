@@ -1,5 +1,5 @@
 export interface FilterOptions {
     seasons: string[];
-    teams: string[];
+    nationalities: string[];
     referees: string[];
 }

@@ -1,4 +1,17 @@
-import {createTheme, ThemeOptions} from "@mui/material";
+import { createTheme, ThemeOptions } from "@mui/material";
+
+declare module '@mui/material/styles' {
+    interface ThemeOptions {
+        custom?: {
+            appBarBackground?: string;
+        };
+    }
+    interface Theme {
+        custom: {
+            appBarBackground: string;
+        };
+    }
+}
 
 const BASE_OPTIONS: ThemeOptions = {
     typography: {
@@ -11,78 +24,74 @@ const BASE_OPTIONS: ThemeOptions = {
     }
 };
 
-export const premierLeagueTheme = createTheme({
+export const allCompetitionsTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#3D195B',
-            light: '#7851A9',
+            main: '#283593',
+            light: '#5f5fc4',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#7851A9',
+            main: '#1a237e',
         },
         ...BASE_OPTIONS.palette,
     },
+    custom: {
+        appBarBackground: 'url(/theme_backgrounds/uefa_background.jpg)',
+    }
 });
 
-export const bundesligaTheme = createTheme({
+export const championsLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#D4002D',
-            light: '#980427',
+            main: '#001a4b',
+            light: '#003c9e',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#FFCC00',
+            main: '#00b4f0',
         },
         ...BASE_OPTIONS.palette,
     },
+    custom: {
+        appBarBackground: 'url(/theme_backgrounds/champions_league_background.jpg)',
+    }
 });
 
-
-export const serieATheme = createTheme({
+export const europaLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#008348',
-            light: '#3C9C69',
+            main: '#ff8a3d',
+            light: '#f26200',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#0092BF',
+            main: '#000000',
         },
         ...BASE_OPTIONS.palette,
     },
+    custom: {
+        appBarBackground: 'url(/theme_backgrounds/europa_league_background.jpg)',
+    }
 });
 
-export const ligue1Theme = createTheme({
+export const conferenceLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {
         primary: {
-            main: '#091530',
-            light: '#3d4969',
+            main: '#00842a',
+            light: '#339c55',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#FF0000',
+            main: '#000000',
         },
         ...BASE_OPTIONS.palette,
     },
-});
-
-export const laLigaTheme = createTheme({
-    ...BASE_OPTIONS,
-    palette: {
-        primary: {
-            main: '#F44336',
-            light: '#f1968e',
-            contrastText: '#ffffff',
-        },
-        secondary: {
-            main: '#002D62',
-        },
-        ...BASE_OPTIONS.palette,
-    },
+    custom: {
+        appBarBackground: 'url(/theme_backgrounds/conference_league_background.jpg)',
+    }
 });

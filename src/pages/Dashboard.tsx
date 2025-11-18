@@ -1,7 +1,10 @@
-import {FilterOptions} from "../interfaces/FilterOptions";
-import {useEffect, useState} from "react";
-import {MatchData} from "../interfaces/MatchData";
-import {extractSeasonalOptions, loadAllData} from "../utlis/DatasetMapper";
+import { useEffect, useMemo, useState } from "react";
+import { RefereeData } from "../interfaces/RefereeData";
+import {
+    extractNationalityOptions,
+    extractRefereeOptions,
+    loadAllData
+} from "../utlis/DatasetMapper";
 import {
     Alert,
     AppBar,
@@ -13,50 +16,58 @@ import {
     Container,
     FormControl,
     Grid,
+    IconButton,
     InputLabel,
     ListItemText,
+    Menu,
     MenuItem,
     OutlinedInput,
     Select,
     SelectChangeEvent,
+    Theme,
     ThemeProvider,
     Toolbar,
     Typography,
-    IconButton,
-    Menu,
-    Theme,
+    Stack,
+    Slider,
+    Switch,
+    FormControlLabel
 } from "@mui/material";
-import {DEFAULT_LEAGUE, LEAGUES, LeagueConfig} from "../interfaces/Leagues";
-import PublicIcon from '@mui/icons-material/Public';
-
+import {
+    COMPETITIONS,
+    CompetitionConfig,
+    DEFAULT_COMPETITION
+} from "../interfaces/Competitions";
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+import { FilterOptions } from "../interfaces/FilterOptions";
 
 export default function Dashboard() {
-    const [selectedLeague, setSelectedLeague] = useState<LeagueConfig>(DEFAULT_LEAGUE);
-    const currentTheme: Theme = selectedLeague.theme as Theme;
+    const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
+    const currentTheme: Theme = selectedCompetition.theme as Theme;
 
-    const [allMatchData, setAllMatchData] = useState<MatchData[]>([]);
+    const [allRefereeData, setAllRefereeData] = useState<RefereeData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [loadingError, setLoadingError] = useState<string | null>(null);
 
     const [selectedSeason, setSelectedSeason] = useState<string>('');
-    const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+    const [selectedNationality, setSelectedNationality] = useState<string[]>([]);
     const [selectedReferees, setSelectedReferees] = useState<string[]>([]);
 
-    const [currentFilterOptions, setCurrentFilterOptions] = useState<FilterOptions>({
+    const [ageRange, setAgeRange] = useState<number[]>([20, 60]);
+    const [minMaxAge, setMinMaxAge] = useState<number[]>([20, 60]);
+    const [isAgeChart, setIsAgeChart] = useState<boolean>(false);
+
+    const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         seasons: [],
-        teams: [],
+        nationalities: [],
         referees: [],
     });
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+    const handleMenuClose = () => setAnchorEl(null);
 
     useEffect(() => {
         const fetchAndParseData = async () => {
@@ -65,346 +76,453 @@ export default function Dashboard() {
             setDataLoaded(false);
 
             try {
-                const {allData, initialSeasons} = await loadAllData(selectedLeague.dataFolder);
+                const { allData, initialSeasons } = await loadAllData(selectedCompetition.dataFolder);
 
                 if (allData.length > 0) {
-                    setAllMatchData(allData);
-                    setCurrentFilterOptions(prev => ({
-                        ...prev,
-                        seasons: initialSeasons,
-                    }));
+                    setAllRefereeData(allData);
+                    setFilterOptions(prev => ({ ...prev, seasons: initialSeasons }));
+
+                    const ages = allData.map(r => r.age).filter(a => a > 0);
+                    if (ages.length > 0) {
+                        const min = Math.min(...ages);
+                        const max = Math.max(...ages);
+                        setMinMaxAge([min, max]);
+                        setAgeRange([min, max]);
+                    }
 
                     if (initialSeasons.length > 0) {
                         setSelectedSeason(initialSeasons[0]);
                     }
                     setDataLoaded(true);
-                    setLoadingError(null);
                 } else {
-                    setLoadingError(`Could not load matches for ${selectedLeague.name}.`);
-                    setDataLoaded(false);
+                    setLoadingError(`Could not load statistics for ${selectedCompetition.name}.`);
                 }
-
             } catch (error: any) {
-                setLoadingError(error.message || `Unexpected error loading ${selectedLeague.name} data.`);
-                setDataLoaded(false);
+                setLoadingError(error.message || `Unexpected error.`);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchAndParseData();
-    }, [selectedLeague]);
+    }, [selectedCompetition]);
 
     useEffect(() => {
-        if (!selectedSeason || allMatchData.length === 0) {
-            setCurrentFilterOptions(prev => ({...prev, teams: [], referees: []}));
+        if (!selectedSeason || allRefereeData.length === 0) return;
+
+        const dataInSeason = allRefereeData.filter(r => r.season === selectedSeason);
+        const ages = dataInSeason.map(r => r.age).filter(a => a > 0);
+
+        if (ages.length === 0) {
+            setMinMaxAge([20, 60]);
+            setAgeRange([20, 60]);
             return;
         }
 
-        const seasonalData = allMatchData.filter(m => m.season === selectedSeason);
-        const {teams, referees} = extractSeasonalOptions(seasonalData);
+        const min = Math.min(...ages);
+        const max = Math.max(...ages);
 
-        setCurrentFilterOptions(prev => ({
+        const newMinMaxAge = [min, max];
+
+        if (minMaxAge[0] !== min || minMaxAge[1] !== max) {
+            setMinMaxAge(newMinMaxAge);
+
+            const newAgeRange: number[] = [
+                Math.max(ageRange[0], min),
+                Math.min(ageRange[1], max)
+            ];
+
+            if (newAgeRange[0] !== ageRange[0] || newAgeRange[1] !== ageRange[1]) {
+                setAgeRange(newAgeRange);
+            }
+        }
+    }, [selectedSeason, allRefereeData]);
+
+    useEffect(() => {
+        if (!selectedSeason || allRefereeData.length === 0) return;
+
+        const dataInSeason = allRefereeData.filter(r => r.season === selectedSeason);
+
+        const { nationalities } = extractNationalityOptions(dataInSeason);
+
+        let dataFiltered = dataInSeason;
+
+        if (selectedNationality.length > 0) {
+            dataFiltered = dataFiltered.filter(r => selectedNationality.includes(r.nationality));
+        }
+
+        dataFiltered = dataFiltered.filter(r => {
+            if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
+            return true;
+        });
+
+        const { referees } = extractRefereeOptions(dataFiltered);
+
+        setFilterOptions(prev => ({
             ...prev,
-            teams: teams,
-            referees: referees,
+            nationalities: nationalities,
+            referees: referees
         }));
 
-        setSelectedTeams([]);
-        setSelectedReferees([]);
+    }, [selectedSeason, selectedNationality, allRefereeData, ageRange]);
 
-    }, [selectedSeason, allMatchData]);
 
-    const handleLeagueChange = (league: LeagueConfig) => {
-        if (league.id !== selectedLeague.id) {
-            setSelectedLeague(league);
+    const handleCompetitionChange = (competition: CompetitionConfig) => {
+        if (competition.id !== selectedCompetition.id) {
+            setSelectedCompetition(competition);
+            setSelectedNationality([]);
+            setSelectedReferees([]);
         }
         handleMenuClose();
     };
 
-    const handleSeasonChange = (event: SelectChangeEvent<string>) => { // ZMIANA: Lepsze typowanie
+    const handleSeasonChange = (event: SelectChangeEvent<string>) => {
         setSelectedSeason(event.target.value);
+        setSelectedNationality([]);
+        setSelectedReferees([]);
     };
 
-    const handleTeamChange = (event: SelectChangeEvent<string[]>) => {
+    const handleNationalityChange = (event: SelectChangeEvent<string[]>) => {
         const { target: { value } } = event;
-        if (value.includes('all')) {
-            if (selectedTeams.length === currentFilterOptions.teams.length) {
-                setSelectedTeams([]);
-            } else {
-                setSelectedTeams(currentFilterOptions.teams);
-            }
-        } else {
-            setSelectedTeams(typeof value === 'string' ? value.split(',') : value);
-        }
+        const newVal = typeof value === 'string' ? value.split(',') : value;
+
+        setSelectedNationality(newVal);
+        setSelectedReferees([]);
     };
 
     const handleRefereeChange = (event: SelectChangeEvent<string[]>) => {
         const { target: { value } } = event;
         if (value.includes('all')) {
-            if (selectedReferees.length === currentFilterOptions.referees.length) {
-                setSelectedReferees([]);
-            } else {
-                setSelectedReferees(currentFilterOptions.referees);
-            }
+            setSelectedReferees(
+                selectedReferees.length === filterOptions.referees.length ? [] : filterOptions.referees
+            );
         } else {
             setSelectedReferees(typeof value === 'string' ? value.split(',') : value);
         }
     };
 
+    const handleAgeChange = (event: Event, newValue: number | number[]) => {
+        setAgeRange(newValue as number[]);
+    };
+
+    const handleChartToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setIsAgeChart(event.target.checked);
+    };
+
+
+    const displayedData = useMemo(() => {
+        return allRefereeData.filter(r => {
+            if (r.season !== selectedSeason) return false;
+            if (selectedNationality.length > 0 && !selectedNationality.includes(r.nationality)) return false;
+            if (selectedReferees.length > 0 && !selectedReferees.includes(r.name)) return false;
+
+            if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
+
+            return true;
+        });
+    }, [allRefereeData, selectedSeason, selectedNationality, selectedReferees, ageRange]);
+
+
     if (loading) {
         return (
             <Box sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgress color="primary" />
-                <Typography sx={{ ml: 2, color: currentTheme.palette.primary.main }}>Loading {selectedLeague.name} data...</Typography>
+                <Typography sx={{ ml: 2 }}>Loading data...</Typography>
             </Box>
         );
     }
 
-    const totalSeasons = currentFilterOptions.seasons.length;
-    const totalMatches = allMatchData.length;
-    const currentSeasonMatchCount = allMatchData.filter(m => m.season === selectedSeason).length;
-
-    const areAllTeamsSelected = currentFilterOptions.teams.length > 0 && selectedTeams.length === currentFilterOptions.teams.length;
-    const areAllRefereesSelected = currentFilterOptions.referees.length > 0 && selectedReferees.length === currentFilterOptions.referees.length;
+    const areAllRefereesSelected = filterOptions.referees.length > 0 && selectedReferees.length === filterOptions.referees.length;
 
     return (
         <ThemeProvider theme={currentTheme}>
             <Box sx={{ flexGrow: 1, backgroundColor: currentTheme.palette.background.default, minHeight: '100vh' }}>
-                <AppBar position="static" sx={{ bgcolor: currentTheme.palette.primary.light }}>
+                <AppBar position="static" sx={{
+                    bgcolor: currentTheme.palette.primary.light,
+                    backgroundImage: currentTheme.custom.appBarBackground,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }}>
                     <Toolbar sx={{ justifyContent: 'space-between' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box
-                                component="img"
-                                sx={{ height: 40, mr: 2 }}
-                                alt={`${selectedLeague.name} Logo`}
-                                src={selectedLeague.logoPath}
-                            />
-                            <Typography
-                                variant="h5"
-                                sx={{ fontWeight: 'bold', color: currentTheme.palette.primary.contrastText }}
-                            >
-                                {selectedLeague.name} Referee Influence Analysis
+                            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#fff' }}>
+                                {selectedCompetition.name}
                             </Typography>
                         </Box>
+
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', alignItems: 'flex-end' }}>
+                                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                                    Active Filters
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: '#fff', fontWeight: 'bold' }}>
+                                    {selectedSeason} • {selectedNationality.length > 0 ? `${selectedNationality.length} Nations` : 'All Nations'} • {displayedData.length} Records
+                                </Typography>
+                            </Box>
                             <IconButton
                                 onClick={handleMenuClick}
                                 size="large"
-                                sx={{ color: currentTheme.palette.primary.contrastText }}
-                                aria-controls={open ? 'league-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open ? 'true' : undefined}
+                                sx={{ color: '#fff' }}
                             >
-                                <PublicIcon />
+                                <SportsSoccerIcon />
                             </IconButton>
                             <Menu
                                 anchorEl={anchorEl}
-                                id="league-menu"
                                 open={open}
                                 onClose={handleMenuClose}
-                                onClick={handleMenuClose}
-                                PaperProps={{
-                                    sx: { width: 200 },
-                                }}
                             >
-                                {LEAGUES.map((league) => (
-                                    <MenuItem
-                                        key={league.id}
-                                        onClick={() => handleLeagueChange(league)}
-                                        selected={league.id === selectedLeague.id}
-                                    >
-                                        <Box
-                                            component="img"
-                                            src={league.logoPath}
-                                            alt={`${league.name} Logo`}
-                                            sx={{ height: 20, width: 20, mr: 1 }}
-                                        />
-                                        <ListItemText primary={league.name} />
+                                {COMPETITIONS.map((comp) => (
+                                    <MenuItem key={comp.id} onClick={() => handleCompetitionChange(comp)} selected={comp.id === selectedCompetition.id}>
+                                        <Box component="img" src={comp.logoPath} sx={{ height: 20, width: 20, mr: 1 }} />
+                                        <ListItemText primary={comp.name} />
                                     </MenuItem>
                                 ))}
                             </Menu>
-                            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-                                <Typography variant="subtitle1" sx={{ color: 'white' }}>
-                                    Total Seasons: <Box component="span" sx={{ fontWeight: 'bold', color: currentTheme.palette.primary.contrastText }}>{totalSeasons}</Box>
-                                </Typography>
-                                <Typography variant="subtitle1" sx={{ color: 'white' }}>
-                                    Total Matches Loaded: <Box component="span" sx={{ fontWeight: 'bold', color: currentTheme.palette.primary.contrastText }}>{totalMatches}</Box>
-                                </Typography>
-                            </Box>
                         </Box>
                     </Toolbar>
                 </AppBar>
 
                 <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
-                    {loadingError && (
-                        <Alert severity="error" sx={{ mb: 2 }}>
-                            Loading error! {loadingError}. Please check your `public/datasets/{selectedLeague.dataFolder}/` files.
-                        </Alert>
-                    )}
-                    {!dataLoaded && !loadingError && (
-                        <Alert severity="info" sx={{ mb: 2 }}>
-                            No data to display. Please ensure CSV files are correctly loaded for {selectedLeague.name}.
-                        </Alert>
+                    {loadingError && <Alert severity="error" sx={{ mb: 2 }}>{loadingError}</Alert>}
+                    {!dataLoaded && !loadingError && <Alert severity="info">No data loaded.</Alert>}
+
+                    {dataLoaded && (
+                        <>
+                            <Card sx={{ mb: 3, p: 2 }}>
+                                <Stack
+                                    direction={{ xs: 'column', lg: 'row' }}
+                                    spacing={3}
+                                    alignItems="center"
+                                    justifyContent="space-between"
+                                >
+                                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ flexGrow: 1, width: '100%' }} alignItems="center">
+                                        <Box sx={{ minWidth: 150 }}>
+                                            <FormControl fullWidth size="small">
+                                                <InputLabel>Season</InputLabel>
+                                                <Select
+                                                    value={selectedSeason}
+                                                    label="Season"
+                                                    onChange={handleSeasonChange}
+                                                >
+                                                    {filterOptions.seasons.map((s) => (
+                                                        <MenuItem key={s} value={s}>{s}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Box>
+
+                                        <Box sx={{ minWidth: 200 }}>
+                                            <FormControl fullWidth size="small" disabled={!selectedSeason}>
+                                                <InputLabel>Nationality</InputLabel>
+                                                <Select
+                                                    multiple
+                                                    value={selectedNationality}
+                                                    onChange={handleNationalityChange}
+                                                    input={<OutlinedInput label="Nationality" />}
+                                                    renderValue={(selected) => selected.join(', ')}
+                                                >
+                                                    {filterOptions.nationalities.map((nat) => (
+                                                        <MenuItem key={nat} value={nat}>
+                                                            <Checkbox checked={selectedNationality.indexOf(nat) > -1} />
+                                                            <ListItemText primary={nat} />
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Box>
+
+                                        <Box sx={{ width: 200 }}>
+                                            <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+                                                Age Range: {ageRange[0]} - {ageRange[1]} years
+                                            </Typography>
+                                            <Slider
+                                                value={ageRange}
+                                                onChange={handleAgeChange}
+                                                valueLabelDisplay="auto"
+                                                min={minMaxAge[0]}
+                                                max={minMaxAge[1]}
+                                                size="small"
+                                            />
+                                        </Box>
+
+                                        <Box sx={{ minWidth: 200, flexGrow: 1 }}>
+                                            <FormControl fullWidth size="small" disabled={!selectedSeason}>
+                                                <InputLabel>Referees</InputLabel>
+                                                <Select
+                                                    multiple
+                                                    value={selectedReferees}
+                                                    onChange={handleRefereeChange}
+                                                    input={<OutlinedInput label="Referees" />}
+                                                    renderValue={(selected) => areAllRefereesSelected ? 'All referees' : selected.join(', ')}
+                                                >
+                                                    <MenuItem value="all">
+                                                        <Checkbox checked={areAllRefereesSelected} />
+                                                        <ListItemText primary="All referees" />
+                                                    </MenuItem>
+                                                    {filterOptions.referees.map((ref) => (
+                                                        <MenuItem key={ref} value={ref}>
+                                                            <Checkbox checked={selectedReferees.indexOf(ref) > -1} />
+                                                            <ListItemText primary={ref} />
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Box>
+                                    </Stack>
+
+                                    <Box sx={{ flexShrink: 0 }}>
+                                        <Typography variant="caption" color="textSecondary">
+                                            Displaying <b>{displayedData.length}</b> records
+                                        </Typography>
+                                    </Box>
+                                </Stack>
+                            </Card>
+
+                            <Grid container spacing={3} sx={{ mb: 3 }}>
+                                <Grid sx={{ width: '100%', display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
+                                            <CardContent sx={{ flexGrow: 1 }}>
+                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                                                    <Typography variant="h6" color="primary">
+                                                        {isAgeChart ? "Age vs. Strictness Analysis" : "Experience vs. Strictness Analysis"}
+                                                    </Typography>
+                                                    <FormControlLabel
+                                                        control={<Switch checked={isAgeChart} onChange={handleChartToggle} color="primary" size="small" />}
+                                                        label={<Typography variant="caption">Age Analysis</Typography>}
+                                                        labelPlacement="start"
+                                                    />
+                                                </Stack>
+
+                                                <Box sx={{
+                                                    height: '100%',
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: 2,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    bgcolor: '#fafafa'
+                                                }}>
+                                                    <Box sx={{ textAlign: 'center' }}>
+                                                        <Typography variant="h5" color="textSecondary">
+                                                            [ PLACEHOLDER: SCATTER PLOT ]
+                                                        </Typography>
+                                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                                                            {isAgeChart
+                                                                ? "X: Age | Y: Strictness Index | Size: Penalties"
+                                                                : "X: Appearances | Y: Strictness Index | Size: Penalties"
+                                                            }
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
+
+                                    <Box sx={{ flex: 1 }}>
+                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
+                                            <CardContent sx={{ flexGrow: 1 }}>
+                                                <Typography variant="h6" color="primary" gutterBottom>
+                                                    Geographic Strictness
+                                                </Typography>
+                                                <Box sx={{
+                                                    height: '100%',
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: 2,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    bgcolor: '#fafafa'
+                                                }}>
+                                                    <Box sx={{ textAlign: 'center' }}>
+                                                        <Typography variant="h5" color="textSecondary">
+                                                            [ PLACEHOLDER: MAP ]
+                                                        </Typography>
+                                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                                                            Europe Heatmap
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+
+                            <Grid container spacing={3} sx={{ mb: 3 }}>
+                                <Grid sx={{ width: '100%' }}>
+                                    <Card elevation={3}>
+                                        <CardContent>
+                                            <Typography variant="h6" color="primary" gutterBottom>
+                                                Top 15 Referees by Strictness Index
+                                            </Typography>
+                                            <Box sx={{
+                                                height: 300,
+                                                border: '2px dashed #ccc',
+                                                borderRadius: 2,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                bgcolor: '#fafafa'
+                                            }}>
+                                                <Typography variant="h5" color="textSecondary">
+                                                    [ PLACEHOLDER: BAR CHART ]
+                                                </Typography>
+                                            </Box>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            </Grid>
+
+                            {selectedReferees.length === 1 && (
+                                <Grid container spacing={3}>
+                                    <Grid sx={{ width: '100%', display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+                                        <Box sx={{ flex: 1 }}>
+                                            <Card elevation={3} sx={{ borderTop: `4px solid ${currentTheme.palette.secondary.main}` }}>
+                                                <CardContent>
+                                                    <Typography variant="h6" gutterBottom>
+                                                        Referee Passport: {selectedReferees[0]}
+                                                    </Typography>
+                                                    <Box sx={{ height: 250, bgcolor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        [ PLACEHOLDER: HEATMAP ]
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Box>
+                                        <Box sx={{ flex: 1 }}>
+                                            <Card elevation={3} sx={{ borderTop: `4px solid ${currentTheme.palette.secondary.main}` }}>
+                                                <CardContent>
+                                                    <Typography variant="h6" gutterBottom>
+                                                        Card DNA: {selectedReferees[0]}
+                                                    </Typography>
+                                                    <Box sx={{ height: 250, bgcolor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        [ PLACEHOLDER: WAFFLE CHART ]
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                            )}
+                        </>
                     )}
                 </Container>
 
-                {dataLoaded && (
-                    <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
-                        <Grid container spacing={3} alignItems="center">
-                            <Grid sx={{ minWidth: 150 }}>
-                                <FormControl fullWidth size="small" variant="outlined">
-                                    <InputLabel id="season-select-label">Season</InputLabel>
-                                    <Select
-                                        labelId="season-select-label"
-                                        value={selectedSeason}
-                                        label="Season"
-                                        onChange={handleSeasonChange}
-                                        variant="outlined">
-                                        {currentFilterOptions.seasons.map((season) => (
-                                            <MenuItem key={season} value={season}>{season}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid sx={{ minWidth: 250 }}>
-                                <FormControl fullWidth size="small" variant="outlined" disabled={!selectedSeason}>
-                                    <InputLabel id="team-select-label">Teams</InputLabel>
-                                    <Select
-                                        labelId="team-select-label"
-                                        multiple
-                                        value={selectedTeams}
-                                        onChange={handleTeamChange}
-                                        variant="outlined"
-                                        input={<OutlinedInput label="Teams" />}
-                                        renderValue={(selected) => {
-                                            if (areAllTeamsSelected) return 'All teams';
-                                            return selected.join(', ');
-                                        }}
-                                    >
-                                        <MenuItem value="all">
-                                            <Checkbox checked={areAllTeamsSelected} />
-                                            <ListItemText primary="All teams" />
-                                        </MenuItem>
-                                        {currentFilterOptions.teams.map((team) => (
-                                            <MenuItem key={team} value={team}>
-                                                <Checkbox checked={selectedTeams.indexOf(team) > -1} />
-                                                <ListItemText primary={team} />
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid sx={{ minWidth: 250 }}>
-                                <FormControl fullWidth size="small" variant="outlined" disabled={!selectedSeason}>
-                                    <InputLabel id="referee-select-label">Referees</InputLabel>
-                                    <Select
-                                        labelId="referee-select-label"
-                                        multiple
-                                        value={selectedReferees}
-                                        onChange={handleRefereeChange}
-                                        variant="outlined"
-                                        input={<OutlinedInput label="Referees" />}
-                                        renderValue={(selected) => {
-                                            if (areAllRefereesSelected) return 'All referees';
-                                            return selected.join(', ');
-                                        }}
-                                    >
-                                        <MenuItem value="all">
-                                            <Checkbox checked={areAllRefereesSelected} />
-                                            <ListItemText primary="All referees" />
-                                        </MenuItem>
-                                        {currentFilterOptions.referees.map((referee) => (
-                                            <MenuItem key={referee} value={referee}>
-                                                <Checkbox checked={selectedReferees.indexOf(referee) > -1} />
-                                                <ListItemText primary={referee} />
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                    </Container>
-                )}
-                {dataLoaded && (
-                    <Container maxWidth="xl" sx={{ pt: 2, pb: 4 }}>
-                        <Card elevation={4} sx={{ borderRadius: 2 }}>
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom color="primary">
-                                    {selectedLeague.name} Referee Performance Heatmap ({selectedSeason})
-                                </Typography>
-                                <Box
-                                    sx={{
-                                        height: 500,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border: `2px dashed ${currentTheme.palette.secondary.main}`,
-                                        borderRadius: 1,
-                                        p: 3,
-                                    }}
-                                >
-                                    <Typography variant="h4" sx={{ color: currentTheme.palette.primary.main, mb: 1 }}>
-                                        {currentSeasonMatchCount} Matches Available
-                                    </Typography>
-                                    <Typography color="textSecondary" align="center">
-                                        **TODO: Implement component to display the Referee vs. Statistic Heatmap.**
-                                        <br/>
-                                        Current Filters: Teams ({selectedTeams.length}), Referees ({selectedReferees.length})
-                                    </Typography>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                        <Card elevation={4} sx={{ borderRadius: 2 }}>
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom color="primary">
-                                    {selectedLeague.name} Other chart... ({selectedSeason})
-                                </Typography>
-                                <Box
-                                    sx={{
-                                        height: 500,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border: `2px dashed ${currentTheme.palette.secondary.main}`,
-                                        borderRadius: 1,
-                                        p: 3,
-                                    }}
-                                >
-                                    <Typography variant="h4" sx={{ color: currentTheme.palette.primary.main, mb: 1 }}>
-                                        {currentSeasonMatchCount} Matches Available
-                                    </Typography>
-                                    <Typography color="textSecondary" align="center">
-                                        **TODO: Implement other charts if needed.**
-                                        <br/>
-                                        Current Filters: Teams ({selectedTeams.length}), Referees
-                                        ({selectedReferees.length})
-                                    </Typography>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Container>
-                )}
-                <Box
-                    component="footer"
-                    sx={{
-                        py: 3,
-                        px: 2,
-                        mt: 'auto',
-                        backgroundColor: currentTheme.palette.primary.light,
-                        color: 'white',
-                        textAlign: 'center',
-                        borderTop: `1px solid ${currentTheme.palette.primary.dark || currentTheme.palette.primary.main}`
-                    }}
-                >
+                <Box component="footer" sx={{
+                    py: 3, px: 2, mt: 'auto',
+                    color: 'white', textAlign: 'center',
+                    borderTop: `1px solid ${currentTheme.palette.primary.dark}`,
+                    bgcolor: currentTheme.palette.primary.light,
+                    backgroundImage: currentTheme.custom.appBarBackground,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}>
                     <Container maxWidth="xl">
                         <Typography variant="body2" sx={{ mb: 1 }}>
                             Data Visualization Course Project - Group 4, Aarhus University 2025
                         </Typography>
                         <Typography variant="caption" color="inherit">
-                            Top 5 European Football Leagues Referee Influence Analysis Tool | Data Source: https://github.com/datasets/football-datasets
+                            UEFA Competition Referee Analysis Tool | Data Source: transfermarkt.de
                         </Typography>
                     </Container>
                 </Box>
