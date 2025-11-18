@@ -24,6 +24,24 @@ const BASE_OPTIONS: ThemeOptions = {
     }
 };
 
+export const allCompetitionsTheme = createTheme({
+    ...BASE_OPTIONS,
+    palette: {
+        primary: {
+            main: '#283593',
+            light: '#5f5fc4',
+            contrastText: '#ffffff',
+        },
+        secondary: {
+            main: '#1a237e',
+        },
+        ...BASE_OPTIONS.palette,
+    },
+    custom: {
+        appBarBackground: 'url(/theme_backgrounds/uefa_background.jpg)',
+    }
+});
+
 export const championsLeagueTheme = createTheme({
     ...BASE_OPTIONS,
     palette: {

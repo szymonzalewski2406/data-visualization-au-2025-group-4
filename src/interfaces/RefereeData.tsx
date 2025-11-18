@@ -7,4 +7,10 @@ export interface RefereeData {
     red_cards: number;
     penalties: number;
     appearances: number;
+    competition: string;
+    season: string;
+    total_cards: number
+    cards_per_game: number;
+    penalties_per_game: number;
+    strictness_index: number;
 }
