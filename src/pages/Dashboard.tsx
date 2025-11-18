@@ -111,6 +111,37 @@ export default function Dashboard() {
         if (!selectedSeason || allRefereeData.length === 0) return;
 
         const dataInSeason = allRefereeData.filter(r => r.season === selectedSeason);
+        const ages = dataInSeason.map(r => r.age).filter(a => a > 0);
+
+        if (ages.length === 0) {
+            setMinMaxAge([20, 60]);
+            setAgeRange([20, 60]);
+            return;
+        }
+
+        const min = Math.min(...ages);
+        const max = Math.max(...ages);
+
+        const newMinMaxAge = [min, max];
+
+        if (minMaxAge[0] !== min || minMaxAge[1] !== max) {
+            setMinMaxAge(newMinMaxAge);
+
+            const newAgeRange: number[] = [
+                Math.max(ageRange[0], min),
+                Math.min(ageRange[1], max)
+            ];
+
+            if (newAgeRange[0] !== ageRange[0] || newAgeRange[1] !== ageRange[1]) {
+                setAgeRange(newAgeRange);
+            }
+        }
+    }, [selectedSeason, allRefereeData]);
+
+    useEffect(() => {
+        if (!selectedSeason || allRefereeData.length === 0) return;
+
+        const dataInSeason = allRefereeData.filter(r => r.season === selectedSeason);
 
         const { nationalities } = extractNationalityOptions(dataInSeason);
 
@@ -300,7 +331,7 @@ export default function Dashboard() {
                                             </FormControl>
                                         </Box>
 
-                                        <Box sx={{ width: 200, px: 1 }}>
+                                        <Box sx={{ width: 200 }}>
                                             <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
                                                 Age Range: {ageRange[0]} - {ageRange[1]} years
                                             </Typography>
@@ -349,7 +380,7 @@ export default function Dashboard() {
 
                             <Grid container spacing={3} sx={{ mb: 3 }}>
                                 <Grid sx={{ width: '100%', display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
-                                    <Box sx={{ flex: 2 }}>
+                                    <Box sx={{ flex: 1 }}>
                                         <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
                                             <CardContent sx={{ flexGrow: 1 }}>
                                                 <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
