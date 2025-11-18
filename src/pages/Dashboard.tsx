@@ -246,7 +246,7 @@ export default function Dashboard() {
                     <Toolbar sx={{ justifyContent: 'space-between' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#fff' }}>
-                                UEFA {selectedCompetition.name} Referee Analysis Tool
+                                {selectedCompetition.name}
                             </Typography>
                         </Box>
 
