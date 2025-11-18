@@ -12,4 +12,4 @@ europa['league'] = 'Europa'
 combined = pd.concat([champions, conference, europa])
 
 os.makedirs('public/datasets/uefa_combined', exist_ok=True)
-combined.to_csv('public/datasets/uefa_combined/uefa_all_leagues_combined.csv')
+combined.to_csv('public/datasets/uefa_combined/uefa_all_leagues_combined.csv', index=False)
