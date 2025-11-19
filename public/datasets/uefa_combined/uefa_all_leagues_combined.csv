@@ -1,822 +1,398 @@
 name,nationality,age,yellow_cards,double_yellow_cards,red_cards,penalties,appearances,league
-Dr. Felix Brych,Germany,50,285,17,7,25,69,Champions
-Björn Kuipers,Netherlands,52,221,6,5,22,59,Champions
-Kim Milton Nielsen,Denmark,65,163,3,3,10,57,Champions
-Szymon Marciniak,Poland,44,224,6,2,22,56,Champions
-Clément Turpin,France,43,197,2,9,28,56,Champions
-Daniele Orsato,Italy,49,244,6,2,12,55,Champions
-Cüneyt Çakır,Türkiye,48,221,7,3,25,54,Champions
-Damir Skomina,Slovenia,49,205,3,4,10,53,Champions
-Danny Makkelie,Netherlands,42,198,6,3,16,53,Champions
-Wolfgang Stark,Germany,55,193,4,6,12,51,Champions
-Lubos Michel,Slovakia,57,203,7,8,13,50,Champions
-Dr. Markus Merk,Germany,63,195,6,11,6,49,Champions
-Terje Hauge,Norway,60,169,4,3,12,47,Champions
-Frank De Bleeckere,Belgium,59,166,2,2,6,47,Champions
-Anders Frisk,Sweden,62,151,3,8,4,45,Champions
-Viktor Kassai,Hungary,50,168,7,0,15,44,Champions
-Urs Meier,Switzerland,66,168,0,6,11,42,Champions
-Slavko Vincic,Slovenia,45,167,1,2,5,42,Champions
-Kyros Vassaras,Greece,59,189,3,3,10,41,Champions
-Nicola Rizzoli,Italy,54,162,5,1,9,41,Champions
-Mateu Lahoz,Spain,48,156,4,0,13,41,Champions
-Michael Oliver,England,40,185,5,2,12,41,Champions
-Mejuto González,Spain,60,125,2,0,10,40,Champions
-Jonas Eriksson,Sweden,51,139,2,4,10,40,Champions
-Anthony Taylor,England,46,178,4,1,12,40,Champions
-Pierluigi Collina,Italy,65,124,5,1,10,39,Champions
-Ovidiu Hațegan,Romania,45,159,4,3,10,39,Champions
-Konrad Plautz,Austria,60,106,3,1,4,38,Champions
-Undiano Mallenco,Spain,52,164,6,3,6,38,Champions
-Gianluca Rocchi,Italy,52,144,10,1,14,38,Champions
-Felix Zwayer,Germany,44,200,6,4,18,38,Champions
-Willie Collum,Scotland,46,151,5,8,11,37,Champions
-Massimo Busacca,Switzerland,56,113,2,1,6,36,Champions
-Howard Webb,England,54,161,2,4,5,36,Champions
-Alain Hamer,Luxembourg,59,137,7,1,5,34,Champions
-Claus Bo Larsen,Denmark,59,82,0,0,6,34,Champions
-Gilles Veissière,France,66,117,1,2,4,33,Champions
-Herbert Fandel,Germany,61,125,7,2,3,33,Champions
-Graham Poll,England,62,109,3,2,3,32,Champions
-Istvan Kovacs,Romania,41,143,3,3,12,32,Champions
-Olegário Benquerença,Portugal,55,131,6,5,6,31,Champions
-Craig Thomson,Scotland,53,136,4,2,8,30,Champions
-Martin Atkinson,England,54,136,2,0,7,30,Champions
-Milorad Mazic,Serbia,52,120,2,1,6,30,Champions
-Hellmut Krug,Germany,69,116,2,3,6,28,Champions
-Carlos Velasco Carballo,Spain,54,106,1,0,10,28,Champions
-Mark Clattenburg,England,50,131,2,0,4,28,Champions
-Pavel Kralovec,Czech Republic,48,102,1,2,8,28,Champions
-Sergey Karasev,Russia,46,100,4,4,11,28,Champions
-Hugh Dallas,Scotland,67,101,3,1,9,27,Champions
-Pedro Proença,Portugal,54,113,3,3,4,27,Champions
-Jesús Gil Manzano,Spain,41,104,0,0,10,27,Champions
-Alain Sars,France,64,88,2,4,8,26,Champions
-Valentin Ivanov,Russia,64,76,2,2,5,26,Champions
-Svein Oddvar Moen,Norway,46,77,1,2,5,26,Champions
-Tom Henning Övrebö,Norway,59,90,4,3,1,25,Champions
-Artur Soares Dias,Portugal,46,67,0,2,7,24,Champions
-Davide Massa,Italy,44,80,2,3,7,24,Champions
-Mike Riley,England,60,89,5,2,3,23,Champions
-Roberto Rosetti,Italy,58,81,1,5,3,23,Champions
-Stéphane Lannoy,France,56,80,5,1,2,23,Champions
-Vítor Pereira,Portugal,68,70,5,1,5,22,Champions
-Paolo Tagliavento,Italy,53,78,2,4,6,22,Champions
-Anastasios Sidiropoulos,Greece,46,87,2,3,6,22,Champions
-Carlos del Cerro Grande,Spain,49,80,3,1,7,22,Champions
-François Letexier,France,36,80,2,6,12,22,Champions
-Rune Pedersen,Norway,62,55,2,3,7,21,Champions
-Stefano Braschi,Italy,68,64,1,3,6,21,Champions
-Lucílio Baptista,Portugal,60,83,4,2,3,21,Champions
-Deniz Aytekin,Germany,47,87,2,3,4,21,Champions
-Antonio Jesús López Nieto,Spain,67,74,2,1,5,20,Champions
-Nikolay Levnikov,Russia,69,78,4,1,3,20,Champions
-Dick Jol,Netherlands,69,79,2,1,4,20,Champions
-Jan Wegereef,Netherlands,63,66,1,2,2,20,Champions
-Luis Medina Cantalejo,Spain,61,87,6,1,5,20,Champions
-Benoît Bastien,France,42,80,1,1,7,20,Champions
-Ivan Kruzliak,Slovakia,41,91,5,1,4,20,Champions
-Tobias Stieler,Germany,44,81,0,2,7,19,Champions
-Daniel Siebert,Germany,41,89,3,3,6,19,Champions
-José María García-Aranda,Spain,69,65,2,0,6,18,Champions
-Peter Fröjdfeldt,Sweden,61,63,2,1,5,18,Champions
-René Temmink,Netherlands,65,54,0,1,2,17,Champions
-Florian Meyer,Germany,56,58,0,2,5,17,Champions
-Serdar Gözübüyük,Netherlands,39,66,1,0,6,17,Champions
-Sandro Schärer,Switzerland,37,61,0,3,5,17,Champions
-Ryszard Wójcik,Poland,69,39,1,3,3,16,Champions
-Manuel Díaz Vega,Spain,71,59,0,2,2,16,Champions
-Bertrand Layec,France,60,62,0,0,2,16,Champions
-Martin Hansson,Sweden,54,49,1,2,3,16,Champions
-Irfan Peljto,Bosnia-Herzegovina,41,51,2,3,9,16,Champions
-David Elleray,England,71,65,4,4,4,15,Champions
-Günter Benkö,Austria,70,56,0,0,0,15,Champions
-Graham Barber,England,67,56,0,1,1,15,Champions
-Arturo Daudén Ibáñez,Spain,61,50,3,4,5,15,Champions
-Laurent Duhamel,France,57,44,0,1,1,15,Champions
-David Fernández Borbalán,Spain,52,58,0,0,4,15,Champions
-Halil Umut Meler,Türkiye,39,56,0,1,7,15,Champions
-José María Sánchez Martínez,Spain,42,51,1,0,3,15,Champions
-Michel Piraux,Belgium,70,54,1,1,3,14,Champions
-Karl-Erik Nilsson,Sweden,68,44,3,1,4,14,Champions
-Éric Poulat,France,61,50,3,3,2,14,Champions
-Stefano Farina,Italy,0,54,2,1,5,14,Champions
-Matej Jug,Slovenia,45,41,1,0,4,14,Champions
-Aleksey Kulbakov,Belarus,45,41,2,1,6,14,Champions
-Orel Grinfeld,Israel,44,53,3,0,2,14,Champions
-Glenn Nyberg,Sweden,37,38,0,0,4,14,Champions
-Serge Muhmenthaler,Switzerland,72,25,1,1,5,13,Champions
-Sándor Puhl,Hungary,0,38,0,1,2,13,Champions
-Claude Colombo,France,65,31,0,0,2,13,Champions
-Massimo De Santis,Italy,63,53,0,0,2,13,Champions
-Yuriy Baskakov,Russia,61,38,1,0,2,13,Champions
-Eric Braamhaar,Netherlands,59,44,0,1,3,13,Champions
-Pieter Vink,Netherlands,58,46,0,1,0,13,Champions
-Srdjan Jovanovic,Serbia,39,45,1,0,2,13,Champions
-Marco Guida,Italy,44,40,0,0,5,13,Champions
-László Vágner,Hungary,69,39,0,0,3,12,Champions
-Paul Durkin,England,70,43,1,1,1,12,Champions
-Knud Erik Fisker,Denmark,65,42,2,2,7,12,Champions
-Domenico Messina,Italy,63,26,1,0,2,12,Champions
-Ivan Bebek,Croatia,48,55,6,2,9,12,Champions
-Bas Nijhuis,Netherlands,48,46,0,0,4,12,Champions
-Maurizio Mariani,Italy,43,48,1,1,6,12,Champions
-Espen Eskås,Norway,37,33,1,0,3,12,Champions
-Ion Craciunescu,Romania,75,42,1,0,0,11,Champions
-Bernd Heynemann,Germany,71,33,1,1,3,11,Champions
-Mario van der Ende,Netherlands,69,41,1,1,0,11,Champions
-Vaclav Krondl,Czech Republic,72,48,1,0,1,11,Champions
-Piero Ceccarini,Italy,71,31,0,0,3,11,Champions
-Alfredo Trentalange,Italy,68,35,1,3,6,11,Champions
-Juan Antonio Fernández Marín,Spain,67,43,1,0,6,11,Champions
-Stuart Dougal,Scotland,62,30,1,2,1,11,Champions
-Paul Allaerts,Belgium,61,23,1,0,2,10,Champions
-Steve Bennett,England,64,42,4,2,3,10,Champions
-Ruddy Buquet,France,48,40,2,0,3,10,Champions
-Georgi Kabakov,Bulgaria,39,45,3,0,1,10,Champions
-Leslie Irvine,Northern Ireland,67,14,0,1,0,9,Champions
-Leslie Mottram,Scotland,74,27,0,2,2,9,Champions
-Vadim Zhuk,Belarus,73,25,1,2,2,9,Champions
-Leif Sundell,Sweden,67,20,0,0,1,9,Champions
-Marc Batta,France,71,24,0,0,1,9,Champions
-Hartmut Strampe,Germany,69,28,2,0,3,9,Champions
-Stéphane Bré,France,59,26,0,1,1,9,Champions
-Gerd Grabher,Austria,71,26,0,1,1,8,Champions
-Atanas Uzunov,Bulgaria,0,31,0,2,2,8,Champions
-Graziano Cesari,Italy,68,23,0,1,0,8,Champions
-Eduardo Iturralde González,Spain,58,28,1,0,2,8,Champions
-Jorge Sousa,Portugal,50,27,0,2,4,8,Champions
-Andreas Ekberg,Sweden,40,34,2,0,4,8,Champions
-Donatas Rumšas,Lithuania,37,27,1,2,3,8,Champions
-Kurt Röthlisberger,Switzerland,74,20,0,1,0,7,Champions
-Ahmet Çakar,Türkiye,63,17,1,1,0,7,Champions
-Matteo Trefoloni,Italy,54,28,0,2,2,7,Champions
-Tom Harald Hagen,Norway,49,32,0,0,3,7,Champions
-João Pinheiro,Portugal,37,24,0,0,1,7,Champions
-Rade Obrenovic,Slovenia,35,36,1,0,1,7,Champions
-Peter Mikkelsen,Denmark,0,14,0,0,0,6,Champions
-Guy Goethals,Belgium,72,15,0,0,0,6,Champions
-Vladimir Hrinak,Slovakia,0,19,0,1,0,6,Champions
-István Vad,Hungary,50,21,0,0,3,6,Champions
-Manuel Gräfe,Germany,52,26,0,1,1,6,Champions
-Aleksandar Stavrev,North Macedonia,48,18,0,0,1,6,Champions
-Marijo Strahonja,Croatia,50,22,3,0,1,6,Champions
-Andris Treimanis,Latvia,40,22,1,1,6,6,Champions
-Bobby Madden,Scotland,46,21,1,1,3,6,Champions
-Radu Petrescu,Romania,42,29,0,0,2,6,Champions
-Manfredas Lukjančukas,Lithuania,33,14,0,0,1,6,Champions
-Dermot Gallagher,England,68,22,2,0,0,5,Champions
-Grzegorz Gilewski,Poland,52,14,0,1,0,5,Champions
-Tony Chapron,France,53,15,0,1,0,5,Champions
-Fırat Aydınus,Türkiye,51,16,1,0,2,5,Champions
-Martin Strömbergsson,Sweden,48,16,0,0,0,5,Champions
-Bartosz Frankowski,Poland,39,21,1,0,1,5,Champions
 Alejandro Hernández Hernández,Spain,42,14,2,0,2,5,Champions
-Aliyar Agayev,Azerbaijan,37,24,0,0,1,5,Champions
-Erik Lambrechts,Belgium,41,11,1,0,1,5,Champions
-Jim McCluskey,Scotland,0,11,0,0,0,4,Champions
-Rémy Harrel,France,71,9,0,0,1,4,Champions
-Sergey Khusainov,Russia,71,10,0,1,0,4,Champions
-Fabio Baldas,Italy,76,13,0,0,1,4,Champions
-John Blankenstein,Netherlands,0,10,1,2,0,4,Champions
-Vasilios Nikakis,Greece,72,8,0,0,2,4,Champions
-Antonio Martín Navarrete,Spain,76,7,1,0,0,4,Champions
-Oğuz Sarvan,Türkiye,70,5,0,0,1,4,Champions
-Fritz Stuchlik,Austria,59,11,2,1,2,4,Champions
-Michael McCurry,Scotland,61,18,0,0,0,4,Champions
-Aleksey Nikolaev,Russia,54,13,1,0,0,4,Champions
-Alan Kelly,Ireland,50,12,0,0,1,4,Champions
-Antony Gautier,France,47,24,0,0,2,4,Champions
-Pawel Raczkowski,Poland,42,9,0,0,1,4,Champions
-Mykola Balakin,Ukraine,36,9,0,0,1,4,Champions
-Jaap Uilenberg,Netherlands,75,6,0,0,0,3,Champions
-Angelo Amendolia,Italy,0,7,0,0,0,3,Champions
-Karl-Josef Assenmacher,Germany,78,3,0,0,1,3,Champions
-Frans Van Den Wyngaert,Belgium,74,5,0,0,1,3,Champions
-Philip Don,England,73,22,0,1,2,3,Champions
-Pierluigi Pairetto,Italy,73,4,1,1,1,3,Champions
-Georgios Bikas,Greece,70,17,0,1,0,3,Champions
-Jacek Granat,Poland,59,14,0,0,0,3,Champions
-Dr. Helmut Fleischer,Germany,61,9,1,0,1,3,Champions
-Dr. Franz-Xaver Wack,Germany,60,9,0,0,0,3,Champions
-Cosimo Bolognino,Italy,66,4,0,0,1,3,Champions
-Darko Ceferin,Slovenia,57,12,0,0,0,3,Champions
-Thomas Einwaller,Austria,48,11,0,0,0,3,Champions
-Kevin Blom,Netherlands,51,15,0,1,1,3,Champions
-Serge Gumienny,Belgium,53,12,0,0,0,3,Champions
-Robert Schörgenhofer,Austria,52,11,0,1,1,3,Champions
-Peter Rasmussen,Denmark,50,7,0,0,1,3,Champions
-Gediminas Mazeika,Lithuania,47,11,0,0,2,3,Champions
-Ali Palabıyık,Türkiye,44,9,0,0,2,3,Champions
-Stéphanie Frappart,France,41,8,0,0,3,3,Champions
-Urs Schnyder,Switzerland,39,18,0,1,4,3,Champions
-Rohit Saggi,Norway,33,13,0,1,2,3,Champions
-Roman Steindl,Austria,76,6,1,0,0,2,Champions
-Charles Agius,Malta,69,8,0,1,0,2,Champions
-Simo Ruokonen,Finland,0,8,0,0,2,2,Champions
-Christer Fällström,Sweden,73,0,0,0,0,2,Champions
-Roger Philippi,Luxembourg,73,3,0,0,0,2,Champions
-Patrick Kelly,Ireland,0,0,0,0,0,2,Champions
-Aleksey Spirin,Russia,0,3,0,0,0,2,Champions
-Bo Jonas Hil Karlsson,Sweden,76,3,0,1,0,2,Champions
-Aron Schmidhuber,Germany,78,4,0,0,1,2,Champions
-Keith Burge,Wales,75,0,0,0,0,2,Champions
-Joël Quiniou,France,75,6,0,0,0,2,Champions
-Didier Pauchard,France,74,3,1,0,1,2,Champions
-Zbigniew Przesmycki,Poland,73,13,0,0,0,2,Champions
-Ilkka Koho,Finland,67,6,1,0,0,2,Champions
-Jorge Coroado,Portugal,69,3,0,0,0,2,Champions
-Hans-Jürgen Weber,Germany,70,7,0,0,0,2,Champions
-Adrian Porumboiu,Romania,75,4,0,0,1,2,Champions
-Amand Ancion,Belgium,67,11,1,1,4,2,Champions
-Miroslav Radoman,Serbia,67,7,0,0,0,2,Champions
-Dick van Egmond,Netherlands,64,4,0,0,0,2,Champions
-Paulo Costa,Portugal,60,11,1,0,1,2,Champions
-Michal Benes,Czech Republic,57,8,0,0,0,2,Champions
-Zeljko Siric,Croatia,64,7,2,1,0,2,Champions
-Georgios Kasnaferis,Greece,58,13,1,1,0,2,Champions
-Alon Yefet,Israel,53,7,0,0,0,2,Champions
-Jaroslav Jara,Czech Republic,61,11,0,0,0,2,Champions
-Cristian Balaj,Romania,54,6,0,0,0,2,Champions
-Stefan Johannesson,Sweden,53,7,0,0,0,2,Champions
-Vladislav Bezborodov,Russia,52,5,0,0,0,2,Champions
-Pawel Gil,Poland,49,10,0,0,0,2,Champions
-Mattias Gestranius,Finland,47,9,1,0,0,2,Champions
-Lawrence Visser,Belgium,35,10,0,0,1,2,Champions
-Nikola Dabanovic,Montenegro,43,7,0,0,0,2,Champions
-Giorgi Kruashvili,Georgia,39,7,0,0,0,2,Champions
-Chris Kavanagh,England,40,9,0,0,0,2,Champions
-Arie Frost,Israel,77,5,0,0,0,1,Champions
-Lajos Hartmann,Hungary,78,0,0,0,0,1,Champions
-Wilfred Wallace,Ireland,0,3,0,0,0,1,Champions
-Mitko Mitrev,Bulgaria,0,1,0,0,1,1,Champions
-Léon Schelings,Belgium,75,0,0,1,0,1,Champions
-Hans Reygwart,Netherlands,76,0,0,0,0,1,Champions
-Gerald Ashby,England,0,1,0,0,0,1,Champions
-Rune Larsson,Sweden,73,2,0,0,0,1,Champions
-Stavros Zakestidis,Greece,0,4,0,0,0,1,Champions
-Frederick McKnight,Northern Ireland,79,1,0,0,0,1,Champions
-Jiri Ulrich,Czech Republic,73,1,0,0,0,1,Champions
-Fortunato Azevedo,Portugal,76,0,0,0,0,1,Champions
-Erman Toroğlu,Türkiye,76,3,0,0,0,1,Champions
-Hubert Forstinger,Austria,79,7,0,0,0,1,Champions
-Alphonse Costantin,Belgium,80,0,0,0,0,1,Champions
-Arcangelo Pezzella,Italy,77,4,0,0,0,1,Champions
-Brian Hill,England,78,0,0,0,0,1,Champions
-Jozef Marko,Slovakia,79,1,0,0,0,1,Champions
-Eyjölfur Ólafsson,Iceland,72,3,0,0,0,1,Champions
-Alan Snoddy,Northern Ireland,70,1,0,0,0,1,Champions
-Andrey Butenko,Russia,71,0,0,0,0,1,Champions
-Sándor Varga,Hungary,0,0,0,0,0,1,Champions
-Georgian Ionescu,Romania,47,0,0,0,1,1,Champions
-Fredy Philippoz,Switzerland,74,3,0,0,0,1,Champions
-Dimitar Momirov,Bulgaria,74,2,0,0,0,1,Champions
-Jan Damgaard,Denmark,72,0,0,0,0,1,Champions
-António Marçal,Portugal,68,0,0,0,0,1,Champions
-John Purcell,Ireland,76,0,0,0,0,1,Champions
-Bujar Pregja,Albania,0,0,0,0,0,1,Champions
-Joseph Timmons,Scotland,0,1,0,0,0,1,Champions
-Robert Ihring,Slovakia,0,2,0,0,0,1,Champions
-Eric Blareau,Belgium,66,0,0,1,1,1,Champions
-Sándor Piller,Hungary,63,6,0,0,0,1,Champions
-Edgar Steinborn,Germany,68,5,0,0,0,1,Champions
-Juan Ansuátegui Roca,Spain,69,1,0,0,0,1,Champions
-Vasyl Melnychuk,Ukraine,68,4,0,0,0,1,Champions
-Dieter Schoch,Switzerland,62,3,0,1,1,1,Champions
-Eric Romain,Belgium,66,3,0,0,0,1,Champions
-Sorin Corpodean,Romania,60,6,0,0,0,1,Champions
-Rob Styles,England,61,2,0,0,0,1,Champions
-Nicolai Vollquartz,Denmark,60,3,0,0,0,1,Champions
-Knut Kircher,Germany,56,4,0,0,1,1,Champions
-Alexandru Tudor,Romania,54,1,0,0,0,1,Champions
-Kristinn Jakobsson,Iceland,56,1,0,0,0,1,Champions
-Nikolay Ivanov,Russia,61,5,0,0,0,1,Champions
-Claudio Circhetta,Switzerland,54,6,0,1,0,1,Champions
-Kostas Kapitanis,Cyprus,61,5,0,0,0,1,Champions
-Bruno Paixão,Portugal,51,4,0,0,1,1,Champions
-Markus Strömbergsson,Sweden,50,3,0,0,0,1,Champions
-Marcin Borski,Poland,52,8,0,0,0,1,Champions
-Stanislav Todorov,Bulgaria,49,5,0,0,1,1,Champions
-Jakob Kehlet,Denmark,45,4,0,0,0,1,Champions
-Craig Pawson,England,46,6,0,0,0,1,Champions
-Patrick Stiller,Germany,31,8,0,0,1,1,Champions
-António Nobre,Portugal,36,4,0,0,0,1,Champions
-Morten Krogh,Denmark,37,2,0,0,1,1,Champions
-Enea Jorgji,Albania,41,7,0,0,0,1,Champions
-Juan Martínez Munuera,Spain,43,1,0,0,3,1,Champions
-Harm Osmers,Germany,40,7,0,0,1,1,Champions
-Nick Walsh,Scotland,34,8,1,0,0,1,Champions
+Aleksey Kulbakov,Belarus,45,9,1,0,2,1,Champions
+Aliyar Agayev,Azerbaijan,37,19,0,0,1,4,Champions
 Allard Lindhout,Netherlands,38,7,0,1,0,1,Champions
+Anastasios Sidiropoulos,Greece,46,8,0,1,1,2,Champions
+Andreas Ekberg,Sweden,40,14,0,0,2,3,Champions
+Andris Treimanis,Latvia,40,13,1,1,4,3,Champions
+Anthony Taylor,England,46,78,2,0,3,18,Champions
+António Nobre,Portugal,36,4,0,0,0,1,Champions
+Artur Soares Dias,Portugal,46,28,0,2,4,9,Champions
+Bartosz Frankowski,Poland,39,15,1,0,0,4,Champions
+Benoît Bastien,France,42,41,0,1,3,12,Champions
+Carlos del Cerro Grande,Spain,49,31,1,1,4,7,Champions
+Chris Kavanagh,England,40,6,0,0,0,1,Champions
+Clément Turpin,France,43,78,2,4,11,25,Champions
+Cüneyt Çakır,Türkiye,48,10,1,0,1,2,Champions
+Daniel Siebert,Germany,41,64,2,3,4,14,Champions
+Daniele Orsato,Italy,49,89,2,0,5,19,Champions
+Danny Makkelie,Netherlands,42,94,3,3,5,22,Champions
+Davide Massa,Italy,44,60,2,3,7,19,Champions
+Deniz Aytekin,Germany,47,5,0,0,0,2,Champions
+Donatas Rumšas,Lithuania,37,23,1,2,3,7,Champions
+Dr. Felix Brych,Germany,50,16,0,1,0,5,Champions
+Enea Jorgji,Albania,41,7,0,0,0,1,Champions
+Erik Lambrechts,Belgium,41,11,1,0,1,4,Champions
+Espen Eskås,Norway,37,31,1,0,2,11,Champions
+Felix Zwayer,Germany,44,99,2,3,9,18,Champions
+François Letexier,France,36,71,2,6,10,19,Champions
+Georgi Kabakov,Bulgaria,39,30,2,0,1,6,Champions
+Giorgi Kruashvili,Georgia,39,7,0,0,0,2,Champions
+Glenn Nyberg,Sweden,37,30,0,0,4,12,Champions
+Halil Umut Meler,Türkiye,39,55,0,1,7,14,Champions
+Harm Osmers,Germany,40,7,0,0,1,1,Champions
 Horațiu Feșnic,Romania,35,4,0,0,0,1,Champions
-Marian Barbu,Romania,37,5,0,0,1,1,Champions
-Simone Sozza,Italy,38,4,0,0,1,1,Champions
-Damian Sylwestrzak,Poland,33,6,0,0,1,1,Champions
-Pawel Raczkowski,Poland,42,41,1,3,5,8,Conference
-Nikola Dabanovic,Montenegro,43,37,0,1,2,8,Conference
-Luís Godinho,Portugal,39,30,0,0,2,7,Conference
-Rade Obrenovic,Slovenia,35,36,0,0,2,7,Conference
-Radu Petrescu,Romania,42,25,1,1,1,7,Conference
-António Nobre,Portugal,36,27,3,3,5,7,Conference
-Anastasios Sidiropoulos,Greece,46,45,3,1,3,7,Conference
-Nick Walsh,Scotland,34,30,0,1,0,6,Conference
-Mohammed Al-Hakim,Sweden,40,16,0,1,1,6,Conference
-Espen Eskås,Norway,37,28,0,0,1,6,Conference
-Glenn Nyberg,Sweden,37,27,1,0,1,6,Conference
-Enea Jorgji,Albania,41,36,2,2,2,6,Conference
-Horațiu Feșnic,Romania,35,19,1,1,0,6,Conference
-Harm Osmers,Germany,40,29,0,1,1,6,Conference
-Orel Grinfeld,Israel,44,16,2,2,1,6,Conference
-Genc Nuza,Kosovo,36,30,0,0,2,6,Conference
-Allard Lindhout,Netherlands,38,31,0,0,2,6,Conference
-Sebastian Gishamer,Austria,37,31,2,0,2,6,Conference
-John Beaton,Scotland,43,32,2,0,2,6,Conference
-Julian Weinberger,Austria,40,23,1,0,1,5,Conference
-Giorgi Kruashvili,Georgia,39,20,0,0,4,5,Conference
-Mykola Balakin,Ukraine,36,23,1,0,3,5,Conference
-István Vad,Hungary,50,17,0,0,1,5,Conference
-Morten Krogh,Denmark,37,29,1,0,1,5,Conference
-Urs Schnyder,Switzerland,39,24,0,0,0,5,Conference
-Gergő Bogár,Hungary,34,21,1,0,1,5,Conference
-Andris Treimanis,Latvia,40,25,0,2,1,5,Conference
-Craig Pawson,England,46,25,1,1,1,5,Conference
-Irfan Peljto,Bosnia-Herzegovina,41,14,0,0,1,5,Conference
-Willie Collum,Scotland,46,29,0,0,1,5,Conference
-Serdar Gözübüyük,Netherlands,39,23,1,0,1,5,Conference
-Willy Delajod,France,33,19,0,1,2,5,Conference
-Juxhin Xhaja,Albania,35,21,0,0,4,5,Conference
-Daniel Schlager,Germany,35,23,0,2,0,5,Conference
-Filip Glova,Slovakia,37,16,0,0,1,4,Conference
-João Pinheiro,Portugal,37,13,0,0,1,4,Conference
-Yigal Frid,Israel,33,14,0,0,1,4,Conference
-Anastasios Papapetrou,Greece,40,17,0,0,1,4,Conference
-Michal Ocenas,Slovakia,34,18,0,0,1,4,Conference
-Robert Harvey,Ireland,37,19,0,1,0,4,Conference
-Erik Lambrechts,Belgium,41,16,0,2,0,4,Conference
-Duje Strukan,Croatia,41,25,0,1,1,4,Conference
-Manuel Schüttengruber,Austria,42,27,0,1,1,4,Conference
-Aliyar Agayev,Azerbaijan,37,21,0,0,1,4,Conference
-Don Robertson,Scotland,38,14,0,0,0,4,Conference
-Rohit Saggi,Norway,33,15,0,0,2,4,Conference
-Bartosz Frankowski,Poland,39,17,0,0,0,4,Conference
-Georgi Kabakov,Bulgaria,39,21,1,1,0,4,Conference
-Donatas Rumšas,Lithuania,37,17,2,0,0,4,Conference
-Daniel Siebert,Germany,41,23,1,0,1,4,Conference
-Ivan Kruzliak,Slovakia,41,21,0,0,0,4,Conference
-Benoît Bastien,France,42,15,0,0,1,4,Conference
-Aleksandar Stavrev,North Macedonia,48,20,0,1,1,4,Conference
-Elchin Masiyev,Azerbaijan,34,14,0,0,0,4,Conference
-Dario Bel,Croatia,37,20,0,1,0,4,Conference
-Marian Barbu,Romania,37,17,0,0,2,4,Conference
-Milos Milanovic,Serbia,32,10,0,0,1,4,Conference
-Matej Jug,Slovenia,45,12,3,0,0,4,Conference
-Damian Sylwestrzak,Poland,33,19,1,1,0,4,Conference
-Atilla Karaoğlan,Türkiye,39,21,0,0,1,4,Conference
-Mohammed Al-Emara,Finland,33,22,2,0,2,4,Conference
-Jérémie Pignard,France,38,17,1,0,0,4,Conference
-Radoslav Gidzhenov,Bulgaria,34,15,1,1,0,4,Conference
-Davide Massa,Italy,44,7,0,0,1,3,Conference
-Marco Di Bello,Italy,44,18,2,1,0,3,Conference
-Daniel Stefanski,Poland,48,7,1,1,0,3,Conference
-Trustin Farrugia Cann,Malta,39,7,0,1,1,3,Conference
-Ali Palabıyık,Türkiye,44,9,0,0,1,3,Conference
-Stéphanie Frappart,France,41,9,0,0,2,3,Conference
-Goga Kikacheishvili,Georgia,34,19,1,0,1,3,Conference
-Fran Jovic,Croatia,41,13,1,0,1,3,Conference
-Maurizio Mariani,Italy,43,11,0,0,1,3,Conference
-Harald Lechner,Austria,43,4,0,1,0,3,Conference
-Lawrence Visser,Belgium,35,12,1,1,0,3,Conference
-Jakob Kehlet,Denmark,45,12,0,0,0,3,Conference
-Anthony Taylor,England,46,11,0,2,1,3,Conference
-Halil Umut Meler,Türkiye,39,22,1,0,2,3,Conference
-Carlos del Cerro Grande,Spain,49,14,0,1,1,3,Conference
-Michael Oliver,England,40,14,1,0,1,3,Conference
-Sandro Schärer,Switzerland,37,15,0,0,1,3,Conference
-Guillermo Cuadra Fernández,Spain,41,16,1,0,1,3,Conference
-Philip Farrugia,Malta,37,12,1,0,0,3,Conference
-Manfredas Lukjančukas,Lithuania,33,18,1,0,1,3,Conference
-Daniele Chiffi,Italy,40,12,0,1,0,3,Conference
-Tamás Bognár,Hungary,46,13,0,0,1,3,Conference
-De Burgos Bengoetxea,Spain,39,9,0,0,2,3,Conference
-Aleksey Kulbakov,Belarus,45,15,0,0,0,3,Conference
-Felix Zwayer,Germany,44,17,1,0,2,3,Conference
-Kristo Tohver,Estonia,44,13,0,0,0,3,Conference
-Joey Kooij,Netherlands,33,23,0,0,2,3,Conference
-Sven Jablonski,Germany,35,12,0,0,0,3,Conference
-Vitalijs Spasjonnikovs,Latvia,39,9,0,0,1,3,Conference
-Balázs Berke,Hungary,41,9,0,0,1,3,Conference
-Ondrej Berka,Czech Republic,37,19,0,0,1,3,Conference
-Nenad Minakovic,Serbia,36,13,0,1,0,3,Conference
-David Smajc,Slovenia,36,13,0,0,0,3,Conference
-Sander van der Eijk,Netherlands,34,9,2,0,0,3,Conference
-Robert Jones,England,38,17,0,0,1,3,Conference
-Oleksiy Derevinskyi,Ukraine,36,16,0,0,1,3,Conference
-Chrysovalantis Theouli,Cyprus,36,6,0,1,2,3,Conference
-Adam Ladebäck,Sweden,33,11,0,1,1,3,Conference
-Clément Turpin,France,43,10,0,0,1,3,Conference
-Lothar D'hondt,Belgium,31,8,1,0,0,3,Conference
-Kevin Clancy,Scotland,41,16,2,0,1,2,Conference
-Bobby Madden,Scotland,46,4,0,0,1,2,Conference
-Juri Frischer,Estonia,41,2,0,0,1,2,Conference
-Fabio Maresca,Italy,44,11,0,0,0,2,Conference
-Fábio Veríssimo,Portugal,42,8,1,0,1,2,Conference
-Ádám Farkas,Hungary,43,11,0,0,0,2,Conference
-Sergiy Boyko,Ukraine,48,10,0,0,2,2,Conference
-Halis Özkahya,Türkiye,45,6,0,0,0,2,Conference
-Peter Kjærsgaard,Denmark,41,12,0,0,1,2,Conference
-Dennis Higler,Netherlands,40,4,0,0,0,2,Conference
-Yevgen Aranovskyi,Ukraine,49,8,0,0,2,2,Conference
-Pavel Orel,Czech Republic,37,7,0,0,2,2,Conference
-Dumitru Muntean,Moldova,40,10,0,0,0,2,Conference
-Chris Kavanagh,England,40,5,0,0,0,2,Conference
-Petri Viljanen,Finland,38,8,0,0,0,2,Conference
-Jérôme Brisard,France,39,8,0,0,1,2,Conference
-Bram Van Driessche,Belgium,40,8,0,1,0,2,Conference
-Istvan Kovacs,Romania,41,7,0,0,1,2,Conference
-Igor Pajac,Croatia,40,12,0,0,0,2,Conference
-Krzysztof Jakubik,Poland,42,6,0,0,0,2,Conference
-Andreas Ekberg,Sweden,40,8,0,0,1,2,Conference
-Artur Soares Dias,Portugal,46,17,0,0,1,2,Conference
-José María Sánchez Martínez,Spain,42,8,0,0,0,2,Conference
-Sascha Stegemann,Germany,40,6,0,0,0,2,Conference
-Novak Simovic,Serbia,43,9,0,0,0,2,Conference
-Iwan Griffith,Wales,37,12,0,1,0,2,Conference
-Visar Kastrati,Kosovo,38,6,0,0,0,2,Conference
-Juan Martínez Munuera,Spain,43,12,1,0,1,2,Conference
-François Letexier,France,36,10,0,0,0,2,Conference
-Arda Kardeşler,Türkiye,37,5,0,1,1,2,Conference
-Christian-Petru Ciochirca,Austria,36,7,0,0,1,2,Conference
-Vangelis Manouchos,Greece,36,9,0,0,0,2,Conference
-Jesús Gil Manzano,Spain,41,7,0,1,0,2,Conference
-Luka Bilbija,Bosnia-Herzegovina,36,12,2,0,0,2,Conference
-Gustavo Correia,Portugal,33,16,0,1,0,2,Conference
-Vasilios Fotias,Greece,36,9,0,0,0,2,Conference
-Ovidiu Hațegan,Romania,45,13,0,0,0,2,Conference
-Simone Sozza,Italy,38,7,0,2,2,2,Conference
-Luca Pairetto,Italy,41,12,0,1,0,2,Conference
-Tobias Stieler,Germany,44,11,1,0,0,2,Conference
-Marco Guida,Italy,44,6,0,0,1,2,Conference
-Lukas Fähndrich,Switzerland,41,9,0,0,0,2,Conference
-Oliver Reitala,Finland,31,6,0,0,1,2,Conference
-David Dickinson,Scotland,45,10,0,1,0,2,Conference
-Rob Hennessy,Ireland,34,10,0,0,1,2,Conference
-Andrea Colombo,Italy,35,7,0,0,1,2,Conference
-Sigurd Kringstad,Norway,37,8,0,0,0,2,Conference
-Ishmael Barbara,Malta,0,5,0,1,0,2,Conference
-Aleksandrs Anufrijevs,Latvia,41,4,0,0,0,1,Conference
-Kateryna Monzul,Ukraine,44,1,0,0,1,1,Conference
-Stuart Attwell,England,43,3,0,0,1,1,Conference
-Kai Erik Steen,Norway,40,11,0,0,0,1,Conference
-Mattias Gestranius,Finland,47,10,0,1,0,1,Conference
-Michael Fabbri,Italy,41,4,0,0,1,1,Conference
-Kirill Levnikov,Russia,41,5,0,0,0,1,Conference
-Jens Maae,Denmark,43,2,0,0,0,1,Conference
-Volen Chinkov,Bulgaria,41,2,0,0,1,1,Conference
-Vilhjálmur Alvar Thórarinsson,Iceland,40,4,0,0,0,1,Conference
-Alain Durieux,Luxembourg,40,5,0,0,0,1,Conference
-Kristoffer Karlsson,Sweden,0,4,0,0,0,1,Conference
-Vitaliy Meshkov,Russia,42,4,0,0,0,1,Conference
-Kári Jóannesarson á Hövdanum,Faroe Islands,35,4,0,0,0,1,Conference
-Helgi Mikael Jónasson,Iceland,31,3,0,0,0,1,Conference
-Kaspar Sjöberg,Sweden,38,3,0,0,0,1,Conference
-Sergey Ivanov,Russia,41,4,0,0,0,1,Conference
-Deniz Aytekin,Germany,47,2,0,1,0,1,Conference
-Szymon Marciniak,Poland,44,5,1,0,0,1,Conference
-Danny Makkelie,Netherlands,42,2,0,0,0,1,Conference
-Srdjan Jovanovic,Serbia,39,4,0,0,0,1,Conference
-Ivan Bebek,Croatia,48,6,0,0,1,1,Conference
-Mads-Kristoffer Kristoffersen,Denmark,42,4,0,0,0,1,Conference
-Joni Hyytiä,Finland,37,4,0,0,1,1,Conference
-Jochem Kamphuis,Netherlands,39,2,0,0,0,1,Conference
-Ruddy Buquet,France,48,3,0,0,1,1,Conference
-Darren England,England,39,6,0,0,0,1,Conference
-Nathan Verboomen,Belgium,37,1,0,0,0,1,Conference
-Roi Reinshreiber,Israel,45,8,0,0,0,1,Conference
-Andrew Madley,England,42,2,0,0,0,1,Conference
-César Soto Grado,Spain,0,2,0,0,0,1,Conference
-Ívar Orri Kristjánsson,Iceland,36,3,0,0,0,1,Conference
-José Luis Munuera Montero,Spain,42,6,0,0,0,1,Conference
-Rauf Cabarov,Azerbaijan,40,3,0,0,0,1,Conference
-Gal Leibovich,Israel,39,5,0,0,0,1,Conference
-Mateu Lahoz,Spain,48,5,0,0,0,1,Conference
+Irfan Peljto,Bosnia-Herzegovina,41,46,2,2,7,15,Champions
+Istvan Kovacs,Romania,41,106,2,2,10,24,Champions
+Ivan Kruzliak,Slovakia,41,40,1,1,2,9,Champions
+Jesús Gil Manzano,Spain,41,67,0,0,4,17,Champions
+José María Sánchez Martínez,Spain,42,47,1,0,2,14,Champions
+João Pinheiro,Portugal,37,24,0,0,1,7,Champions
+Juan Martínez Munuera,Spain,43,1,0,0,3,1,Champions
+Lawrence Visser,Belgium,35,10,0,0,1,2,Champions
+Manfredas Lukjančukas,Lithuania,33,13,0,0,1,5,Champions
+Marco Guida,Italy,44,34,0,0,4,9,Champions
+Mateu Lahoz,Spain,48,23,2,0,2,6,Champions
+Maurizio Mariani,Italy,43,45,1,1,6,11,Champions
+Michael Oliver,England,40,91,3,1,7,21,Champions
+Morten Krogh,Denmark,37,2,0,0,1,1,Champions
+Mykola Balakin,Ukraine,36,9,0,0,1,4,Champions
+Nick Walsh,Scotland,34,8,1,0,0,1,Champions
+Nikola Dabanovic,Montenegro,43,7,0,0,0,2,Champions
+Orel Grinfeld,Israel,44,15,0,0,0,5,Champions
+Ovidiu Hațegan,Romania,45,31,0,1,0,6,Champions
+Rade Obrenovic,Slovenia,35,29,1,0,1,6,Champions
+Radu Petrescu,Romania,42,29,0,0,2,6,Champions
+Rohit Saggi,Norway,33,13,0,1,2,3,Champions
+Sandro Schärer,Switzerland,37,53,0,2,2,14,Champions
+Serdar Gözübüyük,Netherlands,39,53,1,0,5,12,Champions
+Sergey Karasev,Russia,46,9,1,0,1,4,Champions
+Slavko Vincic,Slovenia,45,118,1,1,4,29,Champions
+Srdjan Jovanovic,Serbia,39,39,1,0,2,11,Champions
+Stéphanie Frappart,France,41,5,0,0,3,2,Champions
+Szymon Marciniak,Poland,44,113,3,1,12,28,Champions
+Tobias Stieler,Germany,44,49,0,1,4,11,Champions
+Urs Schnyder,Switzerland,39,13,0,1,2,2,Champions
+Willie Collum,Scotland,46,9,0,0,1,1,Champions
 Abdulkadir Bitigen,Türkiye,41,6,0,0,1,1,Conference
-Robertas Valikonis,Lithuania,42,2,0,0,1,1,Conference
-Tomas Klima,Czech Republic,37,8,0,0,0,1,Conference
-David Fucsman,Israel,34,2,1,0,0,1,Conference
-Andrei Chivulete,Romania,38,5,0,0,0,1,Conference
-Robert Schröder,Germany,40,6,0,0,1,1,Conference
-Viktor Kopiyevskyi,Ukraine,34,4,0,0,1,1,Conference
-Pierre Gaillouste,France,36,1,0,0,0,1,Conference
-Miguel Nogueira,Portugal,31,1,0,0,0,1,Conference
-Ashot Ghaltakhchyan,Armenia,33,4,0,0,1,1,Conference
-Henrik Nalbandyan,Armenia,30,5,0,1,1,1,Conference
-Antoni Bandic,Bosnia-Herzegovina,35,1,0,0,0,1,Conference
-Mikkel Redder,Denmark,31,3,0,0,1,1,Conference
-Menelaos Antoniou,Cyprus,30,2,0,0,0,1,Conference
-Jasper Vergoote,Belgium,33,2,0,0,0,1,Conference
-Sayat Karabaev,Kazakhstan,32,7,0,1,1,1,Conference
-Daniyar Sakhi,Kazakhstan,34,3,0,0,0,1,Conference
-Jan Petrik,Czech Republic,33,3,0,0,0,1,Conference
-Javier Alberola Rojas,Spain,0,5,0,0,0,1,Conference
-Bulat Sariev,Kazakhstan,34,4,0,0,0,1,Conference
-Snir Levi,Israel,0,2,0,0,0,1,Conference
-Stefan Ebner,Austria,34,4,0,0,0,1,Conference
-Patrik Kolaric,Croatia,30,4,0,0,0,1,Conference
-Jakob Sundberg,Denmark,36,7,0,1,0,1,Conference
-Kristoffer Hagenes,Norway,35,1,0,0,0,1,Conference
+Adam Ladebäck,Sweden,33,11,0,1,1,3,Conference
+Alain Durieux,Luxembourg,40,5,0,0,0,1,Conference
 Alejandro Hernández Hernández,Spain,42,2,0,0,1,1,Conference
-Florian Badstübner,Germany,34,4,0,0,0,1,Conference
-Igor Stojchevski,North Macedonia,36,4,0,1,0,1,Conference
-Matej Jug,Slovenia,45,192,7,3,11,40,Europa
-Aleksandar Stavrev,North Macedonia,48,174,3,4,4,39,Europa
-Aleksey Kulbakov,Belarus,45,128,1,5,8,36,Europa
-Ivan Kruzliak,Slovakia,41,184,9,6,7,36,Europa
-Ivan Bebek,Croatia,48,176,9,2,8,35,Europa
-Willie Collum,Scotland,46,131,3,5,15,31,Europa
-Robert Schörgenhofer,Austria,52,110,5,1,5,30,Europa
-Artur Soares Dias,Portugal,46,107,4,0,11,30,Europa
-István Vad,Hungary,50,98,3,2,3,29,Europa
-Vladislav Bezborodov,Russia,52,106,4,4,9,29,Europa
-Serdar Gözübüyük,Netherlands,39,120,5,4,12,29,Europa
-Pavel Kralovec,Czech Republic,48,121,5,0,5,27,Europa
-Alon Yefet,Israel,53,99,1,2,2,27,Europa
-Gediminas Mazeika,Lithuania,47,100,2,3,4,27,Europa
-Clément Turpin,France,43,114,2,9,9,27,Europa
-Felix Zwayer,Germany,44,124,6,3,7,27,Europa
-Bobby Madden,Scotland,46,105,2,1,7,27,Europa
-Andris Treimanis,Latvia,40,141,3,1,7,27,Europa
-Pawel Gil,Poland,49,108,5,2,7,26,Europa
-Ovidiu Hațegan,Romania,45,124,1,4,6,26,Europa
-Mateu Lahoz,Spain,48,109,2,1,7,26,Europa
-Anastasios Sidiropoulos,Greece,46,110,3,3,7,26,Europa
-Kevin Blom,Netherlands,51,96,1,6,8,25,Europa
-Michael Oliver,England,40,98,1,2,9,25,Europa
-Alexandru Tudor,Romania,54,121,5,0,2,24,Europa
-Stefan Johannesson,Sweden,53,96,5,0,6,24,Europa
-Hüseyin Göçek,Türkiye,48,88,4,0,2,24,Europa
-Harald Lechner,Austria,43,97,3,0,4,24,Europa
-Sergiy Boyko,Ukraine,48,98,2,4,8,24,Europa
-Tobias Stieler,Germany,44,114,5,0,5,24,Europa
-Bas Nijhuis,Netherlands,48,99,3,2,3,23,Europa
-Jorge Sousa,Portugal,50,102,3,2,5,23,Europa
-Ruddy Buquet,France,48,103,2,1,6,23,Europa
-Anthony Taylor,England,46,96,4,7,6,23,Europa
-Benoît Bastien,France,42,93,6,6,11,23,Europa
-Craig Pawson,England,46,108,3,0,5,23,Europa
-Jakob Kehlet,Denmark,45,92,1,1,9,23,Europa
-Luca Banti,Italy,51,77,1,2,5,22,Europa
-Sergey Karasev,Russia,46,107,3,3,13,22,Europa
-Kristo Tohver,Estonia,44,117,4,2,9,22,Europa
-Yevgen Aranovskyi,Ukraine,49,95,8,0,3,22,Europa
-Slavko Vincic,Slovenia,45,92,0,3,3,22,Europa
-Pawel Raczkowski,Poland,42,107,3,0,11,22,Europa
-Istvan Kovacs,Romania,41,95,3,3,5,22,Europa
-Tamás Bognár,Hungary,46,101,4,3,6,22,Europa
-Orel Grinfeld,Israel,44,95,4,2,4,22,Europa
-Sandro Schärer,Switzerland,37,90,4,1,9,22,Europa
-Nikola Dabanovic,Montenegro,43,76,0,2,6,22,Europa
-Serge Gumienny,Belgium,53,98,5,4,7,21,Europa
-Halis Özkahya,Türkiye,45,66,4,1,2,21,Europa
-Liran Liany,Israel,48,82,0,2,4,21,Europa
-John Beaton,Scotland,43,96,2,0,7,21,Europa
-Cüneyt Çakır,Türkiye,48,72,1,2,8,20,Europa
-Tony Chapron,France,53,86,1,3,10,20,Europa
-Milorad Mazic,Serbia,52,115,1,3,8,20,Europa
-Daniel Siebert,Germany,41,98,3,2,4,20,Europa
-Gianluca Rocchi,Italy,52,79,4,1,5,19,Europa
-Kristinn Jakobsson,Iceland,56,59,0,3,2,19,Europa
-Damir Skomina,Slovenia,49,93,0,2,3,19,Europa
-Björn Kuipers,Netherlands,52,80,2,3,3,19,Europa
-Deniz Aytekin,Germany,47,91,4,2,7,19,Europa
-Miroslav Zelinka,Czech Republic,44,92,2,2,2,19,Europa
-Szymon Marciniak,Poland,44,92,5,3,10,19,Europa
-Jesús Gil Manzano,Spain,41,74,1,2,4,19,Europa
-Daniel Stefanski,Poland,48,89,2,2,8,19,Europa
-Paolo Tagliavento,Italy,53,74,4,2,7,18,Europa
-Manuel Gräfe,Germany,52,95,3,3,8,18,Europa
-Danny Makkelie,Netherlands,42,70,3,1,5,18,Europa
-Andreas Ekberg,Sweden,40,57,3,1,4,18,Europa
-Aliyar Agayev,Azerbaijan,37,68,4,0,8,18,Europa
-Davide Massa,Italy,44,78,1,0,3,18,Europa
-Srdjan Jovanovic,Serbia,39,70,2,1,6,18,Europa
-Irfan Peljto,Bosnia-Herzegovina,41,71,4,1,6,18,Europa
-José María Sánchez Martínez,Spain,42,80,2,1,7,18,Europa
-Martin Atkinson,England,54,86,1,1,5,17,Europa
-Jonas Eriksson,Sweden,51,74,3,2,4,17,Europa
-Mattias Gestranius,Finland,47,67,4,1,4,17,Europa
-François Letexier,France,36,62,3,3,8,17,Europa
-Svein Oddvar Moen,Norway,46,52,2,1,4,16,Europa
-Simon Lee Evans,Wales,50,83,2,2,3,16,Europa
-Marijo Strahonja,Croatia,50,83,4,1,3,16,Europa
-Michalis Koukoulakis,Greece,50,77,1,1,1,16,Europa
-Daniele Orsato,Italy,49,69,1,3,6,16,Europa
-Radu Petrescu,Romania,42,56,1,2,2,16,Europa
-Georgi Kabakov,Bulgaria,39,100,2,0,5,16,Europa
-Undiano Mallenco,Spain,52,37,0,0,0,15,Europa
-Estrada Fernández,Spain,49,64,3,1,6,15,Europa
-Aleksey Eskov,Russia,47,57,1,3,4,15,Europa
-Carlos del Cerro Grande,Spain,49,65,1,0,4,15,Europa
-Mike Dean,England,57,72,3,4,3,14,Europa
-Cristian Balaj,Romania,54,54,3,0,2,14,Europa
-Florian Meyer,Germany,56,51,1,1,1,14,Europa
-Craig Thomson,Scotland,53,56,1,2,2,14,Europa
-Marcin Borski,Poland,52,73,3,2,5,14,Europa
-Halil Umut Meler,Türkiye,39,42,0,2,2,14,Europa
-Jérôme Brisard,France,39,70,3,0,4,14,Europa
-Libor Kovarik,Czech Republic,49,62,1,1,2,13,Europa
-Mark Clattenburg,England,50,62,2,2,1,13,Europa
-Sébastien Delferière,Belgium,44,46,1,2,0,13,Europa
-Tiago Martins,Portugal,45,71,3,2,6,13,Europa
-Lawrence Visser,Belgium,35,60,3,0,3,13,Europa
-Alan Kelly,Ireland,50,55,2,2,2,12,Europa
-Andre Marriner,England,54,53,3,3,1,12,Europa
-Pol van Boekel,Netherlands,50,47,0,0,5,12,Europa
-Roi Reinshreiber,Israel,45,56,1,0,1,12,Europa
-Filip Glova,Slovakia,37,41,0,1,0,12,Europa
-Mohammed Al-Hakim,Sweden,40,35,0,1,4,12,Europa
-Carlos Velasco Carballo,Spain,54,51,0,0,3,11,Europa
-Hannes Kaasik,Estonia,47,39,0,3,0,11,Europa
-Viktor Kassai,Hungary,50,69,3,1,1,11,Europa
-Anastasios Kakos,Greece,55,41,2,1,0,11,Europa
-Martin Hansson,Sweden,54,32,1,1,0,11,Europa
-Stephan Studer,Switzerland,50,47,1,1,2,11,Europa
-David Fernández Borbalán,Spain,52,40,1,1,2,11,Europa
-Ali Palabıyık,Türkiye,44,40,1,0,2,11,Europa
-Marco Guida,Italy,44,36,0,1,6,11,Europa
-Alejandro Hernández Hernández,Spain,42,47,1,1,3,11,Europa
-Giorgi Kruashvili,Georgia,39,38,0,1,1,11,Europa
-Laurent Duhamel,France,57,24,1,0,3,10,Europa
-Dr. Felix Brych,Germany,50,43,1,0,2,10,Europa
-Leontios Trattou,Cyprus,52,34,0,0,7,10,Europa
-Carlos Clos Gómez,Spain,53,44,3,2,3,10,Europa
-Tom Harald Hagen,Norway,49,43,0,0,4,10,Europa
-Paolo Silvio Mazzoleni,Italy,51,41,0,0,1,10,Europa
-Enea Jorgji,Albania,41,42,2,3,6,10,Europa
-Donatas Rumšas,Lithuania,37,40,1,3,2,10,Europa
-João Pinheiro,Portugal,37,32,1,0,5,10,Europa
-Aleksey Nikolaev,Russia,54,37,0,0,0,9,Europa
-Duarte Gomes,Portugal,52,39,1,0,2,9,Europa
-Antony Gautier,France,47,37,2,2,3,9,Europa
-Bartosz Frankowski,Poland,39,29,1,0,3,9,Europa
-Sascha Stegemann,Germany,40,63,4,0,4,9,Europa
-Glenn Nyberg,Sweden,37,37,1,1,1,9,Europa
-Harm Osmers,Germany,40,47,0,0,3,9,Europa
-Tommy Skjerven,Norway,58,23,0,1,1,8,Europa
-Sascha Kever,Switzerland,50,34,1,0,3,8,Europa
-Zsolt Szabó,Hungary,53,33,2,0,5,8,Europa
-Eric Braamhaar,Netherlands,59,34,0,1,2,8,Europa
-Kenn Hansen,Denmark,45,29,3,1,1,8,Europa
-Anastasios Papapetrou,Greece,40,30,0,1,0,8,Europa
-Chris Kavanagh,England,40,52,0,1,3,8,Europa
-Espen Eskås,Norway,37,43,0,1,1,8,Europa
-Duje Strukan,Croatia,41,42,2,1,3,8,Europa
-Maurizio Mariani,Italy,43,28,1,0,1,8,Europa
-Bruno Paixão,Portugal,51,31,3,0,3,7,Europa
-Tony Asumaa,Finland,57,24,0,0,0,7,Europa
-Peter Rasmussen,Denmark,50,29,1,0,2,7,Europa
-Thomas Einwaller,Austria,48,28,1,0,1,7,Europa
-Said Ennjimi,France,52,35,0,0,3,7,Europa
-Pedro Proença,Portugal,54,35,0,1,1,7,Europa
-Fernando Teixeira Vitienes,Spain,54,16,0,0,2,7,Europa
-Bülent Yıldırım,Türkiye,53,16,0,0,3,7,Europa
-Wolfgang Stark,Germany,55,31,2,0,2,7,Europa
-Manuel Schüttengruber,Austria,42,31,1,0,1,7,Europa
-Sergey Ivanov,Russia,41,28,0,0,3,7,Europa
-Marco Di Bello,Italy,44,33,0,0,3,7,Europa
-De Burgos Bengoetxea,Spain,39,21,1,0,3,7,Europa
-Rade Obrenovic,Slovenia,35,32,0,0,1,7,Europa
-Horațiu Feșnic,Romania,35,33,1,0,2,7,Europa
-Morten Krogh,Denmark,37,20,1,0,4,7,Europa
-Simone Sozza,Italy,38,36,0,1,4,7,Europa
-Knut Kircher,Germany,56,23,0,2,2,6,Europa
-Robert Małek,Poland,54,14,0,2,0,6,Europa
-Claudio Circhetta,Switzerland,54,28,0,0,3,6,Europa
-Nicola Rizzoli,Italy,54,26,1,0,2,6,Europa
-Mark Courtney,Northern Ireland,53,26,1,0,0,6,Europa
-Fredy Fautrel,France,53,27,1,2,3,6,Europa
-Stanislav Todorov,Bulgaria,49,27,1,1,2,6,Europa
-Martin Strömbergsson,Sweden,48,11,0,0,1,6,Europa
-Arnold Hunter,Northern Ireland,46,25,0,0,2,6,Europa
-Fábio Veríssimo,Portugal,42,18,0,0,1,6,Europa
-Fran Jovic,Croatia,41,20,0,1,1,6,Europa
-Stéphanie Frappart,France,41,27,0,1,4,6,Europa
-Erik Lambrechts,Belgium,41,25,0,0,2,6,Europa
-Nick Walsh,Scotland,34,35,4,2,1,6,Europa
-Sebastian Gishamer,Austria,37,23,1,0,1,6,Europa
-Martin Ingvarsson,Sweden,59,14,0,0,2,5,Europa
-Darko Ceferin,Slovenia,57,21,0,1,1,5,Europa
-Douglas McDonald,Scotland,60,29,1,0,1,5,Europa
-César Muñiz Fernández,Spain,55,25,0,0,2,5,Europa
-Eduardo Iturralde González,Spain,58,24,1,0,4,5,Europa
-Maksim Layushkin,Russia,53,16,1,1,0,5,Europa
-Markus Strömbergsson,Sweden,50,26,1,1,2,5,Europa
-Fırat Aydınus,Türkiye,51,21,0,3,3,5,Europa
-Stephan Klossner,Switzerland,44,20,0,0,1,5,Europa
-Mag. Oliver Drachta,Austria,48,16,0,1,0,5,Europa
-Kevin Clancy,Scotland,41,16,0,0,2,5,Europa
-Allard Lindhout,Netherlands,38,20,0,0,2,5,Europa
-Igor Pajac,Croatia,40,12,0,0,0,5,Europa
-Juxhin Xhaja,Albania,35,21,0,2,1,5,Europa
-Julian Weinberger,Austria,40,18,1,0,2,5,Europa
-Luís Godinho,Portugal,39,16,0,0,0,5,Europa
-Nenad Minakovic,Serbia,36,16,1,0,2,5,Europa
-Michael Weiner,Germany,56,12,1,0,0,4,Europa
-Terje Hauge,Norway,60,15,0,0,1,4,Europa
-Pieter Vink,Netherlands,58,17,1,1,0,4,Europa
-Daniel Stalhammar,Sweden,50,18,0,5,1,4,Europa
-Antti Munukka,Finland,43,10,0,0,0,4,Europa
-Antonio Damato,Italy,53,16,1,0,0,4,Europa
-Menashe Mashiah,Israel,51,14,1,2,1,4,Europa
-Stéphane Lannoy,France,56,18,0,0,1,4,Europa
-Clayton Pisani,Malta,47,10,2,0,2,4,Europa
-Tobias Welz,Germany,48,21,0,2,4,4,Europa
-Bart Vertenten,Belgium,37,11,0,0,3,4,Europa
-Andrew Dallas,Scotland,42,13,0,0,0,4,Europa
-Petr Ardeleanu,Czech Republic,44,22,2,0,1,4,Europa
-Rohit Saggi,Norway,33,21,2,0,1,4,Europa
-Mykola Balakin,Ukraine,36,15,0,0,2,4,Europa
-António Nobre,Portugal,36,11,0,0,1,4,Europa
-John Brooks,England,0,11,0,0,0,4,Europa
-Manfredas Lukjančukas,Lithuania,33,17,3,0,3,4,Europa
-Marian Barbu,Romania,37,13,0,0,0,4,Europa
-Vladimir Hrinak,Slovakia,0,8,0,0,1,3,Europa
-Kostas Kapitanis,Cyprus,61,9,1,1,0,3,Europa
-Paul Allaerts,Belgium,61,9,0,1,1,3,Europa
-Selçuk Dereli,Türkiye,56,13,2,0,0,3,Europa
-Claus Bo Larsen,Denmark,59,13,0,0,0,3,Europa
-Alexandru Deaconu,Romania,53,13,0,0,0,3,Europa
-Lee Probert,England,53,17,3,0,1,3,Europa
-Olegário Benquerença,Portugal,55,18,0,1,0,3,Europa
-Eitan Shmuelevic,Israel,47,13,0,0,0,3,Europa
-Steven McLean,Scotland,44,7,0,0,0,3,Europa
-Ognjen Valjic,Bosnia-Herzegovina,44,9,2,0,1,3,Europa
-Vitaliy Meshkov,Russia,42,13,0,1,3,3,Europa
-Ola Hobber Nilsen,Norway,39,12,0,0,1,3,Europa
-Mads-Kristoffer Kristoffersen,Denmark,42,10,1,0,0,3,Europa
-Pavel Orel,Czech Republic,37,13,1,0,1,3,Europa
-Urs Schnyder,Switzerland,39,7,1,0,1,3,Europa
-Willy Delajod,France,33,10,0,1,1,3,Europa
-Damian Sylwestrzak,Poland,33,16,0,0,0,3,Europa
-Sven Jablonski,Germany,35,14,0,0,0,3,Europa
-Oleg Orekhov,Ukraine,58,3,0,0,1,2,Europa
-Nikolay Ivanov,Russia,61,5,0,0,0,2,Europa
-Espen Berntsen,Norway,58,6,0,0,0,2,Europa
-Cyril Zimmermann,Switzerland,49,2,0,0,0,2,Europa
-Nicolai Vollquartz,Denmark,60,2,0,0,0,2,Europa
-Thorsten Kinhöfer,Germany,57,4,0,0,0,2,Europa
-Stanislav Sukhina,Russia,57,7,0,0,0,2,Europa
-Howard Webb,England,54,9,2,1,0,2,Europa
-Stuart Attwell,England,43,17,1,0,0,2,Europa
-Emir Aleckovic,Bosnia-Herzegovina,46,7,0,0,0,2,Europa
-Artem Kuchin,Kazakhstan,47,9,0,0,1,2,Europa
-Marius Avram,Romania,46,9,0,0,0,2,Europa
-Christian Dingert,Germany,45,10,0,1,2,2,Europa
-Adrien Jaccottet,Switzerland,42,11,0,0,2,2,Europa
-Jonathan Lardot,Belgium,41,9,1,0,1,2,Europa
-Jens Maae,Denmark,43,1,0,0,0,2,Europa
-Dennis Higler,Netherlands,40,7,0,0,0,2,Europa
-Vilhjálmur Alvar Thórarinsson,Iceland,40,7,0,0,0,2,Europa
-Kirill Levnikov,Russia,41,10,0,0,0,2,Europa
-Paul Tierney,England,44,6,0,0,0,2,Europa
-Kateryna Monzul,Ukraine,44,17,0,0,0,2,Europa
-Fabio Maresca,Italy,44,10,0,1,1,2,Europa
+Aleksandar Stavrev,North Macedonia,48,20,0,1,1,4,Conference
+Aleksandrs Anufrijevs,Latvia,41,4,0,0,0,1,Conference
+Aleksey Kulbakov,Belarus,45,15,0,0,0,3,Conference
+Ali Palabıyık,Türkiye,44,9,0,0,1,3,Conference
+Aliyar Agayev,Azerbaijan,37,21,0,0,1,4,Conference
+Allard Lindhout,Netherlands,38,31,0,0,2,6,Conference
+Anastasios Papapetrou,Greece,40,17,0,0,1,4,Conference
+Anastasios Sidiropoulos,Greece,46,45,3,1,3,7,Conference
+Andrea Colombo,Italy,35,3,0,0,1,1,Conference
+Andreas Ekberg,Sweden,40,8,0,0,1,2,Conference
+Andrei Chivulete,Romania,38,5,0,0,0,1,Conference
+Andrew Madley,England,42,2,0,0,0,1,Conference
+Andris Treimanis,Latvia,40,25,0,2,1,5,Conference
+Anthony Taylor,England,46,11,0,2,1,3,Conference
+Antoni Bandic,Bosnia-Herzegovina,35,1,0,0,0,1,Conference
+António Nobre,Portugal,36,27,3,3,5,7,Conference
+Arda Kardeşler,Türkiye,37,5,0,1,1,2,Conference
+Artur Soares Dias,Portugal,46,17,0,0,1,2,Conference
+Ashot Ghaltakhchyan,Armenia,33,4,0,0,1,1,Conference
+Atilla Karaoğlan,Türkiye,39,14,0,0,1,3,Conference
+Balázs Berke,Hungary,41,9,0,0,1,3,Conference
+Bartosz Frankowski,Poland,39,17,0,0,0,4,Conference
+Benoît Bastien,France,42,15,0,0,1,4,Conference
+Bobby Madden,Scotland,46,4,0,0,1,2,Conference
+Bram Van Driessche,Belgium,40,8,0,1,0,2,Conference
+Bulat Sariev,Kazakhstan,34,4,0,0,0,1,Conference
+Carlos del Cerro Grande,Spain,49,14,0,1,1,3,Conference
+Chris Kavanagh,England,40,5,0,0,0,2,Conference
+Christian-Petru Ciochirca,Austria,36,7,0,0,1,2,Conference
+Chrysovalantis Theouli,Cyprus,36,6,0,1,2,3,Conference
+Clément Turpin,France,43,10,0,0,1,3,Conference
+Craig Pawson,England,46,25,1,1,1,5,Conference
+César Soto Grado,Spain,0,2,0,0,0,1,Conference
+Damian Sylwestrzak,Poland,33,19,1,1,0,4,Conference
+Daniel Schlager,Germany,35,18,0,1,0,4,Conference
+Daniel Siebert,Germany,41,23,1,0,1,4,Conference
+Daniel Stefanski,Poland,48,7,1,1,0,3,Conference
+Daniele Chiffi,Italy,40,12,0,1,0,3,Conference
+Daniyar Sakhi,Kazakhstan,34,3,0,0,0,1,Conference
+Danny Makkelie,Netherlands,42,2,0,0,0,1,Conference
+Dario Bel,Croatia,37,20,0,1,0,4,Conference
+Darren England,England,39,6,0,0,0,1,Conference
+David Dickinson,Scotland,45,10,0,1,0,2,Conference
+David Fucsman,Israel,34,2,1,0,0,1,Conference
+David Smajc,Slovenia,36,13,0,0,0,3,Conference
+Davide Massa,Italy,44,7,0,0,1,3,Conference
+De Burgos Bengoetxea,Spain,39,9,0,0,2,3,Conference
+Deniz Aytekin,Germany,47,2,0,1,0,1,Conference
+Dennis Higler,Netherlands,40,4,0,0,0,2,Conference
+Don Robertson,Scotland,38,14,0,0,0,4,Conference
+Donatas Rumšas,Lithuania,37,17,2,0,0,4,Conference
+Duje Strukan,Croatia,41,17,0,1,0,3,Conference
+Dumitru Muntean,Moldova,40,10,0,0,0,2,Conference
+Elchin Masiyev,Azerbaijan,34,14,0,0,0,4,Conference
+Enea Jorgji,Albania,41,36,2,2,2,6,Conference
+Erik Lambrechts,Belgium,41,16,0,2,0,4,Conference
+Espen Eskås,Norway,37,28,0,0,1,6,Conference
+Fabio Maresca,Italy,44,11,0,0,0,2,Conference
+Felix Zwayer,Germany,44,17,1,0,2,3,Conference
+Filip Glova,Slovakia,37,16,0,0,1,4,Conference
+Fran Jovic,Croatia,41,13,1,0,1,3,Conference
+François Letexier,France,36,10,0,0,0,2,Conference
+Fábio Veríssimo,Portugal,42,8,1,0,1,2,Conference
+Gal Leibovich,Israel,39,5,0,0,0,1,Conference
+Genc Nuza,Kosovo,36,28,0,0,2,5,Conference
+Georgi Kabakov,Bulgaria,39,21,1,1,0,4,Conference
+Gergő Bogár,Hungary,34,21,1,0,1,5,Conference
+Giorgi Kruashvili,Georgia,39,20,0,0,4,5,Conference
+Glenn Nyberg,Sweden,37,27,1,0,1,6,Conference
+Goga Kikacheishvili,Georgia,34,19,1,0,1,3,Conference
+Guillermo Cuadra Fernández,Spain,41,16,1,0,1,3,Conference
+Gustavo Correia,Portugal,33,16,0,1,0,2,Conference
+Halil Umut Meler,Türkiye,39,22,1,0,2,3,Conference
+Halis Özkahya,Türkiye,45,6,0,0,0,2,Conference
+Harald Lechner,Austria,43,4,0,1,0,3,Conference
+Harm Osmers,Germany,40,29,0,1,1,6,Conference
+Helgi Mikael Jónasson,Iceland,31,3,0,0,0,1,Conference
+Henrik Nalbandyan,Armenia,30,5,0,1,1,1,Conference
+Horațiu Feșnic,Romania,35,19,1,1,0,6,Conference
+Igor Pajac,Croatia,40,12,0,0,0,2,Conference
+Irfan Peljto,Bosnia-Herzegovina,41,14,0,0,1,5,Conference
+Ishmael Barbara,Malta,0,2,0,0,0,1,Conference
+Istvan Kovacs,Romania,41,7,0,0,1,2,Conference
+István Vad,Hungary,50,17,0,0,1,5,Conference
+Ivan Bebek,Croatia,48,6,0,0,1,1,Conference
+Ivan Kruzliak,Slovakia,41,21,0,0,0,4,Conference
+Iwan Griffith,Wales,37,12,0,1,0,2,Conference
+Jakob Kehlet,Denmark,45,12,0,0,0,3,Conference
+Jakob Sundberg,Denmark,36,7,0,1,0,1,Conference
+Jan Petrik,Czech Republic,33,3,0,0,0,1,Conference
+Jasper Vergoote,Belgium,33,2,0,0,0,1,Conference
+Javier Alberola Rojas,Spain,0,5,0,0,0,1,Conference
+Jens Maae,Denmark,43,2,0,0,0,1,Conference
+Jesús Gil Manzano,Spain,41,7,0,1,0,2,Conference
+Jochem Kamphuis,Netherlands,39,2,0,0,0,1,Conference
+Joey Kooij,Netherlands,33,23,0,0,2,3,Conference
+John Beaton,Scotland,43,32,2,0,2,6,Conference
+Joni Hyytiä,Finland,37,4,0,0,1,1,Conference
+José Luis Munuera Montero,Spain,42,6,0,0,0,1,Conference
+José María Sánchez Martínez,Spain,42,8,0,0,0,2,Conference
+João Pinheiro,Portugal,37,13,0,0,1,4,Conference
+Juan Martínez Munuera,Spain,43,12,1,0,1,2,Conference
+Julian Weinberger,Austria,40,23,1,0,1,5,Conference
+Juri Frischer,Estonia,41,2,0,0,1,2,Conference
+Juxhin Xhaja,Albania,35,21,0,0,4,5,Conference
+Jérémie Pignard,France,38,10,1,0,0,3,Conference
+Jérôme Brisard,France,39,8,0,0,1,2,Conference
+Kai Erik Steen,Norway,40,11,0,0,0,1,Conference
+Kaspar Sjöberg,Sweden,38,3,0,0,0,1,Conference
+Kateryna Monzul,Ukraine,44,1,0,0,1,1,Conference
+Kevin Clancy,Scotland,41,16,2,0,1,2,Conference
+Kirill Levnikov,Russia,41,5,0,0,0,1,Conference
+Kristo Tohver,Estonia,44,13,0,0,0,3,Conference
+Kristoffer Hagenes,Norway,35,1,0,0,0,1,Conference
+Kristoffer Karlsson,Sweden,0,4,0,0,0,1,Conference
+Krzysztof Jakubik,Poland,42,6,0,0,0,2,Conference
+Kári Jóannesarson á Hövdanum,Faroe Islands,35,4,0,0,0,1,Conference
+Lawrence Visser,Belgium,35,12,1,1,0,3,Conference
+Lothar D'hondt,Belgium,31,5,0,0,0,2,Conference
+Luca Pairetto,Italy,41,12,0,1,0,2,Conference
+Luka Bilbija,Bosnia-Herzegovina,36,12,2,0,0,2,Conference
+Lukas Fähndrich,Switzerland,41,9,0,0,0,2,Conference
+Luís Godinho,Portugal,39,30,0,0,2,7,Conference
+Mads-Kristoffer Kristoffersen,Denmark,42,4,0,0,0,1,Conference
+Manfredas Lukjančukas,Lithuania,33,18,1,0,1,3,Conference
+Manuel Schüttengruber,Austria,42,27,0,1,1,4,Conference
+Marco Di Bello,Italy,44,18,2,1,0,3,Conference
+Marco Guida,Italy,44,6,0,0,1,2,Conference
+Marian Barbu,Romania,37,17,0,0,2,4,Conference
+Matej Jug,Slovenia,45,12,3,0,0,4,Conference
+Mateu Lahoz,Spain,48,5,0,0,0,1,Conference
+Mattias Gestranius,Finland,47,10,0,1,0,1,Conference
+Maurizio Mariani,Italy,43,11,0,0,1,3,Conference
+Menelaos Antoniou,Cyprus,30,2,0,0,0,1,Conference
+Michael Fabbri,Italy,41,4,0,0,1,1,Conference
+Michael Oliver,England,40,14,1,0,1,3,Conference
+Michal Ocenas,Slovakia,34,15,0,0,1,3,Conference
+Miguel Nogueira,Portugal,31,1,0,0,0,1,Conference
+Mikkel Redder,Denmark,31,3,0,0,1,1,Conference
+Milos Milanovic,Serbia,32,8,0,0,0,3,Conference
+Mohammed Al-Emara,Finland,33,19,2,0,2,3,Conference
+Mohammed Al-Hakim,Sweden,40,16,0,1,1,6,Conference
+Morten Krogh,Denmark,37,29,1,0,1,5,Conference
+Mykola Balakin,Ukraine,36,23,1,0,3,5,Conference
+Nathan Verboomen,Belgium,37,1,0,0,0,1,Conference
+Nenad Minakovic,Serbia,36,13,0,1,0,3,Conference
+Nick Walsh,Scotland,34,30,0,1,0,6,Conference
+Nikola Dabanovic,Montenegro,43,37,0,1,2,8,Conference
+Novak Simovic,Serbia,43,9,0,0,0,2,Conference
+Oleksiy Derevinskyi,Ukraine,36,9,0,0,1,2,Conference
+Oliver Reitala,Finland,31,6,0,0,1,2,Conference
+Ondrej Berka,Czech Republic,37,19,0,0,1,3,Conference
+Orel Grinfeld,Israel,44,16,2,2,1,6,Conference
+Ovidiu Hațegan,Romania,45,13,0,0,0,2,Conference
+Patrik Kolaric,Croatia,30,4,0,0,0,1,Conference
+Pavel Orel,Czech Republic,37,7,0,0,2,2,Conference
+Pawel Raczkowski,Poland,42,38,1,3,5,7,Conference
+Peter Kjærsgaard,Denmark,41,12,0,0,1,2,Conference
+Petri Viljanen,Finland,38,8,0,0,0,2,Conference
+Philip Farrugia,Malta,37,12,1,0,0,3,Conference
+Pierre Gaillouste,France,36,1,0,0,0,1,Conference
+Rade Obrenovic,Slovenia,35,36,0,0,2,7,Conference
+Radoslav Gidzhenov,Bulgaria,34,11,1,0,0,3,Conference
+Radu Petrescu,Romania,42,25,1,1,1,7,Conference
+Rauf Cabarov,Azerbaijan,40,3,0,0,0,1,Conference
+Rob Hennessy,Ireland,34,6,0,0,1,1,Conference
+Robert Harvey,Ireland,37,19,0,1,0,4,Conference
+Robert Jones,England,38,17,0,0,1,3,Conference
+Robert Schröder,Germany,40,6,0,0,1,1,Conference
+Robertas Valikonis,Lithuania,42,2,0,0,1,1,Conference
+Rohit Saggi,Norway,33,15,0,0,2,4,Conference
+Roi Reinshreiber,Israel,45,8,0,0,0,1,Conference
+Ruddy Buquet,France,48,3,0,0,1,1,Conference
+Sander van der Eijk,Netherlands,34,9,2,0,0,3,Conference
+Sandro Schärer,Switzerland,37,15,0,0,1,3,Conference
+Sascha Stegemann,Germany,40,6,0,0,0,2,Conference
+Sayat Karabaev,Kazakhstan,32,7,0,1,1,1,Conference
+Sebastian Gishamer,Austria,37,31,2,0,2,6,Conference
+Serdar Gözübüyük,Netherlands,39,23,1,0,1,5,Conference
+Sergey Ivanov,Russia,41,4,0,0,0,1,Conference
+Sergiy Boyko,Ukraine,48,10,0,0,2,2,Conference
+Sigurd Kringstad,Norway,37,3,0,0,0,1,Conference
+Simone Sozza,Italy,38,7,0,2,2,2,Conference
+Snir Levi,Israel,0,2,0,0,0,1,Conference
+Srdjan Jovanovic,Serbia,39,4,0,0,0,1,Conference
+Stefan Ebner,Austria,34,4,0,0,0,1,Conference
+Stuart Attwell,England,43,3,0,0,1,1,Conference
+Stéphanie Frappart,France,41,9,0,0,2,3,Conference
+Sven Jablonski,Germany,35,12,0,0,0,3,Conference
+Szymon Marciniak,Poland,44,5,1,0,0,1,Conference
+Tamás Bognár,Hungary,46,13,0,0,1,3,Conference
+Tobias Stieler,Germany,44,11,1,0,0,2,Conference
+Tomas Klima,Czech Republic,37,8,0,0,0,1,Conference
+Trustin Farrugia Cann,Malta,39,7,0,1,1,3,Conference
+Urs Schnyder,Switzerland,39,24,0,0,0,5,Conference
+Vangelis Manouchos,Greece,36,9,0,0,0,2,Conference
+Vasilios Fotias,Greece,36,9,0,0,0,2,Conference
+Viktor Kopiyevskyi,Ukraine,34,4,0,0,1,1,Conference
+Vilhjálmur Alvar Thórarinsson,Iceland,40,4,0,0,0,1,Conference
+Visar Kastrati,Kosovo,38,6,0,0,0,2,Conference
+Vitalijs Spasjonnikovs,Latvia,39,9,0,0,1,3,Conference
+Vitaliy Meshkov,Russia,42,4,0,0,0,1,Conference
+Volen Chinkov,Bulgaria,41,2,0,0,1,1,Conference
+Willie Collum,Scotland,46,29,0,0,1,5,Conference
+Willy Delajod,France,33,19,0,1,2,5,Conference
+Yevgen Aranovskyi,Ukraine,49,8,0,0,2,2,Conference
+Yigal Frid,Israel,33,14,0,0,1,4,Conference
+Ádám Farkas,Hungary,43,11,0,0,0,2,Conference
+Ívar Orri Kristjánsson,Iceland,36,3,0,0,0,1,Conference
+Alejandro Hernández Hernández,Spain,42,37,1,1,3,9,Europa
+Aleksandar Stavrev,North Macedonia,48,27,0,1,1,6,Europa
+Aleksey Kulbakov,Belarus,45,13,0,2,2,3,Europa
+Ali Palabıyık,Türkiye,44,8,1,0,0,2,Europa
+Aliyar Agayev,Azerbaijan,37,25,1,0,4,6,Europa
+Allard Lindhout,Netherlands,38,17,0,0,2,4,Europa
+Anastasios Papapetrou,Greece,40,21,0,1,0,5,Europa
+Anastasios Sidiropoulos,Greece,46,31,0,3,1,8,Europa
+Andreas Ekberg,Sweden,40,8,0,0,0,2,Europa
+Andris Treimanis,Latvia,40,62,2,0,1,9,Europa
+Anthony Taylor,England,46,36,0,5,2,8,Europa
+António Nobre,Portugal,36,9,0,0,1,3,Europa
+Artur Soares Dias,Portugal,46,28,1,0,4,7,Europa
 Atilla Karaoğlan,Türkiye,39,12,0,0,2,2,Europa
-Ondrej Berka,Czech Republic,37,11,0,0,0,2,Europa
 Balázs Berke,Hungary,41,7,1,1,0,2,Europa
-Guillermo Cuadra Fernández,Spain,41,11,0,0,2,2,Europa
-Matteo Trefoloni,Italy,54,3,0,0,0,1,Europa
-Lucílio Baptista,Portugal,60,3,0,0,0,1,Europa
-Georgios Daloukas,Greece,47,2,0,0,0,1,Europa
-Jiri Jech,Czech Republic,49,4,0,0,1,1,Europa
-José Antonio Teixeira Vitienes,Spain,55,3,0,0,0,1,Europa
-Anton Genov,Bulgaria,59,3,0,0,0,1,Europa
-Paolo Valeri,Italy,47,7,1,0,0,1,Europa
-Rene Eisner,Austria,50,5,0,0,0,1,Europa
-Ilias Spathas,Greece,45,2,0,0,0,1,Europa
-Sergey Lapochkin,Russia,44,4,0,0,0,1,Europa
-Hugo Miguel,Portugal,48,1,0,0,0,1,Europa
-Mete Kalkavan,Türkiye,46,6,1,0,0,1,Europa
-Charalampos Kalogeropoulos,Greece,42,1,0,0,0,1,Europa
-Peter Kralovic,Slovakia,42,2,0,0,0,1,Europa
-Alain Bieri,Switzerland,46,3,0,0,0,1,Europa
-Ville Nevalainen,Finland,40,3,0,0,0,1,Europa
-Juan Martínez Munuera,Spain,43,6,0,0,0,1,Europa
-Benoît Millot,France,43,5,1,0,1,1,Europa
-Ivaylo Stoyanov,Bulgaria,44,5,0,0,0,1,Europa
-Ádám Farkas,Hungary,43,6,0,0,0,1,Europa
-Dumitru Muntean,Moldova,40,3,0,0,1,1,Europa
-Karim Abed,France,36,3,0,0,0,1,Europa
-Alain Durieux,Luxembourg,40,5,0,0,0,1,Europa
-Robert Harvey,Ireland,37,7,0,0,1,1,Europa
-Massimiliano Irrati,Italy,46,5,0,0,0,1,Europa
-Petri Viljanen,Finland,38,1,0,0,1,1,Europa
-Trustin Farrugia Cann,Malta,39,7,0,0,2,1,Europa
-Michael Fabbri,Italy,41,6,0,0,0,1,Europa
-Rob Hennessy,Ireland,34,3,0,0,1,1,Europa
-Amaury Delerue,France,48,4,1,0,0,1,Europa
-Bojan Pandzic,Sweden,43,4,0,0,1,1,Europa
-Novak Simovic,Serbia,43,5,0,0,0,1,Europa
+Bartosz Frankowski,Poland,39,13,0,0,1,4,Europa
+Benoît Bastien,France,42,36,3,3,5,9,Europa
+Carlos del Cerro Grande,Spain,49,11,0,0,0,3,Europa
+Chris Kavanagh,England,40,34,0,1,2,5,Europa
 Christian-Petru Ciochirca,Austria,36,6,0,0,1,1,Europa
-Robert Jones,England,38,2,0,0,0,1,Europa
+Clément Turpin,France,43,31,0,1,4,8,Europa
+Craig Pawson,England,46,47,2,0,3,9,Europa
+Cüneyt Çakır,Türkiye,48,3,0,0,2,2,Europa
+Damian Sylwestrzak,Poland,33,16,0,0,0,3,Europa
+Daniel Siebert,Germany,41,32,1,1,0,7,Europa
+Daniel Stefanski,Poland,48,29,0,1,3,5,Europa
+Daniele Orsato,Italy,49,13,0,1,0,2,Europa
+Danny Makkelie,Netherlands,42,21,1,0,3,5,Europa
+Davide Massa,Italy,44,25,0,0,1,5,Europa
+De Burgos Bengoetxea,Spain,39,17,1,0,3,5,Europa
+Deniz Aytekin,Germany,47,13,0,0,2,3,Europa
+Dennis Higler,Netherlands,40,4,0,0,0,1,Europa
 Don Robertson,Scotland,38,2,0,0,0,1,Europa
-Vasilios Fotias,Greece,36,1,0,0,0,1,Europa
-Sander van der Eijk,Netherlands,34,5,1,0,0,1,Europa
+Donatas Rumšas,Lithuania,37,20,1,2,2,6,Europa
+Duje Strukan,Croatia,41,32,2,0,3,6,Europa
+Enea Jorgji,Albania,41,20,1,1,2,6,Europa
+Erik Lambrechts,Belgium,41,21,0,0,1,5,Europa
+Espen Eskås,Norway,37,28,0,1,1,5,Europa
+Fabio Maresca,Italy,44,10,0,1,1,2,Europa
+Felix Zwayer,Germany,44,47,1,2,2,8,Europa
+Filip Glova,Slovakia,37,36,0,1,0,8,Europa
+Fran Jovic,Croatia,41,11,0,0,1,3,Europa
+François Letexier,France,36,46,2,2,4,11,Europa
+Fábio Veríssimo,Portugal,42,2,0,0,0,1,Europa
+Georgi Kabakov,Bulgaria,39,53,1,0,1,8,Europa
+Giorgi Kruashvili,Georgia,39,22,0,1,1,7,Europa
+Glenn Nyberg,Sweden,37,26,0,1,1,7,Europa
+Guillermo Cuadra Fernández,Spain,41,6,0,0,1,1,Europa
+Halil Umut Meler,Türkiye,39,19,0,2,1,7,Europa
+Harald Lechner,Austria,43,24,1,0,1,6,Europa
+Harm Osmers,Germany,40,42,0,0,2,8,Europa
+Horațiu Feșnic,Romania,35,27,1,0,2,6,Europa
+Igor Pajac,Croatia,40,7,0,0,0,4,Europa
+Irfan Peljto,Bosnia-Herzegovina,41,46,3,0,3,11,Europa
+Istvan Kovacs,Romania,41,32,1,1,3,6,Europa
+Ivan Bebek,Croatia,48,6,0,0,0,1,Europa
+Ivan Kruzliak,Slovakia,41,41,2,2,3,10,Europa
+Jakob Kehlet,Denmark,45,22,0,0,3,5,Europa
+Jesús Gil Manzano,Spain,41,23,0,1,1,5,Europa
+John Beaton,Scotland,43,40,0,0,4,8,Europa
+John Brooks,England,0,11,0,0,0,4,Europa
+José María Sánchez Martínez,Spain,42,57,1,1,4,12,Europa
+João Pinheiro,Portugal,37,26,1,0,4,8,Europa
+Julian Weinberger,Austria,40,14,1,0,2,4,Europa
+Juxhin Xhaja,Albania,35,21,0,2,1,5,Europa
+Jérôme Brisard,France,39,38,1,0,3,10,Europa
+Kateryna Monzul,Ukraine,44,8,0,0,0,1,Europa
+Kirill Levnikov,Russia,41,6,0,0,0,1,Europa
+Kristo Tohver,Estonia,44,60,2,0,4,9,Europa
+Lawrence Visser,Belgium,35,43,3,0,3,8,Europa
+Luís Godinho,Portugal,39,13,0,0,0,4,Europa
+Manfredas Lukjančukas,Lithuania,33,11,3,0,2,3,Europa
+Marco Di Bello,Italy,44,28,0,0,3,6,Europa
+Marco Guida,Italy,44,12,0,0,4,4,Europa
+Marian Barbu,Romania,37,13,0,0,0,4,Europa
+Matej Jug,Slovenia,45,89,3,2,8,16,Europa
+Mateu Lahoz,Spain,48,24,1,0,2,6,Europa
+Mattias Gestranius,Finland,47,2,0,1,2,1,Europa
+Maurizio Mariani,Italy,43,21,1,0,1,6,Europa
+Michael Oliver,England,40,29,0,0,2,7,Europa
+Mohammed Al-Hakim,Sweden,40,30,0,1,4,8,Europa
+Morten Krogh,Denmark,37,20,1,0,4,7,Europa
+Mykola Balakin,Ukraine,36,15,0,0,2,4,Europa
+Nenad Minakovic,Serbia,36,12,1,0,1,4,Europa
+Nick Walsh,Scotland,34,31,4,2,1,5,Europa
+Nikola Dabanovic,Montenegro,43,42,0,2,4,11,Europa
+Novak Simovic,Serbia,43,5,0,0,0,1,Europa
+Ondrej Berka,Czech Republic,37,11,0,0,0,2,Europa
+Orel Grinfeld,Israel,44,29,1,0,2,6,Europa
+Ovidiu Hațegan,Romania,45,4,0,0,0,1,Europa
+Paul Tierney,England,44,2,0,0,0,1,Europa
+Pawel Raczkowski,Poland,42,18,1,0,5,4,Europa
+Rade Obrenovic,Slovenia,35,26,0,0,1,6,Europa
+Radu Petrescu,Romania,42,21,0,1,0,6,Europa
+Robert Jones,England,38,2,0,0,0,1,Europa
+Rohit Saggi,Norway,33,21,2,0,1,4,Europa
+Roi Reinshreiber,Israel,45,20,0,0,1,5,Europa
+Ruddy Buquet,France,48,8,0,0,0,3,Europa
+Sandro Schärer,Switzerland,37,47,3,0,3,11,Europa
+Sascha Stegemann,Germany,40,52,4,0,3,7,Europa
+Sebastian Gishamer,Austria,37,21,1,0,1,5,Europa
+Serdar Gözübüyük,Netherlands,39,41,2,1,8,9,Europa
+Sergey Ivanov,Russia,41,10,0,0,2,3,Europa
+Sergey Karasev,Russia,46,3,0,0,1,1,Europa
+Sergiy Boyko,Ukraine,48,6,0,1,0,2,Europa
+Simone Sozza,Italy,38,36,0,1,4,7,Europa
+Slavko Vincic,Slovenia,45,14,0,0,0,3,Europa
+Srdjan Jovanovic,Serbia,39,17,1,0,0,5,Europa
+Stéphanie Frappart,France,41,14,0,1,3,3,Europa
+Sven Jablonski,Germany,35,10,0,0,0,2,Europa
+Szymon Marciniak,Poland,44,14,0,1,0,3,Europa
+Tamás Bognár,Hungary,46,33,2,1,2,6,Europa
+Tiago Martins,Portugal,45,25,1,0,2,4,Europa
+Tobias Stieler,Germany,44,56,3,0,3,11,Europa
+Urs Schnyder,Switzerland,39,7,1,0,1,3,Europa
+Willie Collum,Scotland,46,21,1,1,2,6,Europa
+Willy Delajod,France,33,5,0,1,0,2,Europa
+Yevgen Aranovskyi,Ukraine,49,15,1,0,0,3,Europa
