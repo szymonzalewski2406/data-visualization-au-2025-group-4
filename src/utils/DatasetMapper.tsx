@@ -1,6 +1,8 @@
+// src/utils/DatasetMapper.tsx
 import { RefereeData } from "../interfaces/RefereeData";
+import { processRefereeRow } from "./RefereeMetrics"; // Import your utility
 
-export const HEADER_MAPPING: { [key: string]: keyof RefereeData } = {
+export const HEADER_MAPPING: { [key: string]: string } = {
     'name': 'name',
     'nationality': 'nationality',
     'age': 'age',
@@ -9,12 +11,9 @@ export const HEADER_MAPPING: { [key: string]: keyof RefereeData } = {
     'red_cards': 'red_cards',
     'penalties': 'penalties',
     'appearances': 'appearances',
+    'league': 'league',         // Mapping for combined file
+    'competition': 'competition'
 };
-
-export const INT_FIELDS = [
-    'age', 'yellow_cards', 'double_yellow_cards',
-    'red_cards', 'penalties', 'appearances'
-];
 
 const formatCompetitionName = (rawString: string): string => {
     if (rawString.includes('champions_league')) return 'Champions League';
@@ -23,6 +22,7 @@ const formatCompetitionName = (rawString: string): string => {
     return rawString.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 };
 
+// --- SIMPLIFIED PARSER USING YOUR UTILITY ---
 export const parseCSVData = (
     csvString: string,
     seasonName: string,
@@ -38,46 +38,21 @@ export const parseCSVData = (
         const values = lines[i].split(',').map(v => v.trim());
         if (values.length !== headers.length) continue;
 
+        // Create raw object
         const rawRow: any = {};
-
-        headers.forEach((csvHeader, index) => {
-            const value = values[index];
-            if (HEADER_MAPPING[csvHeader]) {
-                const jsField = HEADER_MAPPING[csvHeader];
-                if (INT_FIELDS.includes(csvHeader)) {
-                    rawRow[jsField] = parseInt(value, 10) || 0;
-                } else {
-                    rawRow[jsField] = value;
-                }
+        headers.forEach((header, index) => {
+            const mappedField = HEADER_MAPPING[header];
+            if (mappedField) {
+                rawRow[mappedField] = values[index];
             }
         });
 
-        const appearances = rawRow.appearances || 0;
-        const gamesDivisor = appearances > 0 ? appearances : 1;
+        // Delegate logic to RefereeMetrics
+        const processedRef = processRefereeRow(rawRow, seasonName, competitionName);
 
-        const yellow = rawRow.yellow_cards || 0;
-        const doubleYellow = rawRow.double_yellow_cards || 0;
-        const red = rawRow.red_cards || 0;
-        const penalties = rawRow.penalties || 0;
-
-        const total_cards = yellow + doubleYellow + red;
-
-        const cards_per_game = parseFloat((total_cards / gamesDivisor).toFixed(2));
-        const penalties_per_game = parseFloat((penalties / gamesDivisor).toFixed(2));
-
-        const strictness_index = parseFloat((cards_per_game + (penalties_per_game * 2)).toFixed(2));
-
-        const refereeStat: RefereeData = {
-            ...rawRow,
-            competition: competitionName,
-            season: seasonName,
-            total_cards,
-            cards_per_game,
-            penalties_per_game,
-            strictness_index
-        };
-
-        data.push(refereeStat);
+        if (processedRef) {
+            data.push(processedRef);
+        }
     }
     return data;
 };
@@ -112,19 +87,7 @@ export async function loadAllData(dataFolder: string): Promise<{ allData: Refere
 
     const fetchPromises = ALL_CSV_FILENAMES.map(filename => {
         const path = `/datasets/${dataFolder}/${filename}`;
-
-        return fetch(path)
-            .then(response => {
-                if (!response.ok) {
-                    console.warn(`File ${path} not found. Skipped.`);
-                    return null;
-                }
-                return response.text();
-            })
-            .catch(error => {
-                console.error(`Error while loading the file ${path}:`, error);
-                return null;
-            });
+        return fetch(path).then(res => res.ok ? res.text() : null).catch(() => null);
     });
 
     const csvContents = await Promise.all(fetchPromises);
@@ -136,7 +99,8 @@ export async function loadAllData(dataFolder: string): Promise<{ allData: Refere
             let seasonName = getSeasonNameFromFile(filename);
             let competitionName = formatCompetitionName(filename);
 
-            if (dataFolder.includes('combined') && filename === 'uefa_total_overview.csv') {
+            // Fix: Correctly identify your combined file
+            if (filename.includes('combined') || filename === 'uefa_total_overview.csv') {
                 seasonName = 'Overall';
                 competitionName = 'All Competitions';
             } else if (!filename.includes('league') && !dataFolder.includes('combined')) {
@@ -160,46 +124,26 @@ export async function loadAllData(dataFolder: string): Promise<{ allData: Refere
 }
 
 export const getSeasonNameFromFile = (filename: string): string => {
+    // 1. Try YYYY_YYYY format
     const seasonMatch = filename.match(/_(\d{4})_(\d{4})\.csv$/);
-    if (seasonMatch && seasonMatch.length === 3) {
-        return `${seasonMatch[1]}/${seasonMatch[2]}`;
-    }
+    if (seasonMatch) return `${seasonMatch[1]}/${seasonMatch[2]}`;
 
-    const totalMatch = filename.match(/_total\.csv$/);
-    if (totalMatch) {
-        return "Overall";
-    }
+    // 2. Handle Combined Files
+    if (filename.includes('combined') || filename.includes('total')) return "Overall";
 
-    const simpleSeasonMatch = filename.match(/^(\d{4})_(\d{4})\.csv$/);
-    if (simpleSeasonMatch && simpleSeasonMatch.length === 3) {
-        return `${simpleSeasonMatch[1]}/${simpleSeasonMatch[2]}`;
-    }
-
-    if (filename === 'uefa_total_overview.csv') {
-        return 'Overall';
-    }
-
+    // 3. Fallback
     return filename.replace('.csv', '');
 };
 
+// Keep your existing extractor functions below...
 export const extractRefereeOptions = (data: RefereeData[]): { referees: string[] } => {
     const referees = new Set<string>();
-    data.forEach(statLine => {
-        referees.add(statLine.name);
-    });
-    return {
-        referees: Array.from(referees).sort(),
-    };
+    data.forEach(statLine => referees.add(statLine.name));
+    return { referees: Array.from(referees).sort() };
 };
 
 export const extractNationalityOptions = (data: RefereeData[]): { nationalities: string[] } => {
     const nations = new Set<string>();
-    data.forEach(statLine => {
-        if (statLine.nationality) {
-            nations.add(statLine.nationality);
-        }
-    });
-    return {
-        nationalities: Array.from(nations).sort(),
-    };
+    data.forEach(statLine => { if (statLine.nationality) nations.add(statLine.nationality); });
+    return { nationalities: Array.from(nations).sort() };
 };

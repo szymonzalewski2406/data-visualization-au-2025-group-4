@@ -4,7 +4,7 @@ import {
     extractNationalityOptions,
     extractRefereeOptions,
     loadAllData
-} from "../utlis/DatasetMapper";
+} from "../utils/DatasetMapper";
 import {
     Alert,
     AppBar,
@@ -40,6 +40,8 @@ import {
 } from "../interfaces/Competitions";
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import { FilterOptions } from "../interfaces/FilterOptions";
+
+import RefereeScatterD3 from '../components/RefereeScatterD3';
 
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
@@ -382,39 +384,39 @@ export default function Dashboard() {
                                 <Grid sx={{ width: '100%', display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
                                     <Box sx={{ flex: 1 }}>
                                         <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
-                                            <CardContent sx={{ flexGrow: 1 }}>
+                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                                                {/* Header Section */}
                                                 <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
                                                     <Typography variant="h6" color="primary">
                                                         {isAgeChart ? "Age vs. Strictness Analysis" : "Experience vs. Strictness Analysis"}
                                                     </Typography>
                                                     <FormControlLabel
-                                                        control={<Switch checked={isAgeChart} onChange={handleChartToggle} color="primary" size="small" />}
+                                                        control={
+                                                            <Switch 
+                                                                checked={isAgeChart} 
+                                                                onChange={handleChartToggle} 
+                                                                color="primary" 
+                                                                size="small" 
+                                                            />
+                                                        }
                                                         label={<Typography variant="caption">Age Analysis</Typography>}
                                                         labelPlacement="start"
                                                     />
                                                 </Stack>
 
-                                                <Box sx={{
-                                                    height: '100%',
-                                                    border: '2px dashed #ccc',
-                                                    borderRadius: 2,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    bgcolor: '#fafafa'
+                                                {/* Chart Section */}
+                                                <Box sx={{ 
+                                                    flexGrow: 1, // Takes up remaining space
+                                                    width: '100%', 
+                                                    minHeight: 0, // Critical for Flexbox children to scroll/resize correctly
+                                                    position: 'relative' 
                                                 }}>
-                                                    <Box sx={{ textAlign: 'center' }}>
-                                                        <Typography variant="h5" color="textSecondary">
-                                                            [ PLACEHOLDER: SCATTER PLOT ]
-                                                        </Typography>
-                                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                                                            {isAgeChart
-                                                                ? "X: Age | Y: Strictness Index | Size: Penalties"
-                                                                : "X: Appearances | Y: Strictness Index | Size: Penalties"
-                                                            }
-                                                        </Typography>
-                                                    </Box>
-                                                </Box>
+                                                {/* Pass the Data and the Toggle State */}
+                                                <RefereeScatterD3 
+                                                    data={displayedData} 
+                                                    isAgeMode={isAgeChart} 
+                                                />
+                                            </Box>
                                             </CardContent>
                                         </Card>
                                     </Box>
