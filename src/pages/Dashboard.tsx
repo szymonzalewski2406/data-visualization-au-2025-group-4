@@ -42,6 +42,7 @@ import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import { FilterOptions } from "../interfaces/FilterOptions";
 
 import RefereeScatterD3 from '../components/RefereeScatterD3';
+import GeoMap from "../components/GeoMap";
 
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
@@ -423,28 +424,23 @@ export default function Dashboard() {
 
                                     <Box sx={{ flex: 1 }}>
                                         <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
-                                            <CardContent sx={{ flexGrow: 1 }}>
+                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
                                                 <Typography variant="h6" color="primary" gutterBottom>
                                                     Geographic Strictness
                                                 </Typography>
-                                                <Box sx={{
-                                                    height: '100%',
-                                                    border: '2px dashed #ccc',
-                                                    borderRadius: 2,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    bgcolor: '#fafafa'
+												{/* Chart Section */}
+                                                <Box sx={{ 
+                                                    flexGrow: 1, // Takes up remaining space
+                                                    width: '100%', 
+                                                    minHeight: 0, // Critical for Flexbox children to scroll/resize correctly
+                                                    position: 'relative' 
                                                 }}>
-                                                    <Box sx={{ textAlign: 'center' }}>
-                                                        <Typography variant="h5" color="textSecondary">
-                                                            [ PLACEHOLDER: MAP ]
-                                                        </Typography>
-                                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                                                            Europe Heatmap
-                                                        </Typography>
-                                                    </Box>
-                                                </Box>
+                                                {/* Pass the Data and the Toggle State */}
+                                                <GeoMap
+                                                    data={displayedData}
+                                                />
+												</Box>
+
                                             </CardContent>
                                         </Card>
                                     </Box>
