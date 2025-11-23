@@ -44,6 +44,18 @@ const nationalityToISO2: Record<string, string> = {
 	'Ukraine': 'UA',
 	'Russia': 'RU',
 	'Israel': 'IL',
+	'Albania': 'AL',
+	'Belarus': 'BY',
+	'Cyprus': 'CY',
+	"Faroe Islands": 'FO',
+	'Iceland': 'IS',
+	'Moldova': 'MD',
+	'North Macedonia': 'MK',
+	'San Marino': 'SM',
+	'Wales': 'GB',
+	'Türkiye': 'TR',
+	'Scotland': 'GB',
+	'Ireland': 'IE',
 	// Add more as needed
 };
 
