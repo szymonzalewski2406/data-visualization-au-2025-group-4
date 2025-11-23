@@ -89,14 +89,35 @@ const GeoMap: React.FC<Props> = ({ data}) => {
 		const projection = d3.geoMercator().fitSize([width, height], europeGeoJson as any);
 		const path = d3.geoPath().projection(projection);
 
-		const maxValue = d3.max(data, d => d.strictness_index) || 1;
-		const color = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, maxValue]);
-
-		const valueByISO2: Record<string, number> = {};
+		// Compute average strictness per ISO2 (support multiple referees per country)
+		const sumByISO2: Record<string, number> = {};
+		const countByISO2: Record<string, number> = {};
 		data.forEach(d => {
 			const iso2 = nationalityToISO2[d.nationality] || d.nationality;
-			valueByISO2[iso2] = d.strictness_index;
+			sumByISO2[iso2] = (sumByISO2[iso2] || 0) + (d.strictness_index ?? 0);
+			countByISO2[iso2] = (countByISO2[iso2] || 0) + 1;
 		});
+
+		const avgByISO2: Record<string, number> = {};
+		Object.keys(sumByISO2).forEach(k => {
+			avgByISO2[k] = sumByISO2[k] / countByISO2[k];
+		});
+
+		const maxValue = d3.max(Object.values(avgByISO2)) || 1;
+		const color = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, maxValue]);
+
+		// Tooltip: appended to the container so it overlays the svg and can be positioned
+		const container = d3.select(containerRef.current as any);
+		const tooltip = container.append('div')
+			.attr('class', 'geo-tooltip')
+			.style('position', 'absolute')
+			.style('pointer-events', 'none')
+			.style('background', 'rgba(30, 30, 30, 0.95)')
+			.style('color', '#fff')
+			.style('padding', '6px 8px')
+			.style('border-radius', '4px')
+			.style('font-size', '12px')
+			.style('visibility', 'hidden');
 
 		svg.append('g')
 			.selectAll('path')
@@ -105,11 +126,33 @@ const GeoMap: React.FC<Props> = ({ data}) => {
 			.append('path')
 			.attr('d', path as any)
 			.attr('fill', (d: any) => {
-				const val = valueByISO2[d.properties.ISO2];
-				return val ? color(val) : '#eee';
+				const val = avgByISO2[d.properties.ISO2];
+				return val != null ? color(val) : '#eee';
 			})
 			.attr('stroke', '#333')
-			.attr('stroke-width', 0.5);
+			.attr('stroke-width', 0.5)
+			.on('mouseover', function(_, d: any) {
+				// highlight
+				d3.select(this).attr('stroke-width', 1.5);
+				const iso = d.properties.ISO2;
+				const avg = avgByISO2[iso];
+				const count = countByISO2[iso] || 0;
+				const name = d.properties.NAME || d.properties.name || iso;
+				tooltip.html(`<strong>${name}</strong><br/>Average strictness: ${avg != null ? avg.toFixed(2) : 'N/A'}${count ? ` (${count} refs)` : ''}`)
+					.style('visibility', 'visible');
+			})
+			.on('mousemove', function(event: any) {
+				// position relative to container
+				const [mouseX, mouseY] = d3.pointer(event, container.node());
+				tooltip.style('left', `${mouseX + 12}px`).style('top', `${mouseY + 12}px`);
+			})
+			.on('mouseout', function() {
+				d3.select(this).attr('stroke-width', 0.5);
+				tooltip.style('visibility', 'hidden');
+			});
+		return () => {
+			tooltip.remove();
+		};
 	}, [data, dimensions]);
 	    return (
         <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
