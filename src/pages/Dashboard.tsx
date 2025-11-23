@@ -43,6 +43,7 @@ import { FilterOptions } from "../interfaces/FilterOptions";
 
 import RefereeScatterD3 from '../components/RefereeScatterD3';
 import GeoMap from "../components/GeoMap";
+import RefereeGroupedBarChartD3 from '../components/RefereeGroupedBarChartD3';
 
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
@@ -463,9 +464,7 @@ export default function Dashboard() {
                                                 justifyContent: 'center',
                                                 bgcolor: '#fafafa'
                                             }}>
-                                                <Typography variant="h5" color="textSecondary">
-                                                    [ PLACEHOLDER: BAR CHART ]
-                                                </Typography>
+                                                <RefereeGroupedBarChartD3 data={displayedData} />
                                             </Box>
                                         </CardContent>
                                     </Card>
