@@ -47,6 +47,7 @@ import RefereeScatterD3 from '../components/RefereeScatterD3';
 import GeoMap from "../components/GeoMap";
 import RefereeGroupedBarChartD3 from '../components/RefereeGroupedBarChartD3';
 import RefereeWaffleChart from "../components/RefereeWaffleChart";
+import RefereePassportHeatmap from "../components/RefereePassportHeatmap";
 
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
@@ -529,8 +530,16 @@ export default function Dashboard() {
                                                     <Typography variant="h6" gutterBottom>
                                                         Referee Passport: {selectedReferees[0]}
                                                     </Typography>
-                                                    <Box sx={{ height: 250, bgcolor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                        [ PLACEHOLDER: HEATMAP ]
+                                                    <Box sx={{ height: 250, bgcolor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        {(() => {
+                                                            const refereeHistory = allRefereeData.filter(d => d.name === selectedReferees[0]);
+
+                                                            if (!refereeHistory || refereeHistory.length === 0) {
+                                                                return <Typography>No historical data found.</Typography>;
+                                                            }
+
+                                                            return <RefereePassportHeatmap data={refereeHistory} />;
+                                                        })()}
                                                     </Box>
                                                 </CardContent>
                                             </Card>
