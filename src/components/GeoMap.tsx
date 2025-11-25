@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import europeGeoJson from './europe.geo.json';
 import { RefereeData } from '../interfaces/RefereeData';
@@ -56,28 +56,26 @@ const nationalityToISO2: Record<string, string> = {
 	'Türkiye': 'TR',
 	'Scotland': 'GB',
 	'Ireland': 'IE',
-	// Add more as needed
 };
 
-const GeoMap: React.FC<Props> = ({ data}) => {
+const GeoMap: React.FC<Props> = ({ data }) => {
 	const svgRef = useRef<SVGSVGElement>(null);
-  	const containerRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-	
-// 1. Resize Observer
-  useEffect(() => {
-	if (!containerRef.current) return;
 
-	const resizeObserver = new ResizeObserver((entries) => {
-	  if (!entries || entries.length === 0) return;
-	  const { width, height } = entries[0].contentRect;
-	  setDimensions({ width, height });
-	});
+	useEffect(() => {
+		if (!containerRef.current) return;
 
-	resizeObserver.observe(containerRef.current);
+		const resizeObserver = new ResizeObserver((entries) => {
+			if (!entries || entries.length === 0) return;
+			const { width, height } = entries[0].contentRect;
+			setDimensions({ width, height });
+		});
 
-	return () => resizeObserver.disconnect();
-  }, []);
+		resizeObserver.observe(containerRef.current);
+
+		return () => resizeObserver.disconnect();
+	}, []);
 
 	useEffect(() => {
 		if (!data || data.length === 0 || !europeGeoJson) return;
@@ -85,16 +83,33 @@ const GeoMap: React.FC<Props> = ({ data}) => {
 		svg.selectAll('*').remove();
 		const { width, height } = dimensions;
 
-
 		const projection = d3.geoMercator().fitSize([width, height], europeGeoJson as any);
 		const path = d3.geoPath().projection(projection);
 
-		// Compute average strictness per ISO2 (support multiple referees per country)
+		const uniqueReferees: Record<string, { nationality: string; totalStrictnessPoints: number; totalAppearances: number }> = {};
+
+		data.forEach(d => {
+			if (!uniqueReferees[d.name]) {
+				uniqueReferees[d.name] = {
+					nationality: d.nationality,
+					totalStrictnessPoints: 0,
+					totalAppearances: 0
+				};
+			}
+			uniqueReferees[d.name].totalStrictnessPoints += (d.strictness_index * d.appearances);
+			uniqueReferees[d.name].totalAppearances += d.appearances;
+		});
+
 		const sumByISO2: Record<string, number> = {};
 		const countByISO2: Record<string, number> = {};
-		data.forEach(d => {
-			const iso2 = nationalityToISO2[d.nationality] || d.nationality;
-			sumByISO2[iso2] = (sumByISO2[iso2] || 0) + (d.strictness_index ?? 0);
+
+		Object.values(uniqueReferees).forEach(ref => {
+			const iso2 = nationalityToISO2[ref.nationality] || ref.nationality;
+			const personalStrictness = ref.totalAppearances > 0
+				? ref.totalStrictnessPoints / ref.totalAppearances
+				: 0;
+
+			sumByISO2[iso2] = (sumByISO2[iso2] || 0) + personalStrictness;
 			countByISO2[iso2] = (countByISO2[iso2] || 0) + 1;
 		});
 
@@ -106,7 +121,6 @@ const GeoMap: React.FC<Props> = ({ data}) => {
 		const maxValue = d3.max(Object.values(avgByISO2)) || 1;
 		const color = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, maxValue]);
 
-		// Tooltip: appended to the container so it overlays the svg and can be positioned
 		const container = d3.select(containerRef.current as any);
 		const tooltip = container.append('div')
 			.attr('class', 'geo-tooltip')
@@ -132,7 +146,6 @@ const GeoMap: React.FC<Props> = ({ data}) => {
 			.attr('stroke', '#333')
 			.attr('stroke-width', 0.5)
 			.on('mouseover', function(_, d: any) {
-				// highlight
 				d3.select(this).attr('stroke-width', 1.5);
 				const iso = d.properties.ISO2;
 				const avg = avgByISO2[iso];
@@ -142,7 +155,6 @@ const GeoMap: React.FC<Props> = ({ data}) => {
 					.style('visibility', 'visible');
 			})
 			.on('mousemove', function(event: any) {
-				// position relative to container
 				const [mouseX, mouseY] = d3.pointer(event, container.node());
 				tooltip.style('left', `${mouseX + 12}px`).style('top', `${mouseY + 12}px`);
 			})
@@ -154,11 +166,11 @@ const GeoMap: React.FC<Props> = ({ data}) => {
 			tooltip.remove();
 		};
 	}, [data, dimensions]);
-	    return (
-        <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-            <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
-        </div>
-    );
+	return (
+		<div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+			<svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+		</div>
+	);
 };
 
 export default GeoMap;

@@ -494,6 +494,7 @@ export default function Dashboard() {
                                 </Grid>
                             </Grid>
 
+                            {selectedReferees.length !== 1 && (
                             <Grid container spacing={3} sx={{ mb: 3 }}>
                                 <Grid sx={{ width: '100%' }}>
                                     <Card elevation={3}>
@@ -516,6 +517,7 @@ export default function Dashboard() {
                                     </Card>
                                 </Grid>
                             </Grid>
+                            )}
 
                             {selectedReferees.length === 1 && (
                                 <Grid container spacing={3}>
