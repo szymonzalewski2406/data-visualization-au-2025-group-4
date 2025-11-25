@@ -31,7 +31,8 @@ import {
     Stack,
     Slider,
     Switch,
-    FormControlLabel
+    FormControlLabel,
+    Tooltip
 } from "@mui/material";
 import {
     COMPETITIONS,
@@ -39,6 +40,7 @@ import {
     DEFAULT_COMPETITION
 } from "../interfaces/Competitions";
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { FilterOptions } from "../interfaces/FilterOptions";
 
 import RefereeScatterD3 from '../components/RefereeScatterD3';
@@ -60,6 +62,10 @@ export default function Dashboard() {
 
     const [ageRange, setAgeRange] = useState<number[]>([20, 60]);
     const [minMaxAge, setMinMaxAge] = useState<number[]>([20, 60]);
+
+    const [appearancesRange, setAppearancesRange] = useState<number[]>([0, 50]);
+    const [minMaxAppearances, setMinMaxAppearances] = useState<number[]>([0, 50]);
+
     const [isAgeChart, setIsAgeChart] = useState<boolean>(false);
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -94,6 +100,14 @@ export default function Dashboard() {
                         setAgeRange([min, max]);
                     }
 
+                    const apps = allData.map(r => r.appearances);
+                    if (apps.length > 0) {
+                        const minApp = Math.min(...apps);
+                        const maxApp = Math.max(...apps);
+                        setMinMaxAppearances([minApp, maxApp]);
+                        setAppearancesRange([minApp, maxApp]);
+                    }
+
                     if (initialSeasons.length > 0) {
                         setSelectedSeason(initialSeasons[0]);
                     }
@@ -115,31 +129,30 @@ export default function Dashboard() {
         if (!selectedSeason || allRefereeData.length === 0) return;
 
         const dataInSeason = allRefereeData.filter(r => r.season === selectedSeason);
-        const ages = dataInSeason.map(r => r.age).filter(a => a > 0);
 
-        if (ages.length === 0) {
+        const ages = dataInSeason.map(r => r.age).filter(a => a > 0);
+        if (ages.length > 0) {
+            const min = Math.min(...ages);
+            const max = Math.max(...ages);
+            if (minMaxAge[0] !== min || minMaxAge[1] !== max) {
+                setMinMaxAge([min, max]);
+                setAgeRange([Math.max(ageRange[0], min), Math.min(ageRange[1], max)]);
+            }
+        } else {
             setMinMaxAge([20, 60]);
             setAgeRange([20, 60]);
-            return;
         }
 
-        const min = Math.min(...ages);
-        const max = Math.max(...ages);
-
-        const newMinMaxAge = [min, max];
-
-        if (minMaxAge[0] !== min || minMaxAge[1] !== max) {
-            setMinMaxAge(newMinMaxAge);
-
-            const newAgeRange: number[] = [
-                Math.max(ageRange[0], min),
-                Math.min(ageRange[1], max)
-            ];
-
-            if (newAgeRange[0] !== ageRange[0] || newAgeRange[1] !== ageRange[1]) {
-                setAgeRange(newAgeRange);
+        const apps = dataInSeason.map(r => r.appearances);
+        if (apps.length > 0) {
+            const minApp = Math.min(...apps);
+            const maxApp = Math.max(...apps);
+            if (minMaxAppearances[0] !== minApp || minMaxAppearances[1] !== maxApp) {
+                setMinMaxAppearances([minApp, maxApp]);
+                setAppearancesRange([Math.max(appearancesRange[0], minApp), Math.min(appearancesRange[1], maxApp)]);
             }
         }
+
     }, [selectedSeason, allRefereeData]);
 
     useEffect(() => {
@@ -157,6 +170,7 @@ export default function Dashboard() {
 
         dataFiltered = dataFiltered.filter(r => {
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
+            if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
             return true;
         });
 
@@ -168,7 +182,7 @@ export default function Dashboard() {
             referees: referees
         }));
 
-    }, [selectedSeason, selectedNationality, allRefereeData, ageRange]);
+    }, [selectedSeason, selectedNationality, allRefereeData, ageRange, appearancesRange]);
 
 
     const handleCompetitionChange = (competition: CompetitionConfig) => {
@@ -209,6 +223,10 @@ export default function Dashboard() {
         setAgeRange(newValue as number[]);
     };
 
+    const handleAppearancesChange = (event: Event, newValue: number | number[]) => {
+        setAppearancesRange(newValue as number[]);
+    };
+
     const handleChartToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsAgeChart(event.target.checked);
     };
@@ -221,10 +239,11 @@ export default function Dashboard() {
             if (selectedReferees.length > 0 && !selectedReferees.includes(r.name)) return false;
 
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
+            if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
 
             return true;
         });
-    }, [allRefereeData, selectedSeason, selectedNationality, selectedReferees, ageRange]);
+    }, [allRefereeData, selectedSeason, selectedNationality, selectedReferees, ageRange, appearancesRange]);
 
 
     if (loading) {
@@ -315,7 +334,7 @@ export default function Dashboard() {
                                             </FormControl>
                                         </Box>
 
-                                        <Box sx={{ minWidth: 200 }}>
+                                        <Box sx={{ minWidth: 150 }}>
                                             <FormControl fullWidth size="small" disabled={!selectedSeason}>
                                                 <InputLabel>Nationality</InputLabel>
                                                 <Select
@@ -335,9 +354,9 @@ export default function Dashboard() {
                                             </FormControl>
                                         </Box>
 
-                                        <Box sx={{ width: 200 }}>
+                                        <Box sx={{ width: 150 }}>
                                             <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
-                                                Age Range: {ageRange[0]} - {ageRange[1]} years
+                                                Age: {ageRange[0]} - {ageRange[1]} years
                                             </Typography>
                                             <Slider
                                                 value={ageRange}
@@ -349,7 +368,21 @@ export default function Dashboard() {
                                             />
                                         </Box>
 
-                                        <Box sx={{ minWidth: 200, flexGrow: 1 }}>
+                                        <Box sx={{ width: 150 }}>
+                                            <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+                                                Apps: {appearancesRange[0]} - {appearancesRange[1]}
+                                            </Typography>
+                                            <Slider
+                                                value={appearancesRange}
+                                                onChange={handleAppearancesChange}
+                                                valueLabelDisplay="auto"
+                                                min={minMaxAppearances[0]}
+                                                max={minMaxAppearances[1]}
+                                                size="small"
+                                            />
+                                        </Box>
+
+                                        <Box sx={{ minWidth: 180, flexGrow: 1 }}>
                                             <FormControl fullWidth size="small" disabled={!selectedSeason}>
                                                 <InputLabel>Referees</InputLabel>
                                                 <Select
@@ -374,11 +407,27 @@ export default function Dashboard() {
                                         </Box>
                                     </Stack>
 
-                                    <Box sx={{ flexShrink: 0 }}>
+                                    <Stack direction="row" alignItems="center" spacing={1} sx={{ flexShrink: 0 }}>
                                         <Typography variant="caption" color="textSecondary">
                                             Displaying <b>{displayedData.length}</b> records
                                         </Typography>
-                                    </Box>
+                                        <Tooltip
+                                            title={
+                                                <Box sx={{ p: 0.5 }}>
+                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                                                        Strictness Calculation:
+                                                    </Typography>
+                                                    <Typography variant="caption" display="block">
+                                                        (1×Yellow + 3×2ndYellow + 5×Red + 3×Penalty) / Matches
+                                                    </Typography>
+                                                </Box>
+                                            }
+                                            arrow
+                                            placement="left"
+                                        >
+                                            <InfoOutlinedIcon fontSize="small" sx={{ color: 'text.secondary', cursor: 'help', opacity: 0.7 }} />
+                                        </Tooltip>
+                                    </Stack>
                                 </Stack>
                             </Card>
 
@@ -387,18 +436,19 @@ export default function Dashboard() {
                                     <Box sx={{ flex: 1 }}>
                                         <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
                                             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                                                {/* Header Section */}
+
                                                 <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
                                                     <Typography variant="h6" color="primary">
                                                         {isAgeChart ? "Age vs. Strictness Analysis" : "Experience vs. Strictness Analysis"}
                                                     </Typography>
+
                                                     <FormControlLabel
                                                         control={
-                                                            <Switch 
-                                                                checked={isAgeChart} 
-                                                                onChange={handleChartToggle} 
-                                                                color="primary" 
-                                                                size="small" 
+                                                            <Switch
+                                                                checked={isAgeChart}
+                                                                onChange={handleChartToggle}
+                                                                color="primary"
+                                                                size="small"
                                                             />
                                                         }
                                                         label={<Typography variant="caption">Age Analysis</Typography>}
@@ -406,19 +456,17 @@ export default function Dashboard() {
                                                     />
                                                 </Stack>
 
-                                                {/* Chart Section */}
-                                                <Box sx={{ 
-                                                    flexGrow: 1, // Takes up remaining space
-                                                    width: '100%', 
-                                                    minHeight: 0, // Critical for Flexbox children to scroll/resize correctly
-                                                    position: 'relative' 
+                                                <Box sx={{
+                                                    flexGrow: 1,
+                                                    width: '100%',
+                                                    minHeight: 0,
+                                                    position: 'relative'
                                                 }}>
-                                                {/* Pass the Data and the Toggle State */}
-                                                <RefereeScatterD3 
-                                                    data={displayedData} 
-                                                    isAgeMode={isAgeChart} 
-                                                />
-                                            </Box>
+                                                    <RefereeScatterD3
+                                                        data={displayedData}
+                                                        isAgeMode={isAgeChart}
+                                                    />
+                                                </Box>
                                             </CardContent>
                                         </Card>
                                     </Box>
@@ -429,18 +477,16 @@ export default function Dashboard() {
                                                 <Typography variant="h6" color="primary" gutterBottom>
                                                     Geographic Strictness
                                                 </Typography>
-												{/* Chart Section */}
-                                                <Box sx={{ 
-                                                    flexGrow: 1, // Takes up remaining space
-                                                    width: '100%', 
-                                                    minHeight: 0, // Critical for Flexbox children to scroll/resize correctly
-                                                    position: 'relative' 
+                                                <Box sx={{
+                                                    flexGrow: 1,
+                                                    width: '100%',
+                                                    minHeight: 0,
+                                                    position: 'relative'
                                                 }}>
-                                                {/* Pass the Data and the Toggle State */}
-                                                <GeoMap
-                                                    data={displayedData}
-                                                />
-												</Box>
+                                                    <GeoMap
+                                                        data={displayedData}
+                                                    />
+                                                </Box>
 
                                             </CardContent>
                                         </Card>
@@ -453,7 +499,7 @@ export default function Dashboard() {
                                     <Card elevation={3}>
                                         <CardContent>
                                             <Typography variant="h6" color="primary" gutterBottom>
-                                                Top 15 Referees by Strictness Index
+                                                Top Referees by Strictness Index
                                             </Typography>
                                             <Box sx={{
                                                 height: 300,
@@ -516,10 +562,10 @@ export default function Dashboard() {
                 }}>
                     <Container maxWidth="xl">
                         <Typography variant="body2" sx={{ mb: 1 }}>
-                            Data Visualization Course Project - Group 4, Aarhus University 2025
+                            Data Visualization Course Project - Group 4
                         </Typography>
                         <Typography variant="caption" color="inherit">
-                            UEFA Competition Referee Analysis Tool | Data Source: transfermarkt.de
+                            UEFA Competition Referee Analysis Tool | Aarhus University 2025
                         </Typography>
                     </Container>
                 </Box>
