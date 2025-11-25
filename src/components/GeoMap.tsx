@@ -203,7 +203,7 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 		<div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
 			<svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
 			<div style={{ position: 'absolute', bottom: 10, left: 10, fontSize: '10px', color: '#888', pointerEvents: 'none' }}>
-				Bivariate: Color = Strictness + Confidence
+				Bivariate: Color = Strictness + Appearances
 			</div>
 		</div>
 	);
