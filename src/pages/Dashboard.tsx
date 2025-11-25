@@ -46,6 +46,7 @@ import { FilterOptions } from "../interfaces/FilterOptions";
 import RefereeScatterD3 from '../components/RefereeScatterD3';
 import GeoMap from "../components/GeoMap";
 import RefereeGroupedBarChartD3 from '../components/RefereeGroupedBarChartD3';
+import RefereeWaffleChart from "../components/RefereeWaffleChart";
 
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
@@ -540,8 +541,11 @@ export default function Dashboard() {
                                                     <Typography variant="h6" gutterBottom>
                                                         Card DNA: {selectedReferees[0]}
                                                     </Typography>
-                                                    <Box sx={{ height: 250, bgcolor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                        [ PLACEHOLDER: WAFFLE CHART ]
+                                                    <Box sx={{ height: 250, bgcolor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        {(() => {
+                                                            const refData = displayedData.find(d => d.name === selectedReferees[0]);
+                                                            return refData ? <RefereeWaffleChart data={refData} /> : <Typography>No Data</Typography>;
+                                                        })()}
                                                     </Box>
                                                 </CardContent>
                                             </Card>
