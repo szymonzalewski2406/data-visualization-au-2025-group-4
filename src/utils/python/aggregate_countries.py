@@ -33,8 +33,6 @@ region_map = {
 
 df['region'] = df['nationality'].map(region_map)
 
-print(df.head())
-
 aggregated_regions = df.groupby('region').agg({
     'yellow_cards': 'sum',
     'double_yellow_cards': 'sum',
@@ -45,9 +43,6 @@ aggregated_regions = df.groupby('region').agg({
 })
 
 aggregated_regions = aggregated_regions.rename(columns={'name': 'referees'})
-
-print(aggregated_regions.index)
-print(aggregated_regions.head())
 
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, (aggregated_regions['yellow_cards']/aggregated_regions['appearances']))
