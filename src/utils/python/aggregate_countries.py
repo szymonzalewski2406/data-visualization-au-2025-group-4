@@ -92,7 +92,7 @@ width = 0.18
 plt.figure(figsize=(12, 6))
 plt.bar(x - 1.5*width, aggregated_regions['yc_per_appearance'],   width, label='Yellow')
 plt.bar(x - 0.5*width, aggregated_regions['yyc_per_appearance'],  width, label='Double yellow')
-plt.bar(x + 0.5*width, aggregated_regions['red_cards'],   width, label='Red')
+plt.bar(x + 0.5*width, aggregated_regions['rc_per_appearance'],   width, label='Red')
 plt.bar(x + 1.5*width, aggregated_regions['penalties_per_appearance'], width, label='Penalties')
 plt.xticks(x, aggregated_regions.index)
 plt.ylabel('Cards / appearance')
