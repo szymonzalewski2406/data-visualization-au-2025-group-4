@@ -56,6 +56,19 @@ plt.ylabel('Yellow Cards')
 plt.title('Yellow Cards per Appearance')
 plt.savefig('src/utils/python/plots/yellow_cards_per_appearance')
 
+aggregated_regions['total_cards'] = (
+    aggregated_regions['yellow_cards']
+    + aggregated_regions['double_yellow_cards']
+    + aggregated_regions['red_cards']
+)
+
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, (aggregated_regions['total_cards']/aggregated_regions['appearances']))
+plt.xlabel('Regions')
+plt.ylabel('Total Cards')
+plt.title('Total Cards per Appearance')
+plt.savefig('src/utils/python/plots/total_cards_per_appearance')
+
 # aggregated_countries = df.groupby('nationality').agg({
 #     'yellow_cards': 'sum',
 #     'double_yellow_cards': 'sum',
