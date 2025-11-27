@@ -65,6 +65,27 @@ plt.ylabel('Yellow Cards')
 plt.title('Yellow Cards per Appearance')
 plt.savefig('src/utils/python/plots/yellow_cards_per_appearance')
 
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, aggregated_regions['yyc_per_appearance'])
+plt.xlabel('Regions')
+plt.ylabel('Double-Yellow Cards')
+plt.title('Double Yellow Cards per Appearance')
+plt.savefig('src/utils/python/plots/double_yellow_cards_per_appearance')
+
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, aggregated_regions['rc_per_appearance'])
+plt.xlabel('Regions')
+plt.ylabel('Red Cards')
+plt.title('Red Cards per Appearance')
+plt.savefig('src/utils/python/plots/red_cards_per_appearance')
+
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, aggregated_regions['penalties_per_appearance'])
+plt.xlabel('Regions')
+plt.ylabel('Penalties')
+plt.title('Penalties per Appearance')
+plt.savefig('src/utils/python/plots/penalties_per_appearance')
+
 x = np.arange(len(aggregated_regions.index))
 width = 0.18
 
