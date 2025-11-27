@@ -44,28 +44,35 @@ aggregated_regions = df.groupby('region').agg({
 
 aggregated_regions = aggregated_regions.rename(columns={'name': 'referees'})
 
-plt.figure(figsize=(12, 6))
-plt.bar(aggregated_regions.index, (aggregated_regions['yellow_cards']/aggregated_regions['appearances']))
-plt.xlabel('Regions')
-plt.ylabel('Yellow Cards')
-plt.title('Yellow Cards per Appearance')
-plt.savefig('src/utils/python/plots/yellow_cards_per_appearance')
-
 aggregated_regions['total_cards'] = (
     aggregated_regions['yellow_cards']
     + aggregated_regions['double_yellow_cards']
     + aggregated_regions['red_cards']
 )
 
+aggregated_regions['yc_per_appearance'] = aggregated_regions['yellow_cards'] / aggregated_regions['appearances']
+aggregated_regions['yyc_per_appearance'] = aggregated_regions['double_yellow_cards'] / aggregated_regions['appearances']
+aggregated_regions['rc_per_appearance'] = aggregated_regions['red_cards'] / aggregated_regions['appearances']
+aggregated_regions['penalties_per_appearance'] = aggregated_regions['penalties'] / aggregated_regions['appearances']
+aggregated_regions['tc_per_appearance'] = aggregated_regions['total_cards'] / aggregated_regions['appearances']
+aggregated_regions['appearances_per_referee'] = aggregated_regions['appearances'] / aggregated_regions['referees']
+
 plt.figure(figsize=(12, 6))
-plt.bar(aggregated_regions.index, (aggregated_regions['total_cards']/aggregated_regions['appearances']))
+plt.bar(aggregated_regions.index, aggregated_regions['yc_per_appearance'])
+plt.xlabel('Regions')
+plt.ylabel('Yellow Cards')
+plt.title('Yellow Cards per Appearance')
+plt.savefig('src/utils/python/plots/yellow_cards_per_appearance')
+
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, aggregated_regions['tc_per_appearance'])
 plt.xlabel('Regions')
 plt.ylabel('Total Cards')
 plt.title('Total Cards per Appearance')
 plt.savefig('src/utils/python/plots/total_cards_per_appearance')
 
 plt.figure(figsize=(12, 6))
-plt.bar(aggregated_regions.index, (aggregated_regions['appearances']/aggregated_regions['referees']))
+plt.bar(aggregated_regions.index, aggregated_regions['appearances_per_referee'])
 plt.xlabel('Regions')
 plt.ylabel('Appearances')
 plt.title('Appearances per referee')
