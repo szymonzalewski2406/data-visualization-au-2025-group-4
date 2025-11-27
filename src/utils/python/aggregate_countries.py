@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 df = pd.read_csv('public/datasets/uefa_combined/uefa_all_leagues_combined.csv')
 
@@ -46,7 +47,14 @@ aggregated_regions = df.groupby('region').agg({
 aggregated_regions = aggregated_regions.rename(columns={'name': 'referees'})
 
 print(aggregated_regions.index)
-print(aggregated_regions.head(10))
+print(aggregated_regions.head())
+
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, (aggregated_regions['yellow_cards']/aggregated_regions['appearances']))
+plt.xlabel('Regions')
+plt.ylabel('Yellow Cards')
+plt.title('Yellow Cards per Appearance')
+plt.savefig('src/utils/python/plots/yellow_cards_per_appearance')
 
 # aggregated_countries = df.groupby('nationality').agg({
 #     'yellow_cards': 'sum',
