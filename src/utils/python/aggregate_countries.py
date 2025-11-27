@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 df = pd.read_csv('public/datasets/uefa_combined/uefa_all_leagues_combined.csv')
 
@@ -63,6 +64,22 @@ plt.xlabel('Regions')
 plt.ylabel('Yellow Cards')
 plt.title('Yellow Cards per Appearance')
 plt.savefig('src/utils/python/plots/yellow_cards_per_appearance')
+
+x = np.arange(len(aggregated_regions.index))
+width = 0.18
+
+plt.figure(figsize=(12, 6))
+plt.bar(x - 1.5*width, aggregated_regions['yc_per_appearance'],   width, label='Yellow')
+plt.bar(x - 0.5*width, aggregated_regions['yyc_per_appearance'],  width, label='Double yellow')
+plt.bar(x + 0.5*width, aggregated_regions['red_cards'],   width, label='Red')
+plt.bar(x + 1.5*width, aggregated_regions['penalties_per_appearance'], width, label='Penalties')
+plt.xticks(x, aggregated_regions.index)
+plt.ylabel('Cards / appearance')
+plt.xlabel('Region')
+plt.title('Cards per appearance by region and type')
+plt.legend()
+plt.tight_layout()
+plt.savefig('src/utils/python/plots/grouped_bar_each_card_plus_penalties')
 
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['tc_per_appearance'])
