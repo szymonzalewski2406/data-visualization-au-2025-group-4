@@ -58,6 +58,7 @@ aggregated_regions['penalties_per_appearance'] = aggregated_regions['penalties']
 aggregated_regions['tc_per_appearance'] = aggregated_regions['total_cards'] / aggregated_regions['appearances']
 aggregated_regions['appearances_per_referee'] = aggregated_regions['appearances'] / aggregated_regions['referees']
 
+# YELLOW PER APPEARANCE
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['yc_per_appearance'])
 plt.xlabel('Regions')
@@ -65,6 +66,7 @@ plt.ylabel('Yellow Cards')
 plt.title('Yellow Cards per Appearance')
 plt.savefig('src/utils/python/plots/yellow_cards_per_appearance')
 
+# DOUBLE YELLOW PER APPEARANCE
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['yyc_per_appearance'])
 plt.xlabel('Regions')
@@ -72,6 +74,7 @@ plt.ylabel('Double-Yellow Cards')
 plt.title('Double Yellow Cards per Appearance')
 plt.savefig('src/utils/python/plots/double_yellow_cards_per_appearance')
 
+# RED PER APPEARANCE
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['rc_per_appearance'])
 plt.xlabel('Regions')
@@ -79,6 +82,7 @@ plt.ylabel('Red Cards')
 plt.title('Red Cards per Appearance')
 plt.savefig('src/utils/python/plots/red_cards_per_appearance')
 
+# PENALTIES PER APPEARANCE
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['penalties_per_appearance'])
 plt.xlabel('Regions')
@@ -86,6 +90,7 @@ plt.ylabel('Penalties')
 plt.title('Penalties per Appearance')
 plt.savefig('src/utils/python/plots/penalties_per_appearance')
 
+# GROUPED BY TYPE
 x = np.arange(len(aggregated_regions.index))
 width = 0.18
 
@@ -102,6 +107,7 @@ plt.legend()
 plt.tight_layout()
 plt.savefig('src/utils/python/plots/grouped_bar_each_card_plus_penalties')
 
+# TOTAL CARDS PER APPEARANCE
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['tc_per_appearance'])
 plt.xlabel('Regions')
@@ -109,6 +115,7 @@ plt.ylabel('Total Cards')
 plt.title('Total Cards per Appearance')
 plt.savefig('src/utils/python/plots/total_cards_per_appearance')
 
+# APPEARANCES PER REFEREE
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['appearances_per_referee'])
 plt.xlabel('Regions')
