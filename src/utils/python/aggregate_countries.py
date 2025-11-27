@@ -69,6 +69,13 @@ plt.ylabel('Total Cards')
 plt.title('Total Cards per Appearance')
 plt.savefig('src/utils/python/plots/total_cards_per_appearance')
 
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, (aggregated_regions['appearances']/aggregated_regions['referees']))
+plt.xlabel('Regions')
+plt.ylabel('Appearances')
+plt.title('Appearances per referee')
+plt.savefig('src/utils/python/plots/appearances_per_referee')
+
 # aggregated_countries = df.groupby('nationality').agg({
 #     'yellow_cards': 'sum',
 #     'double_yellow_cards': 'sum',
