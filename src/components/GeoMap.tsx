@@ -21,11 +21,8 @@ const nationalityToISO2: Record<string, string> = {
 	'Wales': 'GB', 'Türkiye': 'TR', 'Scotland': 'GB', 'Ireland': 'IE', 'Luxembourg': 'LU'
 };
 
-const BIVARIATE_COLORS = [
-	["#e8e8e8", "#e4acac", "#c85a5a"],
-	["#b0d5df", "#ad9ea5", "#985356"],
-	["#64acbe", "#627f8c", "#574249"]
-];
+// Sequential diverging colors for strictness (low -> mid -> high)
+const STRICTNESS_COLORS = ["#2c7bb6", "#ffffbf", "#d7191c"];
 
 const GeoMap: React.FC<Props> = ({ data }) => {
 	const svgRef = useRef<SVGSVGElement>(null);
@@ -81,7 +78,6 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 
 		const finalMetrics: Record<string, { avgStrictness: number; count: number }> = {};
 		const strictnessValues: number[] = [];
-		const countValues: number[] = [];
 
 		Object.keys(statsByISO2).forEach(iso => {
 			const avg = statsByISO2[iso].strictnessSum / statsByISO2[iso].refereeCount;
@@ -89,16 +85,17 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 
 			finalMetrics[iso] = { avgStrictness: avg, count };
 			strictnessValues.push(avg);
-			countValues.push(count);
 		});
 
-		const strictnessScale = d3.scaleQuantile()
-			.domain(strictnessValues)
-			.range([0, 1, 2]);
+		// Build a continuous color scale from low -> mid -> high strictness
+		const minStrict = d3.min(strictnessValues) ?? 0;
+		const maxStrict = d3.max(strictnessValues) ?? 1;
+		const midStrict = (minStrict + maxStrict) / 2;
 
-		const countScale = d3.scaleQuantile()
-			.domain(countValues)
-			.range([0, 1, 2]);
+		const strictnessColorScale = d3.scaleLinear<string>()
+			.domain([minStrict, midStrict, maxStrict])
+			.range(STRICTNESS_COLORS)
+			.clamp(true);
 
 		const container = d3.select(containerRef.current as any);
 		const tooltip = container.append('div')
@@ -125,10 +122,7 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 
 				if (!metrics) return '#eee';
 
-				const strictnessIndex = strictnessScale(metrics.avgStrictness);
-				const countIndex = countScale(metrics.count);
-
-				return BIVARIATE_COLORS[countIndex][strictnessIndex];
+				return strictnessColorScale(metrics.avgStrictness);
 			})
 			.attr('stroke', '#333')
 			.attr('stroke-width', 0.5)
@@ -158,41 +152,52 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 				tooltip.style('visibility', 'hidden');
 			});
 
-		const legendSize = 80;
-		const boxSize = legendSize / 3;
+		// Legend: horizontal gradient representing strictness
+		const legendWidth = 140;
+		const legendHeight = 12;
 		const legendPadding = 20;
 
-		const legendG = svg.append("g")
-			.attr("transform", `translate(${legendPadding}, ${height - legendSize - legendPadding - 20})`);
+		// defs + gradient
+		const defs = svg.append('defs');
+		const gradId = 'strictness-gradient';
+		const linearGrad = defs.append('linearGradient').attr('id', gradId).attr('x1', '0%').attr('x2', '100%');
+		linearGrad.append('stop').attr('offset', '0%').attr('stop-color', STRICTNESS_COLORS[0]);
+		linearGrad.append('stop').attr('offset', '50%').attr('stop-color', STRICTNESS_COLORS[1]);
+		linearGrad.append('stop').attr('offset', '100%').attr('stop-color', STRICTNESS_COLORS[2]);
 
-		BIVARIATE_COLORS.forEach((row, y) => {
-			row.forEach((color, x) => {
-				legendG.append("rect")
-					.attr("x", x * boxSize)
-					.attr("y", (2 - y) * boxSize)
-					.attr("width", boxSize)
-					.attr("height", boxSize)
-					.attr("fill", color);
-			});
-		});
+		const legendG = svg.append('g')
+			.attr('transform', `translate(${legendPadding}, ${height - legendHeight - legendPadding - 20})`);
 
-		const axisColor = "#666";
-		const fontSize = 9;
+		legendG.append('rect')
+			.attr('width', legendWidth)
+			.attr('height', legendHeight)
+			.attr('fill', `url(#${gradId})`)
+			.attr('stroke', '#999')
+			.attr('stroke-width', 0.5);
 
-		legendG.append("text")
-			.attr("x", legendSize + 5)
-			.attr("y", legendSize)
-			.text("Strictness ->")
-			.attr("font-size", fontSize)
-			.attr("fill", axisColor)
-			.attr("alignment-baseline", "middle");
+		// numeric ticks
+		legendG.append('text')
+			.attr('x', 0)
+			.attr('y', legendHeight + 12)
+			.text(minStrict.toFixed(2))
+			.attr('font-size', 9)
+			.attr('fill', '#666');
 
-		legendG.append("text")
-			.attr("x", 0)
-			.attr("y", -5)
-			.text("Referees ^")
-			.attr("font-size", fontSize)
-			.attr("fill", axisColor);
+		legendG.append('text')
+			.attr('x', legendWidth)
+			.attr('y', legendHeight + 12)
+			.text(maxStrict.toFixed(2))
+			.attr('font-size', 9)
+			.attr('fill', '#666')
+			.attr('text-anchor', 'end');
+
+		legendG.append('text')
+			.attr('x', legendWidth + 6)
+			.attr('y', legendHeight / 2)
+			.text('Strictness')
+			.attr('font-size', 9)
+			.attr('fill', '#666')
+			.attr('alignment-baseline', 'middle');
 
 		return () => {
 			tooltip.remove();
@@ -203,7 +208,7 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 		<div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
 			<svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
 			<div style={{ position: 'absolute', bottom: 10, left: 10, fontSize: '10px', color: '#888', pointerEvents: 'none' }}>
-				Bivariate: Color = Strictness + Appearances
+				Color = Avg Strictness
 			</div>
 		</div>
 	);
