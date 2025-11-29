@@ -5,6 +5,8 @@ import { RefereeData } from '../interfaces/RefereeData';
 
 interface Props {
 	data: RefereeData[];
+	selectedNationality: string[];
+	onCountryClick: (nationalities: string[]) => void;
 }
 
 const nationalityToISO2: Record<string, string> = {
@@ -21,10 +23,19 @@ const nationalityToISO2: Record<string, string> = {
 	'Wales': 'GB', 'Türkiye': 'TR', 'Scotland': 'GB', 'Ireland': 'IE', 'Luxembourg': 'LU'
 };
 
+const iso2ToNationalities: Record<string, string[]> = {};
+for (const nationality in nationalityToISO2) {
+	const iso = nationalityToISO2[nationality];
+	if (!iso2ToNationalities[iso]) {
+		iso2ToNationalities[iso] = [];
+	}
+	iso2ToNationalities[iso].push(nationality);
+}
+
 // Sequential diverging colors for strictness (low -> mid -> high)
 const STRICTNESS_COLORS = ["#2c7bb6", "#ffffbf", "#d7191c"];
 
-const GeoMap: React.FC<Props> = ({ data }) => {
+const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) => {
 	const svgRef = useRef<SVGSVGElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -116,11 +127,21 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 			.enter()
 			.append('path')
 			.attr('d', path as any)
+			.style('cursor', 'pointer')
 			.attr('fill', (d: any) => {
 				const iso = d.properties.ISO2;
 				const metrics = finalMetrics[iso];
 
 				if (!metrics) return '#eee';
+
+				if (selectedNationality.length > 0) {
+					const countryName = d.properties.NAME || d.properties.name;
+					const isSelected = selectedNationality.includes(countryName);
+					if (!isSelected) {
+						const isoSelected = selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+						if (!isoSelected) return '#ddd';
+					}
+				}
 
 				return strictnessColorScale(metrics.avgStrictness);
 			})
@@ -150,6 +171,15 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 			.on('mouseout', function() {
 				d3.select(this).attr('stroke-width', 0.5).attr('stroke', '#333');
 				tooltip.style('visibility', 'hidden');
+			})
+			.on('click', function(_, d: any) {
+				const iso = d.properties.ISO2;
+				const countryName = d.properties.NAME || d.properties.name;
+				const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
+
+				if (nationalities.length > 0) {
+					onCountryClick(nationalities);
+				}
 			});
 
 		// Legend: horizontal gradient representing strictness
@@ -202,7 +232,7 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 		return () => {
 			tooltip.remove();
 		};
-	}, [data, dimensions]);
+	}, [data, dimensions, selectedNationality, onCountryClick]);
 
 	return (
 		<div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>

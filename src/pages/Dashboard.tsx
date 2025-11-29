@@ -233,6 +233,16 @@ export default function Dashboard() {
         setIsAgeChart(event.target.checked);
     };
 
+    const handleCountryClick = (countryNames: string[]) => {
+        setSelectedNationality(prev => {
+            const areAnySelected = countryNames.some(name => prev.includes(name));
+            if (areAnySelected) {
+                return prev.filter(n => !countryNames.includes(n));
+            } else {
+                return [...prev, ...countryNames];
+            }
+        });
+    };
 
     const displayedData = useMemo(() => {
         return allRefereeData.filter(r => {
@@ -487,6 +497,8 @@ export default function Dashboard() {
                                                 }}>
                                                     <GeoMap
                                                         data={displayedData}
+                                                        selectedNationality={selectedNationality}
+                                                        onCountryClick={handleCountryClick}
                                                     />
                                                 </Box>
 
