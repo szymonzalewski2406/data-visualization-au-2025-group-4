@@ -7,13 +7,15 @@ interface Props {
     isAgeMode: boolean;
 }
 
+interface AggregatedReferee extends RefereeData {
+    competitionsList: string[];
+}
+
 const LEAGUE_CONFIG: { [key: string]: { label: string; color: string } } = {
     "Champions":  { label: "Champions League",  color: "#048dd9" },
     "Europa":     { label: "Europa League",     color: "#ffb800" },
     "Conference": { label: "Conference League", color: "#03b721" }
 };
-
-const DESIRED_ORDER = ["Champions", "Europa", "Conference"];
 
 const SAFE_STRICTNESS_RANGE = ["#2c7bb6", "#ffffbf", "#d7191c"];
 
@@ -50,19 +52,37 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
 
-        let uniqueCompetitions = Array.from(new Set(data.map(d => d.competition)));
+        const aggregatedData: Record<string, AggregatedReferee> = {};
 
-        uniqueCompetitions.sort((a, b) => {
-            const indexA = DESIRED_ORDER.indexOf(a);
-            const indexB = DESIRED_ORDER.indexOf(b);
-            return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+        data.forEach(d => {
+            if (!aggregatedData[d.name]) {
+                aggregatedData[d.name] = {
+                    ...d,
+                    competitionsList: [d.competition]
+                };
+            } else {
+                const existing = aggregatedData[d.name];
+
+                const totalApps = existing.appearances + d.appearances;
+                const newStrictness =
+                    ((existing.strictness_index * existing.appearances) +
+                        (d.strictness_index * d.appearances)) / totalApps;
+
+                existing.appearances = totalApps;
+                existing.strictness_index = newStrictness;
+                existing.age = Math.max(existing.age, d.age);
+
+                if (!existing.competitionsList.includes(d.competition)) {
+                    existing.competitionsList.push(d.competition);
+                }
+            }
         });
 
-        const isMultiLeague = uniqueCompetitions.length > 1;
+        const plotData = Object.values(aggregatedData);
 
         const margin = {
             top: 20,
-            right: isMultiLeague ? 160 : 30,
+            right: 30,
             bottom: 50,
             left: 60
         };
@@ -73,32 +93,25 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
         const xValue = (d: RefereeData) => isAgeMode ? d.age : d.appearances;
         const xLabel = isAgeMode ? "Referee Age" : "Matches Officiated";
 
-        const xMax = d3.max(data, xValue) || 10;
-        const xMin = d3.min(data, xValue) || 0;
+        const xMax = d3.max(plotData, xValue) || 10;
+        const xMin = d3.min(plotData, xValue) || 0;
 
         const xScale = d3.scaleLinear()
             .domain([Math.max(0, xMin - 1), xMax + 1])
             .range([0, width]);
 
-        const yMax = d3.max(data, (d) => d.strictness_index) || 10;
+        const yMax = d3.max(plotData, (d) => d.strictness_index) || 10;
         const yScale = d3.scaleLinear()
             .domain([0, yMax + 0.5])
             .range([height, 0]);
-
-        const getColor = (key: string) => {
-            return LEAGUE_CONFIG[key] ? LEAGUE_CONFIG[key].color : "#999999";
-        };
 
         const getLabel = (key: string) => {
             return LEAGUE_CONFIG[key] ? LEAGUE_CONFIG[key].label : key;
         };
 
-        let colorScale: any;
-        if (!isMultiLeague) {
-            colorScale = d3.scaleLinear<string>()
-                .domain([2, 5, 8])
-                .range(SAFE_STRICTNESS_RANGE);
-        }
+        const colorScale = d3.scaleLinear<string>()
+            .domain([2, 5, 8])
+            .range(SAFE_STRICTNESS_RANGE);
 
         const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -137,37 +150,15 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
             .style("font-size", "12px")
             .text("Strictness Index");
 
-        if (isMultiLeague) {
-            const legend = svg.append("g")
-                .attr("transform", `translate(${margin.left + width + 15}, ${margin.top})`);
-
-            uniqueCompetitions.forEach((comp, i) => {
-                const legendRow = legend.append("g")
-                    .attr("transform", `translate(0, ${i * 20})`);
-
-                legendRow.append("rect")
-                    .attr("width", 10)
-                    .attr("height", 10)
-                    .attr("fill", getColor(comp));
-
-                legendRow.append("text")
-                    .attr("x", 15)
-                    .attr("y", 9)
-                    .style("font-size", "10px")
-                    .style("fill", "#333")
-                    .text(getLabel(comp));
-            });
-        }
-
         const tooltip = d3.select(tooltipRef.current);
 
         g.selectAll("circle")
-            .data(data)
+            .data(plotData)
             .join("circle")
             .attr("cx", (d) => xScale(xValue(d)))
             .attr("cy", (d) => yScale(d.strictness_index))
             .attr("r", 6)
-            .attr("fill", (d) => isMultiLeague ? getColor(d.competition) : colorScale(d.strictness_index))
+            .attr("fill", (d) => colorScale(d.strictness_index))
             .attr("stroke", "#333")
             .attr("stroke-width", 1)
             .attr("opacity", 0.8)
@@ -179,14 +170,21 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
                     .attr("stroke-width", 2);
 
                 if (tooltipRef.current) {
-                    const displayCompetition = getLabel(d.competition);
+
+                    let leagueDisplay = "";
+                    if (d.competitionsList.length > 1) {
+                        const leagues = d.competitionsList.map(c => `• ${getLabel(c)}`).join("<br/>");
+                        leagueDisplay = `<div style="margin-top:2px; margin-bottom:2px; font-style:italic; opacity:0.9;">${leagues}</div>`;
+                    } else {
+                        leagueDisplay = `<div style="margin-bottom:2px;">${getLabel(d.competition)}</div>`;
+                    }
 
                     tooltip.style("visibility", "visible").html(`
             <div style="font-weight:bold; margin-bottom:4px;">${d.name}</div>
-            <div style="font-size:0.85em; color:#ccc;">${displayCompetition}</div>
+            <div style="font-size:0.85em; color:#ccc; line-height: 1.3;">${leagueDisplay}</div>
             <div style="font-size:0.85em; margin-bottom:6px;">${d.nationality}</div>
             <hr style="border-color:rgba(255,255,255,0.2); margin:4px 0;" />
-            <div>Strictness: <strong>${d.strictness_index}</strong></div>
+            <div>Strictness: <strong>${d.strictness_index.toFixed(2)}</strong></div>
             <div>${isAgeMode ? `Age: ${d.age}` : `Appearances: ${d.appearances}`}</div>
           `);
                 }

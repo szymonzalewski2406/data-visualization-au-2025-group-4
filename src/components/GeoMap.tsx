@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
+import { Slider, Typography, Box } from '@mui/material';
 import europeGeoJson from './europe.geo.json';
 import { RefereeData } from '../interfaces/RefereeData';
 
@@ -32,13 +33,13 @@ for (const nationality in nationalityToISO2) {
 	iso2ToNationalities[iso].push(nationality);
 }
 
-// Sequential diverging colors for strictness (low -> mid -> high)
 const STRICTNESS_COLORS = ["#2c7bb6", "#ffffbf", "#d7191c"];
 
 const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) => {
 	const svgRef = useRef<SVGSVGElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+	const [minReferees, setMinReferees] = useState<number>(1);
 
 	useEffect(() => {
 		if (!containerRef.current) return;
@@ -98,7 +99,6 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 			strictnessValues.push(avg);
 		});
 
-		// Build a continuous color scale from low -> mid -> high strictness
 		const minStrict = d3.min(strictnessValues) ?? 0;
 		const maxStrict = d3.max(strictnessValues) ?? 1;
 		const midStrict = (minStrict + maxStrict) / 2;
@@ -132,7 +132,7 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 				const iso = d.properties.ISO2;
 				const metrics = finalMetrics[iso];
 
-				if (!metrics) return '#eee';
+				if (!metrics || metrics.count < minReferees) return '#eee';
 
 				if (selectedNationality.length > 0) {
 					const countryName = d.properties.NAME || d.properties.name;
@@ -154,14 +154,15 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 				const metrics = finalMetrics[iso];
 				const name = d.properties.NAME || d.properties.name || iso;
 
-				if (metrics) {
+				if (metrics && metrics.count >= minReferees) {
 					tooltip.html(`
                         <div style="font-weight:bold; margin-bottom:4px;">${name}</div>
                         <div>Strictness: <strong>${metrics.avgStrictness.toFixed(2)}</strong></div>
                         <div style="font-size:0.9em; opacity:0.8;">Referees: ${metrics.count}</div>
                     `).style('visibility', 'visible');
 				} else {
-					tooltip.html(`<strong>${name}</strong><br/>No Data`).style('visibility', 'visible');
+					const countInfo = metrics ? ` (${metrics.count} refs)` : '';
+					tooltip.html(`<strong>${name}</strong><br/>Insufficient data${countInfo}`).style('visibility', 'visible');
 				}
 			})
 			.on('mousemove', function(event: any) {
@@ -174,20 +175,22 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 			})
 			.on('click', function(_, d: any) {
 				const iso = d.properties.ISO2;
-				const countryName = d.properties.NAME || d.properties.name;
-				const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
+				const metrics = finalMetrics[iso];
 
-				if (nationalities.length > 0) {
-					onCountryClick(nationalities);
+				if (metrics && metrics.count >= minReferees) {
+					const countryName = d.properties.NAME || d.properties.name;
+					const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
+
+					if (nationalities.length > 0) {
+						onCountryClick(nationalities);
+					}
 				}
 			});
 
-		// Legend: horizontal gradient representing strictness
 		const legendWidth = 140;
 		const legendHeight = 12;
 		const legendPadding = 20;
 
-		// defs + gradient
 		const defs = svg.append('defs');
 		const gradId = 'strictness-gradient';
 		const linearGrad = defs.append('linearGradient').attr('id', gradId).attr('x1', '0%').attr('x2', '100%');
@@ -205,7 +208,6 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 			.attr('stroke', '#999')
 			.attr('stroke-width', 0.5);
 
-		// numeric ticks
 		legendG.append('text')
 			.attr('x', 0)
 			.attr('y', legendHeight + 12)
@@ -232,11 +234,37 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 		return () => {
 			tooltip.remove();
 		};
-	}, [data, dimensions, selectedNationality, onCountryClick]);
+	}, [data, dimensions, selectedNationality, onCountryClick, minReferees]);
 
 	return (
 		<div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
 			<svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+
+			<Box sx={{
+				position: 'absolute',
+				top: 10,
+				left: 10,
+				width: 160,
+				bgcolor: 'rgba(255,255,255,0.9)',
+				p: 1,
+				borderRadius: 2,
+				boxShadow: 1,
+				zIndex: 10
+			}}>
+				<Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block', mb: 0.5 }}>
+					Min. Referees: {minReferees}
+				</Typography>
+				<Slider
+					size="small"
+					value={minReferees}
+					min={1}
+					max={10}
+					step={1}
+					onChange={(_, value) => setMinReferees(value as number)}
+					valueLabelDisplay="auto"
+				/>
+			</Box>
+
 			<div style={{ position: 'absolute', bottom: 10, left: 10, fontSize: '10px', color: '#888', pointerEvents: 'none' }}>
 				Color = Avg Strictness
 			</div>
