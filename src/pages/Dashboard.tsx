@@ -244,19 +244,49 @@ export default function Dashboard() {
         });
     };
 
-    const displayedData = useMemo(() => {
+    // 1. HANDLER: Toggle Selection
+    // Passed to Scatter Plot to add/remove names from the list
+    const handleRefereeToggle = (refereeName: string) => {
+        setSelectedReferees(prev => {
+            if (prev.includes(refereeName)) {
+                return prev.filter(r => r !== refereeName); // Remove
+            } else {
+                return [...prev, refereeName]; // Add
+            }
+        });
+    };
+
+    // 2. DATA STREAM A: SCATTER DATA
+    // Shows ALL referees matching the context filters (Season, Nation, Age, Apps).
+    const scatterData = useMemo(() => {
         return allRefereeData.filter(r => {
             if (r.season !== selectedSeason) return false;
             if (selectedNationality.length > 0 && !selectedNationality.includes(r.nationality)) return false;
-            if (selectedReferees.length > 0 && !selectedReferees.includes(r.name)) return false;
-
+            
+            // Note: selectedReferees check is REMOVED from here
+            
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
             if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
 
             return true;
         });
-    }, [allRefereeData, selectedSeason, selectedNationality, selectedReferees, ageRange, appearancesRange]);
+    }, [allRefereeData, selectedSeason, selectedNationality, ageRange, appearancesRange]);
 
+    // 3. DATA STREAM B: DISPLAYED DATA (For Bar Chart/Stats)
+    // If specific referees are selected, filter down to just them.
+    // Otherwise, show the full list (or let the component handle top 15).
+    const displayedData = useMemo(() => {
+        if (selectedReferees.length === 0) {
+            return scatterData;
+        }
+        return scatterData.filter(r => selectedReferees.includes(r.name));
+    }, [scatterData, selectedReferees]);
+
+    // 4. HELPER: Get Nationalities for the Map
+    const highlightedNationalities = useMemo(() => {
+        if (selectedReferees.length === 0) return null;
+        return displayedData.map(r => r.nationality);
+    }, [displayedData, selectedReferees]);
 
     if (loading) {
         return (
@@ -475,8 +505,10 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <RefereeScatterD3
-                                                        data={displayedData}
+                                                        data={scatterData}
                                                         isAgeMode={isAgeChart}
+                                                        selectedReferees={selectedReferees} // Pass selection state
+                                                        onRefereeToggle={handleRefereeToggle} // Pass toggle handler
                                                     />
                                                 </Box>
                                             </CardContent>
@@ -496,7 +528,7 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <GeoMap
-                                                        data={displayedData}
+                                                        data={scatterData}
                                                         selectedNationality={selectedNationality}
                                                         onCountryClick={handleCountryClick}
                                                     />

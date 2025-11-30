@@ -5,6 +5,9 @@ import { RefereeData } from '../interfaces/RefereeData';
 interface Props {
     data: RefereeData[];
     isAgeMode: boolean;
+    selectedReferees: string[];
+    onRefereeToggle: (name: string) => void; 
+
 }
 
 interface AggregatedReferee extends RefereeData {
@@ -19,7 +22,7 @@ const LEAGUE_CONFIG: { [key: string]: { label: string; color: string } } = {
 
 const SAFE_STRICTNESS_RANGE = ["#2c7bb6", "#ffffbf", "#d7191c"];
 
-const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
+const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, onRefereeToggle }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const tooltipRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -51,6 +54,11 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
 
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
+
+        const uniqueCompetitions = Array.from(new Set(data.map(d => d.competition)));
+        const isMultiLeague = uniqueCompetitions.length > 1;
+
+        const hasSelection = selectedReferees && selectedReferees.length > 0;
 
         const aggregatedData: Record<string, AggregatedReferee> = {};
 
@@ -109,10 +117,17 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
             return LEAGUE_CONFIG[key] ? LEAGUE_CONFIG[key].label : key;
         };
 
-        const colorScale = d3.scaleLinear<string>()
-            .domain([2, 5, 8])
-            .range(SAFE_STRICTNESS_RANGE);
-
+        const getColor = (d: RefereeData) => {
+        if (isMultiLeague) {
+            // Use the specific league branding
+            return LEAGUE_CONFIG[d.competition].color || "#999999"; 
+        } else {
+            const scale = d3.scaleLinear<string>()
+                .domain([2, 5, 8])
+                .range(SAFE_STRICTNESS_RANGE);
+            return scale(d.strictness_index);
+        }
+    };
         const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
         g.append("g")
@@ -157,12 +172,21 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
             .join("circle")
             .attr("cx", (d) => xScale(xValue(d)))
             .attr("cy", (d) => yScale(d.strictness_index))
-            .attr("r", 6)
-            .attr("fill", (d) => colorScale(d.strictness_index))
-            .attr("stroke", "#333")
-            .attr("stroke-width", 1)
-            .attr("opacity", 0.8)
+            .attr("fill", (d) => {
+                const baseColor = getColor(d);
+                if (!hasSelection) return baseColor;
+                return selectedReferees.includes(d.name) ? baseColor: "#e0e0e0";
+            })
+            .attr("opacity", d => (hasSelection && !selectedReferees.includes(d.name)) ? 0.3 : 0.9)
+            .attr("stroke", d => selectedReferees.includes(d.name) ? "#000" : "#333")
+            .attr("stroke-width", d => selectedReferees.includes(d.name) ? 2 : 1)
+            .attr("r", d => selectedReferees.includes(d.name) ? 8 : 6)
             .style("cursor", "pointer")
+            .style("pointer-events", "all") // Force events to capture
+            .on("click", (event, d) => {
+                event.stopPropagation();
+                onRefereeToggle(d.name);
+            })
             .on("mouseover", (event, d) => {
                 d3.select(event.currentTarget)
                     .transition().duration(200)
@@ -192,9 +216,19 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
             .on("mousemove", (event) => {
                 if(tooltipRef.current && containerRef.current) {
                     const [x, y] = d3.pointer(event, containerRef.current);
+           
+                    const containerWidth = dimensions.width;
+                    const tooltipWidth = tooltipRef.current.offsetWidth; // Measures the actual tooltip size
+
+                    let leftPos = x + 15;
+
+                    if (leftPos + tooltipWidth > containerWidth) {
+                        leftPos = x - 15 - tooltipWidth;
+                    }
+
                     tooltip
-                        .style("top", (y - 10) + "px")
-                        .style("left", (x + 15) + "px");
+                    .style("top", (y - 10) + "px")
+                    .style("left", leftPos + "px");
                 }
             })
             .on("mouseout", (event) => {
@@ -205,7 +239,7 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode }) => {
                 if (tooltipRef.current) tooltip.style("visibility", "hidden");
             });
 
-    }, [data, isAgeMode, dimensions]);
+    }, [data, isAgeMode, dimensions, selectedReferees]);
 
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
