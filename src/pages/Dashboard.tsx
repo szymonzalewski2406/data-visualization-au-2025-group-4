@@ -48,6 +48,7 @@ import GeoMap from "../components/GeoMap";
 import RefereeGroupedBarChartD3 from '../components/RefereeGroupedBarChartD3';
 import RefereeWaffleChart from "../components/RefereeWaffleChart";
 import RefereePassportHeatmap from "../components/RefereePassportHeatmap";
+import TwoLeagueScatter from "../components/TwoLeagueScatter";
 
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
@@ -69,6 +70,10 @@ export default function Dashboard() {
     const [minMaxAppearances, setMinMaxAppearances] = useState<number[]>([0, 50]);
 
     const [isAgeChart, setIsAgeChart] = useState<boolean>(false);
+
+    // Two-league comparison state (used when viewing All Competitions)
+    const [leagueA, setLeagueA] = useState<string>('Champions League');
+    const [leagueB, setLeagueB] = useState<string>('Europa League');
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         seasons: [],
@@ -539,6 +544,53 @@ export default function Dashboard() {
                                     </Box>
                                 </Grid>
                             </Grid>
+
+                            {selectedCompetition.id === 0 && (
+                                <Grid container spacing={3} sx={{ mb: 3 }}>
+                                    <Grid sx={{ width: '100%' }}>
+                                        <Card elevation={3}>
+                                            <CardContent>
+                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                                                    <Typography variant="h6" color="primary">
+                                                        Compare Leagues: Strictness (X vs Y)
+                                                    </Typography>
+                                                    <Stack direction="row" spacing={2} alignItems="center">
+                                                        <FormControl size="small" sx={{ minWidth: 180 }}>
+                                                            <InputLabel>League X</InputLabel>
+                                                            <Select
+                                                                value={leagueA}
+                                                                label="League A"
+                                                                onChange={(e) => setLeagueA(e.target.value)}
+                                                            >
+                                                                {COMPETITIONS.filter(c => c.id !== 0).map(c => (
+                                                                    <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+
+                                                        <FormControl size="small" sx={{ minWidth: 180 }}>
+                                                            <InputLabel>League Y</InputLabel>
+                                                            <Select
+                                                                value={leagueB}
+                                                                label="League B"
+                                                                onChange={(e) => setLeagueB(e.target.value)}
+                                                            >
+                                                                {COMPETITIONS.filter(c => c.id !== 0).map(c => (
+                                                                    <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </Stack>
+                                                </Stack>
+
+                                                <Box sx={{ height: 420, mt: 1, position: 'relative' }}>
+                                                        <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
+                            )}
 
                             {selectedReferees.length !== 1 && (
                             <Grid container spacing={3} sx={{ mb: 3 }}>
