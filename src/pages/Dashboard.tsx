@@ -71,7 +71,6 @@ export default function Dashboard() {
 
     const [isAgeChart, setIsAgeChart] = useState<boolean>(false);
 
-    // Two-league comparison state (used when viewing All Competitions)
     const [leagueA, setLeagueA] = useState<string>('Champions League');
     const [leagueB, setLeagueB] = useState<string>('Europa League');
 
@@ -247,29 +246,28 @@ export default function Dashboard() {
                 return [...prev, ...countryNames];
             }
         });
+        // Zerujemy wybranych sędziów przy zmianie kraju
+        setSelectedReferees([]);
     };
 
-    // 1. HANDLER: Toggle Selection
-    // Passed to Scatter Plot to add/remove names from the list
     const handleRefereeToggle = (refereeName: string) => {
         setSelectedReferees(prev => {
-            if (prev.includes(refereeName)) {
-                return prev.filter(r => r !== refereeName); // Remove
+            const isAlreadySelected = prev.includes(refereeName);
+
+            if (!isAlreadySelected) {
+                // Tylko dodajemy sędziego, NIE zmieniamy selectedNationality
+                return [...prev, refereeName];
             } else {
-                return [...prev, refereeName]; // Add
+                return prev.filter(r => r !== refereeName);
             }
         });
     };
 
-    // 2. DATA STREAM A: SCATTER DATA
-    // Shows ALL referees matching the context filters (Season, Nation, Age, Apps).
     const scatterData = useMemo(() => {
         return allRefereeData.filter(r => {
             if (r.season !== selectedSeason) return false;
             if (selectedNationality.length > 0 && !selectedNationality.includes(r.nationality)) return false;
-            
-            // Note: selectedReferees check is REMOVED from here
-            
+
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
             if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
 
@@ -277,21 +275,12 @@ export default function Dashboard() {
         });
     }, [allRefereeData, selectedSeason, selectedNationality, ageRange, appearancesRange]);
 
-    // 3. DATA STREAM B: DISPLAYED DATA (For Bar Chart/Stats)
-    // If specific referees are selected, filter down to just them.
-    // Otherwise, show the full list (or let the component handle top 15).
     const displayedData = useMemo(() => {
         if (selectedReferees.length === 0) {
             return scatterData;
         }
         return scatterData.filter(r => selectedReferees.includes(r.name));
     }, [scatterData, selectedReferees]);
-
-    // 4. HELPER: Get Nationalities for the Map
-    const highlightedNationalities = useMemo(() => {
-        if (selectedReferees.length === 0) return null;
-        return displayedData.map(r => r.nationality);
-    }, [displayedData, selectedReferees]);
 
     if (loading) {
         return (
@@ -512,8 +501,8 @@ export default function Dashboard() {
                                                     <RefereeScatterD3
                                                         data={scatterData}
                                                         isAgeMode={isAgeChart}
-                                                        selectedReferees={selectedReferees} // Pass selection state
-                                                        onRefereeToggle={handleRefereeToggle} // Pass toggle handler
+                                                        selectedReferees={selectedReferees}
+                                                        onRefereeToggle={handleRefereeToggle}
                                                     />
                                                 </Box>
                                             </CardContent>
@@ -545,7 +534,7 @@ export default function Dashboard() {
                                 </Grid>
                             </Grid>
 
-                            {selectedReferees.length !== 1 &&selectedCompetition.id === 0 && (
+                            {selectedReferees.length !== 1 && selectedCompetition.id === 0 && (
                                 <Grid container spacing={3} sx={{ mb: 3 }}>
                                     <Grid sx={{ width: '100%' }}>
                                         <Card elevation={3}>
@@ -584,7 +573,7 @@ export default function Dashboard() {
                                                 </Stack>
 
                                                 <Box sx={{ height: 420, mt: 1, position: 'relative' }}>
-                                                        <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
+                                                    <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
                                                 </Box>
                                             </CardContent>
                                         </Card>
@@ -593,28 +582,28 @@ export default function Dashboard() {
                             )}
 
                             {selectedReferees.length !== 1 && (
-                            <Grid container spacing={3} sx={{ mb: 3 }}>
-                                <Grid sx={{ width: '100%' }}>
-                                    <Card elevation={3}>
-                                        <CardContent>
-                                            <Typography variant="h6" color="primary" gutterBottom>
-                                                Top Referees by Strictness Index
-                                            </Typography>
-                                            <Box sx={{
-                                                height: 300,
-                                                border: '2px dashed #ccc',
-                                                borderRadius: 2,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                bgcolor: '#fafafa'
-                                            }}>
-                                                <RefereeGroupedBarChartD3 data={displayedData} />
-                                            </Box>
-                                        </CardContent>
-                                    </Card>
+                                <Grid container spacing={3} sx={{ mb: 3 }}>
+                                    <Grid sx={{ width: '100%' }}>
+                                        <Card elevation={3}>
+                                            <CardContent>
+                                                <Typography variant="h6" color="primary" gutterBottom>
+                                                    Top Referees by Strictness Index
+                                                </Typography>
+                                                <Box sx={{
+                                                    height: 300,
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: 2,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    bgcolor: '#fafafa'
+                                                }}>
+                                                    <RefereeGroupedBarChartD3 data={displayedData} />
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
                             )}
 
                             {selectedReferees.length === 1 && (

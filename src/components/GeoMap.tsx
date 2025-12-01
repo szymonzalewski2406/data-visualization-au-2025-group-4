@@ -53,7 +53,7 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 	}, []);
 
 	useEffect(() => {
-		if (!data || data.length === 0 || !europeGeoJson) return;
+		if (!data || !europeGeoJson) return;
 		const svg = d3.select(svgRef.current);
 		svg.selectAll('*').remove();
 		const { width, height } = dimensions;
@@ -162,7 +162,7 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
                     `).style('visibility', 'visible');
 				} else {
 					const countInfo = metrics ? ` (${metrics.count} refs)` : '';
-					tooltip.html(`<strong>${name}</strong><br/>Insufficient data${countInfo}`).style('visibility', 'visible');
+					tooltip.html(`<strong>${name}</strong><br/>${metrics ? 'Hidden by filter' : 'No Data'}${countInfo}`).style('visibility', 'visible');
 				}
 			})
 			.on('mousemove', function(event: any) {
@@ -175,15 +175,12 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 			})
 			.on('click', function(_, d: any) {
 				const iso = d.properties.ISO2;
-				const metrics = finalMetrics[iso];
 
-				if (metrics && metrics.count >= minReferees) {
-					const countryName = d.properties.NAME || d.properties.name;
-					const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
+				const countryName = d.properties.NAME || d.properties.name;
+				const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
 
-					if (nationalities.length > 0) {
-						onCountryClick(nationalities);
-					}
+				if (nationalities.length > 0) {
+					onCountryClick(nationalities);
 				}
 			});
 
@@ -242,13 +239,14 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 
 			<Box sx={{
 				position: 'absolute',
-				top: 10,
-				left: 10,
-				width: 160,
-				bgcolor: 'rgba(255,255,255,0.9)',
-				p: 1,
+				top: 5,
+				left: 5,
+				width: 120,
+				height: 40,
+				bgcolor: 'rgba(255,255,255,0.95)',
+				p: 1.5,
 				borderRadius: 2,
-				boxShadow: 1,
+				boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 				zIndex: 10
 			}}>
 				<Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block', mb: 0.5 }}>
