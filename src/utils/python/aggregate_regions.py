@@ -57,6 +57,7 @@ aggregated_regions['rc_per_appearance'] = aggregated_regions['red_cards'] / aggr
 aggregated_regions['penalties_per_appearance'] = aggregated_regions['penalties'] / aggregated_regions['appearances']
 aggregated_regions['tc_per_appearance'] = aggregated_regions['total_cards'] / aggregated_regions['appearances']
 aggregated_regions['appearances_per_referee'] = aggregated_regions['appearances'] / aggregated_regions['referees']
+aggregated_regions['strictness'] = (aggregated_regions['yellow_cards'] + (3 * aggregated_regions['double_yellow_cards']) + (5 * aggregated_regions['red_cards']) + (3 * aggregated_regions['penalties'])) / aggregated_regions['appearances']
 
 # YELLOW PER APPEARANCE
 plt.figure(figsize=(12, 6))
@@ -124,6 +125,14 @@ plt.title('Appearances per referee')
 plt.savefig('src/utils/python/plots/appearances_per_referee')
 
 print(aggregated_regions.head())
+
+# STRICTNESS PER REGION
+plt.figure(figsize=(12, 6))
+plt.bar(aggregated_regions.index, aggregated_regions['strictness'])
+plt.xlabel('Regions')
+plt.ylabel('Strictness')
+plt.title('Strictness per Appearance')
+plt.savefig('src/utils/python/plots/strictness_per_region')
 
 # aggregated_countries = df.groupby('nationality').agg({
 #     'yellow_cards': 'sum',
