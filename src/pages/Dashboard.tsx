@@ -293,6 +293,17 @@ export default function Dashboard() {
         setWeights(prev => ({ ...prev, [key]: val }));
     };
 
+    const mapData = useMemo(() => {
+        return calculatedReferees.filter(r => {
+            if (r.season !== selectedSeason) return false;
+
+            if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
+            if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
+
+            return true;
+        });
+    }, [calculatedReferees, selectedSeason, ageRange, appearancesRange]);
+
     const scatterData = useMemo(() => {
         return calculatedReferees.filter(r => {
             if (r.season !== selectedSeason) return false;
@@ -381,7 +392,6 @@ export default function Dashboard() {
                     </Toolbar>
                 </AppBar>
 
-                {/* Weights Configuration Dialog */}
                 <Dialog open={isSettingsOpen} onClose={() => setIsSettingsOpen(false)}>
                     <DialogTitle>Configure Strictness Weights</DialogTitle>
                     <DialogContent sx={{ minWidth: 400 }}>
@@ -541,6 +551,22 @@ export default function Dashboard() {
                                         <Typography variant="caption" color="textSecondary">
                                             Displaying <b>{displayedData.length}</b> records
                                         </Typography>
+                                        <Tooltip
+                                            title={
+                                                <Box sx={{ p: 0.5 }}>
+                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                                                        Strictness Calculation:
+                                                    </Typography>
+                                                    <Typography variant="caption" display="block">
+                                                        ({weights.yellow}×Y + {weights.doubleYellow}×2Y + {weights.red}×R + {weights.penalty}×P) / Matches
+                                                    </Typography>
+                                                </Box>
+                                            }
+                                            arrow
+                                            placement="left"
+                                        >
+                                            <InfoOutlinedIcon fontSize="small" sx={{ color: 'text.secondary', cursor: 'help', opacity: 0.7 }} />
+                                        </Tooltip>
                                     </Stack>
                                 </Stack>
                             </Card>
@@ -600,7 +626,7 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <GeoMap
-                                                        data={scatterData}
+                                                        data={mapData}
                                                         selectedNationality={selectedNationality}
                                                         onCountryClick={handleCountryClick}
                                                     />

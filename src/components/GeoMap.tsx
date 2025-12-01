@@ -179,19 +179,62 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 
 				if (!metrics || metrics.count < minReferees) return '#eee';
 
-				if (selectedNationality.length > 0 && viewMode === 'countries') {
-					const countryName = d.properties.NAME || d.properties.name;
-					const isSelected = selectedNationality.includes(countryName);
-					if (!isSelected) {
-						const isoSelected = selectedNationality.some(nat => nationalityToISO2[nat] === iso);
-						if (!isoSelected) return '#ddd';
+				if (selectedNationality.length > 0) {
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						const isSelected = selectedNationality.includes(countryName);
+						if (!isSelected) {
+							const isoSelected = selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+							if (!isoSelected) return '#ddd';
+						}
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						const isRegionSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+						if (!isRegionSelected) return '#ddd';
 					}
 				}
 
 				return strictnessColorScale(metrics.avgStrictness);
 			})
-			.attr('stroke', BORDER_COLOR)
-			.attr('stroke-width', 0.5)
+			.attr('stroke', (d: any) => {
+				const iso = d.properties.ISO2;
+				let isSelected = false;
+
+				if (selectedNationality.length > 0) {
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						isSelected = selectedNationality.includes(countryName) || selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						isSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+					}
+				}
+				return isSelected ? '#000' : BORDER_COLOR;
+			})
+			.attr('stroke-width', (d: any) => {
+				const iso = d.properties.ISO2;
+				let isSelected = false;
+
+				if (selectedNationality.length > 0) {
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						isSelected = selectedNationality.includes(countryName) || selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						isSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+					}
+				}
+				return isSelected ? 1.5 : 0.5;
+			})
 			.on('mouseover', function(_, d: any) {
 				const iso = d.properties.ISO2;
 				const metrics = finalMetrics[iso];
@@ -219,7 +262,31 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 				tooltip.style('left', `${mouseX + 12}px`).style('top', `${mouseY + 12}px`);
 			})
 			.on('mouseout', function(_, d: any) {
-				d3.select(this).attr('stroke', BORDER_COLOR).attr('stroke-width', 0.5);
+				const iso = d.properties.ISO2;
+
+				let strokeColor = BORDER_COLOR;
+				let strokeWidth = 0.5;
+
+				let isSelected = false;
+				if (selectedNationality.length > 0) {
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						isSelected = selectedNationality.includes(countryName) || selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						isSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+					}
+				}
+
+				if (isSelected) {
+					strokeColor = '#000';
+					strokeWidth = 1.5;
+				}
+
+				d3.select(this).attr('stroke', strokeColor).attr('stroke-width', strokeWidth);
 				tooltip.style('visibility', 'hidden');
 			})
 			.on('click', function(_, d: any) {
@@ -341,7 +408,10 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 					value={viewMode}
 					exclusive
 					onChange={(_, newMode) => {
-						if (newMode) setViewMode(newMode);
+						if (newMode) {
+							setViewMode(newMode);
+							onCountryClick([]);
+						}
 					}}
 					size="small"
 					sx={{ height: 32 }}
