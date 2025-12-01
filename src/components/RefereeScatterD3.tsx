@@ -118,15 +118,10 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
         };
 
         const getColor = (d: RefereeData) => {
-        if (isMultiLeague) {
-            // Use the specific league branding
-            return LEAGUE_CONFIG[d.competition].color || "#999999"; 
-        } else {
-            const scale = d3.scaleLinear<string>()
+            const colorScale = d3.scaleLinear<string>()
                 .domain([2, 5, 8])
                 .range(SAFE_STRICTNESS_RANGE);
-            return scale(d.strictness_index);
-        }
+            return colorScale(d.strictness_index);
     };
         const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 

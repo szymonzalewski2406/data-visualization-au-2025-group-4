@@ -545,7 +545,7 @@ export default function Dashboard() {
                                 </Grid>
                             </Grid>
 
-                            {selectedCompetition.id === 0 && (
+                            {selectedReferees.length !== 1 &&selectedCompetition.id === 0 && (
                                 <Grid container spacing={3} sx={{ mb: 3 }}>
                                     <Grid sx={{ width: '100%' }}>
                                         <Card elevation={3}>
