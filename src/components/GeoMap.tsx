@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
+import { Slider, Typography, Box } from '@mui/material';
 import europeGeoJson from './europe.geo.json';
 import { RefereeData } from '../interfaces/RefereeData';
 
 interface Props {
 	data: RefereeData[];
+	selectedNationality: string[];
+	onCountryClick: (nationalities: string[]) => void;
 }
 
 const nationalityToISO2: Record<string, string> = {
@@ -21,16 +24,22 @@ const nationalityToISO2: Record<string, string> = {
 	'Wales': 'GB', 'Türkiye': 'TR', 'Scotland': 'GB', 'Ireland': 'IE', 'Luxembourg': 'LU'
 };
 
-const BIVARIATE_COLORS = [
-	["#e8e8e8", "#e4acac", "#c85a5a"],
-	["#b0d5df", "#ad9ea5", "#985356"],
-	["#64acbe", "#627f8c", "#574249"]
-];
+const iso2ToNationalities: Record<string, string[]> = {};
+for (const nationality in nationalityToISO2) {
+	const iso = nationalityToISO2[nationality];
+	if (!iso2ToNationalities[iso]) {
+		iso2ToNationalities[iso] = [];
+	}
+	iso2ToNationalities[iso].push(nationality);
+}
 
-const GeoMap: React.FC<Props> = ({ data }) => {
+const STRICTNESS_COLORS = ["#2c7bb6", "#ffffbf", "#d7191c"];
+
+const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) => {
 	const svgRef = useRef<SVGSVGElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+	const [minReferees, setMinReferees] = useState<number>(1);
 
 	useEffect(() => {
 		if (!containerRef.current) return;
@@ -81,7 +90,6 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 
 		const finalMetrics: Record<string, { avgStrictness: number; count: number }> = {};
 		const strictnessValues: number[] = [];
-		const countValues: number[] = [];
 
 		Object.keys(statsByISO2).forEach(iso => {
 			const avg = statsByISO2[iso].strictnessSum / statsByISO2[iso].refereeCount;
@@ -89,16 +97,16 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 
 			finalMetrics[iso] = { avgStrictness: avg, count };
 			strictnessValues.push(avg);
-			countValues.push(count);
 		});
 
-		const strictnessScale = d3.scaleQuantile()
-			.domain(strictnessValues)
-			.range([0, 1, 2]);
+		const minStrict = d3.min(strictnessValues) ?? 0;
+		const maxStrict = d3.max(strictnessValues) ?? 1;
+		const midStrict = (minStrict + maxStrict) / 2;
 
-		const countScale = d3.scaleQuantile()
-			.domain(countValues)
-			.range([0, 1, 2]);
+		const strictnessColorScale = d3.scaleLinear<string>()
+			.domain([minStrict, midStrict, maxStrict])
+			.range(STRICTNESS_COLORS)
+			.clamp(true);
 
 		const container = d3.select(containerRef.current as any);
 		const tooltip = container.append('div')
@@ -119,16 +127,23 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 			.enter()
 			.append('path')
 			.attr('d', path as any)
+			.style('cursor', 'pointer')
 			.attr('fill', (d: any) => {
 				const iso = d.properties.ISO2;
 				const metrics = finalMetrics[iso];
 
-				if (!metrics) return '#eee';
+				if (!metrics || metrics.count < minReferees) return '#eee';
 
-				const strictnessIndex = strictnessScale(metrics.avgStrictness);
-				const countIndex = countScale(metrics.count);
+				if (selectedNationality.length > 0) {
+					const countryName = d.properties.NAME || d.properties.name;
+					const isSelected = selectedNationality.includes(countryName);
+					if (!isSelected) {
+						const isoSelected = selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+						if (!isoSelected) return '#ddd';
+					}
+				}
 
-				return BIVARIATE_COLORS[countIndex][strictnessIndex];
+				return strictnessColorScale(metrics.avgStrictness);
 			})
 			.attr('stroke', '#333')
 			.attr('stroke-width', 0.5)
@@ -139,14 +154,15 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 				const metrics = finalMetrics[iso];
 				const name = d.properties.NAME || d.properties.name || iso;
 
-				if (metrics) {
+				if (metrics && metrics.count >= minReferees) {
 					tooltip.html(`
                         <div style="font-weight:bold; margin-bottom:4px;">${name}</div>
                         <div>Strictness: <strong>${metrics.avgStrictness.toFixed(2)}</strong></div>
                         <div style="font-size:0.9em; opacity:0.8;">Referees: ${metrics.count}</div>
                     `).style('visibility', 'visible');
 				} else {
-					tooltip.html(`<strong>${name}</strong><br/>No Data`).style('visibility', 'visible');
+					const countInfo = metrics ? ` (${metrics.count} refs)` : '';
+					tooltip.html(`<strong>${name}</strong><br/>Insufficient data${countInfo}`).style('visibility', 'visible');
 				}
 			})
 			.on('mousemove', function(event: any) {
@@ -156,54 +172,101 @@ const GeoMap: React.FC<Props> = ({ data }) => {
 			.on('mouseout', function() {
 				d3.select(this).attr('stroke-width', 0.5).attr('stroke', '#333');
 				tooltip.style('visibility', 'hidden');
+			})
+			.on('click', function(_, d: any) {
+				const iso = d.properties.ISO2;
+				const metrics = finalMetrics[iso];
+
+				if (metrics && metrics.count >= minReferees) {
+					const countryName = d.properties.NAME || d.properties.name;
+					const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
+
+					if (nationalities.length > 0) {
+						onCountryClick(nationalities);
+					}
+				}
 			});
 
-		const legendSize = 80;
-		const boxSize = legendSize / 3;
+		const legendWidth = 140;
+		const legendHeight = 12;
 		const legendPadding = 20;
 
-		const legendG = svg.append("g")
-			.attr("transform", `translate(${legendPadding}, ${height - legendSize - legendPadding - 20})`);
+		const defs = svg.append('defs');
+		const gradId = 'strictness-gradient';
+		const linearGrad = defs.append('linearGradient').attr('id', gradId).attr('x1', '0%').attr('x2', '100%');
+		linearGrad.append('stop').attr('offset', '0%').attr('stop-color', STRICTNESS_COLORS[0]);
+		linearGrad.append('stop').attr('offset', '50%').attr('stop-color', STRICTNESS_COLORS[1]);
+		linearGrad.append('stop').attr('offset', '100%').attr('stop-color', STRICTNESS_COLORS[2]);
 
-		BIVARIATE_COLORS.forEach((row, y) => {
-			row.forEach((color, x) => {
-				legendG.append("rect")
-					.attr("x", x * boxSize)
-					.attr("y", (2 - y) * boxSize)
-					.attr("width", boxSize)
-					.attr("height", boxSize)
-					.attr("fill", color);
-			});
-		});
+		const legendG = svg.append('g')
+			.attr('transform', `translate(${legendPadding}, ${height - legendHeight - legendPadding - 20})`);
 
-		const axisColor = "#666";
-		const fontSize = 9;
+		legendG.append('rect')
+			.attr('width', legendWidth)
+			.attr('height', legendHeight)
+			.attr('fill', `url(#${gradId})`)
+			.attr('stroke', '#999')
+			.attr('stroke-width', 0.5);
 
-		legendG.append("text")
-			.attr("x", legendSize + 5)
-			.attr("y", legendSize)
-			.text("Strictness ->")
-			.attr("font-size", fontSize)
-			.attr("fill", axisColor)
-			.attr("alignment-baseline", "middle");
+		legendG.append('text')
+			.attr('x', 0)
+			.attr('y', legendHeight + 12)
+			.text(minStrict.toFixed(2))
+			.attr('font-size', 9)
+			.attr('fill', '#666');
 
-		legendG.append("text")
-			.attr("x", 0)
-			.attr("y", -5)
-			.text("Referees ^")
-			.attr("font-size", fontSize)
-			.attr("fill", axisColor);
+		legendG.append('text')
+			.attr('x', legendWidth)
+			.attr('y', legendHeight + 12)
+			.text(maxStrict.toFixed(2))
+			.attr('font-size', 9)
+			.attr('fill', '#666')
+			.attr('text-anchor', 'end');
+
+		legendG.append('text')
+			.attr('x', legendWidth + 6)
+			.attr('y', legendHeight / 2)
+			.text('Strictness')
+			.attr('font-size', 9)
+			.attr('fill', '#666')
+			.attr('alignment-baseline', 'middle');
 
 		return () => {
 			tooltip.remove();
 		};
-	}, [data, dimensions]);
+	}, [data, dimensions, selectedNationality, onCountryClick, minReferees]);
 
 	return (
 		<div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
 			<svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+
+			<Box sx={{
+				position: 'absolute',
+				top: 10,
+				left: 10,
+				width: 160,
+				bgcolor: 'rgba(255,255,255,0.9)',
+				p: 1,
+				borderRadius: 2,
+				boxShadow: 1,
+				zIndex: 10
+			}}>
+				<Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block', mb: 0.5 }}>
+					Min. Referees: {minReferees}
+				</Typography>
+				<Slider
+					size="small"
+					value={minReferees}
+					min={1}
+					max={10}
+					step={1}
+					onChange={(_, value) => setMinReferees(value as number)}
+					valueLabelDisplay="auto"
+				/>
+			</Box>
+
 			<div style={{ position: 'absolute', bottom: 10, left: 10, fontSize: '10px', color: '#888', pointerEvents: 'none' }}>
-				Bivariate: Color = Strictness + Appearances
+				Color = Avg Strictness
 			</div>
 		</div>
 	);

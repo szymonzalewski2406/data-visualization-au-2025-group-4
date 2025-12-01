@@ -48,6 +48,7 @@ import GeoMap from "../components/GeoMap";
 import RefereeGroupedBarChartD3 from '../components/RefereeGroupedBarChartD3';
 import RefereeWaffleChart from "../components/RefereeWaffleChart";
 import RefereePassportHeatmap from "../components/RefereePassportHeatmap";
+import TwoLeagueScatter from "../components/TwoLeagueScatter";
 
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
@@ -69,6 +70,10 @@ export default function Dashboard() {
     const [minMaxAppearances, setMinMaxAppearances] = useState<number[]>([0, 50]);
 
     const [isAgeChart, setIsAgeChart] = useState<boolean>(false);
+
+    // Two-league comparison state (used when viewing All Competitions)
+    const [leagueA, setLeagueA] = useState<string>('Champions League');
+    const [leagueB, setLeagueB] = useState<string>('Europa League');
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         seasons: [],
@@ -233,20 +238,60 @@ export default function Dashboard() {
         setIsAgeChart(event.target.checked);
     };
 
+    const handleCountryClick = (countryNames: string[]) => {
+        setSelectedNationality(prev => {
+            const areAnySelected = countryNames.some(name => prev.includes(name));
+            if (areAnySelected) {
+                return prev.filter(n => !countryNames.includes(n));
+            } else {
+                return [...prev, ...countryNames];
+            }
+        });
+    };
 
-    const displayedData = useMemo(() => {
+    // 1. HANDLER: Toggle Selection
+    // Passed to Scatter Plot to add/remove names from the list
+    const handleRefereeToggle = (refereeName: string) => {
+        setSelectedReferees(prev => {
+            if (prev.includes(refereeName)) {
+                return prev.filter(r => r !== refereeName); // Remove
+            } else {
+                return [...prev, refereeName]; // Add
+            }
+        });
+    };
+
+    // 2. DATA STREAM A: SCATTER DATA
+    // Shows ALL referees matching the context filters (Season, Nation, Age, Apps).
+    const scatterData = useMemo(() => {
         return allRefereeData.filter(r => {
             if (r.season !== selectedSeason) return false;
             if (selectedNationality.length > 0 && !selectedNationality.includes(r.nationality)) return false;
-            if (selectedReferees.length > 0 && !selectedReferees.includes(r.name)) return false;
-
+            
+            // Note: selectedReferees check is REMOVED from here
+            
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
             if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
 
             return true;
         });
-    }, [allRefereeData, selectedSeason, selectedNationality, selectedReferees, ageRange, appearancesRange]);
+    }, [allRefereeData, selectedSeason, selectedNationality, ageRange, appearancesRange]);
 
+    // 3. DATA STREAM B: DISPLAYED DATA (For Bar Chart/Stats)
+    // If specific referees are selected, filter down to just them.
+    // Otherwise, show the full list (or let the component handle top 15).
+    const displayedData = useMemo(() => {
+        if (selectedReferees.length === 0) {
+            return scatterData;
+        }
+        return scatterData.filter(r => selectedReferees.includes(r.name));
+    }, [scatterData, selectedReferees]);
+
+    // 4. HELPER: Get Nationalities for the Map
+    const highlightedNationalities = useMemo(() => {
+        if (selectedReferees.length === 0) return null;
+        return displayedData.map(r => r.nationality);
+    }, [displayedData, selectedReferees]);
 
     if (loading) {
         return (
@@ -465,8 +510,10 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <RefereeScatterD3
-                                                        data={displayedData}
+                                                        data={scatterData}
                                                         isAgeMode={isAgeChart}
+                                                        selectedReferees={selectedReferees} // Pass selection state
+                                                        onRefereeToggle={handleRefereeToggle} // Pass toggle handler
                                                     />
                                                 </Box>
                                             </CardContent>
@@ -486,7 +533,9 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <GeoMap
-                                                        data={displayedData}
+                                                        data={scatterData}
+                                                        selectedNationality={selectedNationality}
+                                                        onCountryClick={handleCountryClick}
                                                     />
                                                 </Box>
 
@@ -495,6 +544,53 @@ export default function Dashboard() {
                                     </Box>
                                 </Grid>
                             </Grid>
+
+                            {selectedCompetition.id === 0 && (
+                                <Grid container spacing={3} sx={{ mb: 3 }}>
+                                    <Grid sx={{ width: '100%' }}>
+                                        <Card elevation={3}>
+                                            <CardContent>
+                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                                                    <Typography variant="h6" color="primary">
+                                                        Compare Leagues: Strictness (X vs Y)
+                                                    </Typography>
+                                                    <Stack direction="row" spacing={2} alignItems="center">
+                                                        <FormControl size="small" sx={{ minWidth: 180 }}>
+                                                            <InputLabel>League X</InputLabel>
+                                                            <Select
+                                                                value={leagueA}
+                                                                label="League A"
+                                                                onChange={(e) => setLeagueA(e.target.value)}
+                                                            >
+                                                                {COMPETITIONS.filter(c => c.id !== 0).map(c => (
+                                                                    <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+
+                                                        <FormControl size="small" sx={{ minWidth: 180 }}>
+                                                            <InputLabel>League Y</InputLabel>
+                                                            <Select
+                                                                value={leagueB}
+                                                                label="League B"
+                                                                onChange={(e) => setLeagueB(e.target.value)}
+                                                            >
+                                                                {COMPETITIONS.filter(c => c.id !== 0).map(c => (
+                                                                    <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </Stack>
+                                                </Stack>
+
+                                                <Box sx={{ height: 420, mt: 1, position: 'relative' }}>
+                                                        <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
+                            )}
 
                             {selectedReferees.length !== 1 && (
                             <Grid container spacing={3} sx={{ mb: 3 }}>
