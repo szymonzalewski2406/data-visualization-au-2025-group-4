@@ -551,22 +551,6 @@ export default function Dashboard() {
                                         <Typography variant="caption" color="textSecondary">
                                             Displaying <b>{displayedData.length}</b> records
                                         </Typography>
-                                        <Tooltip
-                                            title={
-                                                <Box sx={{ p: 0.5 }}>
-                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-                                                        Strictness Calculation:
-                                                    </Typography>
-                                                    <Typography variant="caption" display="block">
-                                                        ({weights.yellow}×Y + {weights.doubleYellow}×2Y + {weights.red}×R + {weights.penalty}×P) / Matches
-                                                    </Typography>
-                                                </Box>
-                                            }
-                                            arrow
-                                            placement="left"
-                                        >
-                                            <InfoOutlinedIcon fontSize="small" sx={{ color: 'text.secondary', cursor: 'help', opacity: 0.7 }} />
-                                        </Tooltip>
                                     </Stack>
                                 </Stack>
                             </Card>

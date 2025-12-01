@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import { RefereeData } from '../interfaces/RefereeData';
+import { FormControlLabel, Checkbox, Stack, Typography, Box } from '@mui/material';
 
 interface Props {
   data: RefereeData[];
@@ -20,12 +21,26 @@ const METRIC_LABELS = {
   penalty: "Penalties/Game"
 };
 
+type MetricKey = keyof typeof METRIC_LABELS;
+
 const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [visibleMetrics, setVisibleMetrics] = useState<MetricKey[]>(['yellow', 'double', 'red', 'penalty']);
+
+  const handleMetricToggle = (metric: MetricKey) => {
+    setVisibleMetrics(prev => {
+      if (prev.includes(metric)) {
+        if (prev.length === 1) return prev;
+        return prev.filter(m => m !== metric);
+      } else {
+        return [...prev, metric];
+      }
+    });
+  };
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -49,7 +64,7 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const margin = { top: 40, right: 20, bottom: 40, left: 50 };
+    const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const width = dimensions.width - margin.left - margin.right;
     const height = dimensions.height - margin.top - margin.bottom;
 
@@ -60,7 +75,7 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
         .rangeRound([0, width])
         .paddingInner(0.1);
 
-    const keys = ["yellow", "double", "red", "penalty"] as const;
+    const keys = visibleMetrics;
 
     const x1 = d3.scaleBand()
         .domain(keys)
@@ -68,13 +83,14 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
         .padding(0.05);
 
     const yMax = d3.max(topRefs, d => {
-      const perGame = [
-        d.yellow_cards / d.appearances,
-        d.double_yellow_cards / d.appearances,
-        d.red_cards / d.appearances,
-        d.penalties / d.appearances
-      ];
-      return Math.max(...perGame);
+      const perGameValues = keys.map(key => {
+        if (key === 'yellow') return d.yellow_cards / d.appearances;
+        if (key === 'double') return d.double_yellow_cards / d.appearances;
+        if (key === 'red') return d.red_cards / d.appearances;
+        if (key === 'penalty') return d.penalties / d.appearances;
+        return 0;
+      });
+      return Math.max(...perGameValues);
     }) || 1;
 
     const y = d3.scaleLinear()
@@ -82,8 +98,8 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
         .rangeRound([height, 0]);
 
     const color = d3.scaleOrdinal()
-        .domain(keys)
-        .range([METRIC_COLORS.yellow, METRIC_COLORS.double, METRIC_COLORS.red, METRIC_COLORS.penalty]);
+        .domain(Object.keys(METRIC_COLORS))
+        .range(Object.values(METRIC_COLORS));
 
     g.append("g")
         .attr("class", "grid")
@@ -103,15 +119,14 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
           value: (key === 'yellow' ? d.yellow_cards :
               key === 'double' ? d.double_yellow_cards :
                   key === 'red' ? d.red_cards : d.penalties) / d.appearances,
-          refName: d.name,
-          competition: d.competition
+          refName: d.name
         })))
         .join("rect")
         .attr("x", d => x1(d.key)!)
         .attr("y", d => y(d.value))
         .attr("width", x1.bandwidth())
         .attr("height", d => height - y(d.value))
-        .attr("fill", d => color(d.key) as string)
+        .attr("fill", d => METRIC_COLORS[d.key as MetricKey])
         .attr("rx", 2)
         .style("cursor", "pointer")
         .on("mouseover", (event, d) => {
@@ -119,7 +134,7 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
           if (tooltipRef.current) {
             tooltip.style("visibility", "visible").html(`
             <strong>${d.refName}</strong><br/>
-            ${METRIC_LABELS[d.key as keyof typeof METRIC_LABELS]}: <strong>${d.value.toFixed(2)}</strong>
+            ${METRIC_LABELS[d.key as MetricKey]}: <strong>${d.value.toFixed(2)}</strong>
           `);
           }
         })
@@ -149,44 +164,48 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
         .attr("text-anchor", "start")
         .text("Per Game");
 
-    const legend = svg.append("g")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", 10)
-        .attr("text-anchor", "end")
-        .selectAll("g")
-        .data(keys)
-        .join("g")
-        .attr("transform", (d, i) => `translate(${width},${i * 20})`);
-
-    legend.append("rect")
-        .attr("x", -19)
-        .attr("width", 19)
-        .attr("height", 19)
-        .attr("fill", d => color(d) as string);
-
-    legend.append("text")
-        .attr("x", -24)
-        .attr("y", 9.5)
-        .attr("dy", "0.32em")
-        .text(d => METRIC_LABELS[d]);
-
-  }, [data, dimensions]);
+  }, [data, dimensions, visibleMetrics]);
 
   return (
-      <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
-        <svg ref={svgRef} width="100%" height="100%" />
-        <div ref={tooltipRef} style={{
-          position: "absolute",
-          visibility: "hidden",
-          backgroundColor: "rgba(30, 30, 30, 0.95)",
-          color: "white",
-          padding: "8px",
-          borderRadius: "4px",
-          fontSize: "12px",
-          pointerEvents: "none",
-          zIndex: 10,
-          boxShadow: "0 4px 8px rgba(0,0,0,0.3)"
-        }} />
+      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2, pb: 1 }}>
+          <Stack direction="row" spacing={2}>
+            {(Object.keys(METRIC_LABELS) as MetricKey[]).map(key => (
+                <FormControlLabel
+                    key={key}
+                    control={
+                      <Checkbox
+                          checked={visibleMetrics.includes(key)}
+                          onChange={() => handleMetricToggle(key)}
+                          size="small"
+                          sx={{
+                            color: METRIC_COLORS[key],
+                            '&.Mui-checked': { color: METRIC_COLORS[key] }
+                          }}
+                      />
+                    }
+                    label={<Typography variant="caption">{METRIC_LABELS[key]}</Typography>}
+                />
+            ))}
+          </Stack>
+        </Box>
+
+        <div ref={containerRef} style={{ flexGrow: 1, position: 'relative', width: '100%' }}>
+          <svg ref={svgRef} width="100%" height="100%" />
+          <div ref={tooltipRef} style={{
+            position: "absolute",
+            visibility: "hidden",
+            backgroundColor: "rgba(30, 30, 30, 0.95)",
+            color: "white",
+            padding: "8px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            pointerEvents: "none",
+            zIndex: 10,
+            boxShadow: "0 4px 8px rgba(0,0,0,0.3)"
+          }} />
+        </div>
       </div>
   );
 };
