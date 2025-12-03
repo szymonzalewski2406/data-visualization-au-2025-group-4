@@ -510,7 +510,7 @@ export default function Dashboard() {
 
                                         <Box sx={{ width: 150 }}>
                                             <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
-                                                Apps: {appearancesRange[0]} - {appearancesRange[1]}
+                                                Apps: {appearancesRange[0]} - {appearancesRange[1]} (per referee)
                                             </Typography>
                                             <Slider
                                                 value={appearancesRange}
@@ -559,6 +559,28 @@ export default function Dashboard() {
                                 <Grid sx={{ width: '100%', display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
                                     <Box sx={{ flex: 1 }}>
                                         <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
+                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
+                                                <Typography variant="h6" color="primary" gutterBottom>
+                                                    Geographic Strictness
+                                                </Typography>
+                                                <Box sx={{
+                                                    flexGrow: 1,
+                                                    width: '100%',
+                                                    minHeight: 0,
+                                                    position: 'relative'
+                                                }}>
+                                                    <GeoMap
+                                                        data={mapData}
+                                                        selectedNationality={selectedNationality}
+                                                        onCountryClick={handleCountryClick}
+                                                    />
+                                                </Box>
+
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
                                             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
 
                                                 <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
@@ -593,29 +615,6 @@ export default function Dashboard() {
                                                         onRefereeToggle={handleRefereeToggle}
                                                     />
                                                 </Box>
-                                            </CardContent>
-                                        </Card>
-                                    </Box>
-
-                                    <Box sx={{ flex: 1 }}>
-                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
-                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    Geographic Strictness
-                                                </Typography>
-                                                <Box sx={{
-                                                    flexGrow: 1,
-                                                    width: '100%',
-                                                    minHeight: 0,
-                                                    position: 'relative'
-                                                }}>
-                                                    <GeoMap
-                                                        data={mapData}
-                                                        selectedNationality={selectedNationality}
-                                                        onCountryClick={handleCountryClick}
-                                                    />
-                                                </Box>
-
                                             </CardContent>
                                         </Card>
                                     </Box>
