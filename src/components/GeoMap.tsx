@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
-import { Slider, Typography, Box } from '@mui/material';
+import { Slider, Typography, Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import europeGeoJson from './europe.geo.json';
 import { RefereeData } from '../interfaces/RefereeData';
 
@@ -21,8 +21,24 @@ const nationalityToISO2: Record<string, string> = {
 	'Turkey': 'TR', 'Greece': 'GR', 'Ukraine': 'UA', 'Russia': 'RU', 'Israel': 'IL',
 	'Albania': 'AL', 'Belarus': 'BY', 'Cyprus': 'CY', "Faroe Islands": 'FO',
 	'Iceland': 'IS', 'Moldova': 'MD', 'North Macedonia': 'MK', 'San Marino': 'SM',
-	'Wales': 'GB', 'Türkiye': 'TR', 'Scotland': 'GB', 'Ireland': 'IE', 'Luxembourg': 'LU'
+	'Wales': 'GB', 'Türkiye': 'TR', 'Scotland': 'GB', 'Ireland': 'IE', 'Luxembourg': 'LU',
+	'Kazakhstan': 'KZ', 'Northern Ireland': 'GB'
 };
+
+const REGIONS: Record<string, string[]> = {
+	'Nordic': ['NO', 'SE', 'DK', 'FI', 'IS', 'FO'],
+	'British Isles': ['GB', 'IE'],
+	'Western Europe': ['FR', 'DE', 'NL', 'BE', 'CH', 'AT', 'LU'],
+	'Southern Europe': ['PT', 'ES', 'IT', 'GR', 'CY', 'TR', 'IL', 'SM', 'MT'],
+	'Central Europe': ['PL', 'CZ', 'SK', 'HU', 'SI', 'HR'],
+	'Baltic States': ['EE', 'LT', 'LV'],
+	'Eastern Europe': ['RO', 'BG', 'RS', 'BA', 'ME', 'MK', 'AL', 'MD', 'UA', 'RU', 'BY', 'GE', 'AM', 'AZ', 'KZ']
+};
+
+const ISO_TO_REGION: Record<string, string> = {};
+Object.entries(REGIONS).forEach(([region, isos]) => {
+	isos.forEach(iso => ISO_TO_REGION[iso] = region);
+});
 
 const iso2ToNationalities: Record<string, string[]> = {};
 for (const nationality in nationalityToISO2) {
@@ -34,12 +50,14 @@ for (const nationality in nationalityToISO2) {
 }
 
 const STRICTNESS_COLORS = ["#2c7bb6", "#ffffbf", "#d7191c"];
+const BORDER_COLOR = '#666';
 
 const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) => {
 	const svgRef = useRef<SVGSVGElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 	const [minReferees, setMinReferees] = useState<number>(1);
+	const [viewMode, setViewMode] = useState<'countries' | 'regions'>('countries');
 
 	useEffect(() => {
 		if (!containerRef.current) return;
@@ -53,7 +71,15 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 	}, []);
 
 	useEffect(() => {
-		if (!data || data.length === 0 || !europeGeoJson) return;
+		if (viewMode === 'regions') {
+			setMinReferees(8);
+		} else {
+			setMinReferees(1);
+		}
+	}, [viewMode]);
+
+	useEffect(() => {
+		if (!data || !europeGeoJson) return;
 		const svg = d3.select(svgRef.current);
 		svg.selectAll('*').remove();
 		const { width, height } = dimensions;
@@ -75,7 +101,6 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 		});
 
 		const statsByISO2: Record<string, { strictnessSum: number; refereeCount: number }> = {};
-
 		Object.values(uniqueReferees).forEach(ref => {
 			const iso2 = nationalityToISO2[ref.nationality] || ref.nationality;
 			const personalStrictness = ref.totalAppearances > 0
@@ -83,21 +108,41 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 				: 0;
 
 			if (!statsByISO2[iso2]) statsByISO2[iso2] = { strictnessSum: 0, refereeCount: 0 };
-
 			statsByISO2[iso2].strictnessSum += personalStrictness;
 			statsByISO2[iso2].refereeCount += 1;
 		});
 
-		const finalMetrics: Record<string, { avgStrictness: number; count: number }> = {};
+		const finalMetrics: Record<string, { avgStrictness: number; count: number; label: string }> = {};
 		const strictnessValues: number[] = [];
 
-		Object.keys(statsByISO2).forEach(iso => {
-			const avg = statsByISO2[iso].strictnessSum / statsByISO2[iso].refereeCount;
-			const count = statsByISO2[iso].refereeCount;
+		if (viewMode === 'countries') {
+			Object.keys(statsByISO2).forEach(iso => {
+				const avg = statsByISO2[iso].strictnessSum / statsByISO2[iso].refereeCount;
+				const count = statsByISO2[iso].refereeCount;
+				finalMetrics[iso] = { avgStrictness: avg, count, label: iso };
+				strictnessValues.push(avg);
+			});
+		} else {
+			const statsByRegion: Record<string, { strictnessSum: number; refereeCount: number }> = {};
 
-			finalMetrics[iso] = { avgStrictness: avg, count };
-			strictnessValues.push(avg);
-		});
+			Object.keys(statsByISO2).forEach(iso => {
+				const region = ISO_TO_REGION[iso] || 'Other';
+				if (!statsByRegion[region]) statsByRegion[region] = { strictnessSum: 0, refereeCount: 0 };
+
+				statsByRegion[region].strictnessSum += statsByISO2[iso].strictnessSum;
+				statsByRegion[region].refereeCount += statsByISO2[iso].refereeCount;
+			});
+
+			Object.keys(statsByISO2).forEach(iso => {
+				const region = ISO_TO_REGION[iso];
+				if (region && statsByRegion[region]) {
+					const avg = statsByRegion[region].strictnessSum / statsByRegion[region].refereeCount;
+					const count = statsByRegion[region].refereeCount;
+					finalMetrics[iso] = { avgStrictness: avg, count, label: region };
+					strictnessValues.push(avg);
+				}
+			});
+		}
 
 		const minStrict = d3.min(strictnessValues) ?? 0;
 		const maxStrict = d3.max(strictnessValues) ?? 1;
@@ -135,42 +180,113 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 				if (!metrics || metrics.count < minReferees) return '#eee';
 
 				if (selectedNationality.length > 0) {
-					const countryName = d.properties.NAME || d.properties.name;
-					const isSelected = selectedNationality.includes(countryName);
-					if (!isSelected) {
-						const isoSelected = selectedNationality.some(nat => nationalityToISO2[nat] === iso);
-						if (!isoSelected) return '#ddd';
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						const isSelected = selectedNationality.includes(countryName);
+						if (!isSelected) {
+							const isoSelected = selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+							if (!isoSelected) return '#ddd';
+						}
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						const isRegionSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+						if (!isRegionSelected) return '#ddd';
 					}
 				}
 
 				return strictnessColorScale(metrics.avgStrictness);
 			})
-			.attr('stroke', '#333')
-			.attr('stroke-width', 0.5)
-			.on('mouseover', function(_, d: any) {
-				d3.select(this).attr('stroke-width', 1.5).attr('stroke', '#000');
+			.attr('stroke', (d: any) => {
+				const iso = d.properties.ISO2;
+				let isSelected = false;
 
+				if (selectedNationality.length > 0) {
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						isSelected = selectedNationality.includes(countryName) || selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						isSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+					}
+				}
+				return isSelected ? '#000' : BORDER_COLOR;
+			})
+			.attr('stroke-width', (d: any) => {
+				const iso = d.properties.ISO2;
+				let isSelected = false;
+
+				if (selectedNationality.length > 0) {
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						isSelected = selectedNationality.includes(countryName) || selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						isSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+					}
+				}
+				return isSelected ? 1.5 : 0.5;
+			})
+			.on('mouseover', function(_, d: any) {
 				const iso = d.properties.ISO2;
 				const metrics = finalMetrics[iso];
-				const name = d.properties.NAME || d.properties.name || iso;
 
 				if (metrics && metrics.count >= minReferees) {
+					d3.select(this).attr('stroke', '#000').attr('stroke-width', 1.5);
+
+					const countryName = d.properties.NAME || d.properties.name || iso;
+					const title = viewMode === 'regions' ? metrics.label : countryName;
+					const subLabel = viewMode === 'regions' ? `(Includes ${countryName})` : '';
+
 					tooltip.html(`
-                        <div style="font-weight:bold; margin-bottom:4px;">${name}</div>
+                        <div style="font-weight:bold; margin-bottom:4px;">${title}</div>
+                        ${subLabel ? `<div style="font-size:0.8em; margin-bottom:4px; opacity:0.8">${subLabel}</div>` : ''}
                         <div>Strictness: <strong>${metrics.avgStrictness.toFixed(2)}</strong></div>
                         <div style="font-size:0.9em; opacity:0.8;">Referees: ${metrics.count}</div>
                     `).style('visibility', 'visible');
 				} else {
-					const countInfo = metrics ? ` (${metrics.count} refs)` : '';
-					tooltip.html(`<strong>${name}</strong><br/>Insufficient data${countInfo}`).style('visibility', 'visible');
+					const name = d.properties.NAME || d.properties.name || iso;
+					tooltip.html(`<strong>${name}</strong><br/>Insufficient data`).style('visibility', 'visible');
 				}
 			})
 			.on('mousemove', function(event: any) {
 				const [mouseX, mouseY] = d3.pointer(event, container.node());
 				tooltip.style('left', `${mouseX + 12}px`).style('top', `${mouseY + 12}px`);
 			})
-			.on('mouseout', function() {
-				d3.select(this).attr('stroke-width', 0.5).attr('stroke', '#333');
+			.on('mouseout', function(_, d: any) {
+				const iso = d.properties.ISO2;
+
+				let strokeColor = BORDER_COLOR;
+				let strokeWidth = 0.5;
+
+				let isSelected = false;
+				if (selectedNationality.length > 0) {
+					if (viewMode === 'countries') {
+						const countryName = d.properties.NAME || d.properties.name;
+						isSelected = selectedNationality.includes(countryName) || selectedNationality.some(nat => nationalityToISO2[nat] === iso);
+					} else {
+						const regionName = ISO_TO_REGION[iso];
+						isSelected = selectedNationality.some(nat => {
+							const natIso = nationalityToISO2[nat];
+							return ISO_TO_REGION[natIso] === regionName;
+						});
+					}
+				}
+
+				if (isSelected) {
+					strokeColor = '#000';
+					strokeWidth = 1.5;
+				}
+
+				d3.select(this).attr('stroke', strokeColor).attr('stroke-width', strokeWidth);
 				tooltip.style('visibility', 'hidden');
 			})
 			.on('click', function(_, d: any) {
@@ -178,11 +294,24 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 				const metrics = finalMetrics[iso];
 
 				if (metrics && metrics.count >= minReferees) {
-					const countryName = d.properties.NAME || d.properties.name;
-					const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
+					if (viewMode === 'regions') {
+						const regionName = ISO_TO_REGION[iso];
+						const targetIsos = Object.keys(ISO_TO_REGION).filter(k => ISO_TO_REGION[k] === regionName);
 
-					if (nationalities.length > 0) {
-						onCountryClick(nationalities);
+						let allNats: string[] = [];
+						targetIsos.forEach(targetIso => {
+							if (iso2ToNationalities[targetIso]) {
+								allNats = [...allNats, ...iso2ToNationalities[targetIso]];
+							}
+						});
+						if (allNats.length > 0) onCountryClick(allNats);
+
+					} else {
+						const countryName = d.properties.NAME || d.properties.name;
+						const nationalities = iso2ToNationalities[iso] || (countryName ? [countryName] : []);
+						if (nationalities.length > 0) {
+							onCountryClick(nationalities);
+						}
 					}
 				}
 			});
@@ -234,7 +363,7 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 		return () => {
 			tooltip.remove();
 		};
-	}, [data, dimensions, selectedNationality, onCountryClick, minReferees]);
+	}, [data, dimensions, selectedNationality, onCountryClick, minReferees, viewMode]);
 
 	return (
 		<div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -242,13 +371,14 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 
 			<Box sx={{
 				position: 'absolute',
-				top: 10,
-				left: 10,
-				width: 160,
-				bgcolor: 'rgba(255,255,255,0.9)',
-				p: 1,
+				top: 5,
+				left: 5,
+				width: 120,
+				height: 40,
+				bgcolor: 'rgba(255,255,255,0.95)',
+				p: 1.5,
 				borderRadius: 2,
-				boxShadow: 1,
+				boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 				zIndex: 10
 			}}>
 				<Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block', mb: 0.5 }}>
@@ -257,12 +387,42 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
 				<Slider
 					size="small"
 					value={minReferees}
-					min={1}
-					max={10}
+					min={viewMode === 'regions' ? 8 : 1}
+					max={viewMode === 'regions' ? 42 : 10}
 					step={1}
 					onChange={(_, value) => setMinReferees(value as number)}
 					valueLabelDisplay="auto"
 				/>
+			</Box>
+
+			<Box sx={{
+				position: 'absolute',
+				top: 5,
+				right: 5,
+				bgcolor: 'rgba(255,255,255,0.95)',
+				borderRadius: 1,
+				boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+				zIndex: 10
+			}}>
+				<ToggleButtonGroup
+					value={viewMode}
+					exclusive
+					onChange={(_, newMode) => {
+						if (newMode) {
+							setViewMode(newMode);
+							onCountryClick([]);
+						}
+					}}
+					size="small"
+					sx={{ height: 32 }}
+				>
+					<ToggleButton value="countries" sx={{ fontSize: '0.75rem', px: 2 }}>
+						Countries
+					</ToggleButton>
+					<ToggleButton value="regions" sx={{ fontSize: '0.75rem', px: 2 }}>
+						Regions
+					</ToggleButton>
+				</ToggleButtonGroup>
 			</Box>
 
 			<div style={{ position: 'absolute', bottom: 10, left: 10, fontSize: '10px', color: '#888', pointerEvents: 'none' }}>

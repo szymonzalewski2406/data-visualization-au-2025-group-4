@@ -6,6 +6,11 @@ import {
     loadAllData
 } from "../utils/DatasetMapper";
 import {
+    calculateStrictnessScore,
+    DEFAULT_WEIGHTS,
+    StrictnessWeights
+} from "../utils/RefereeMetrics";
+import {
     Alert,
     AppBar,
     Box,
@@ -32,7 +37,12 @@ import {
     Slider,
     Switch,
     FormControlLabel,
-    Tooltip
+    Tooltip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button
 } from "@mui/material";
 import {
     COMPETITIONS,
@@ -41,6 +51,7 @@ import {
 } from "../interfaces/Competitions";
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import { FilterOptions } from "../interfaces/FilterOptions";
 
 import RefereeScatterD3 from '../components/RefereeScatterD3';
@@ -54,10 +65,13 @@ export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
     const currentTheme: Theme = selectedCompetition.theme as Theme;
 
-    const [allRefereeData, setAllRefereeData] = useState<RefereeData[]>([]);
+    const [rawRefereeData, setRawRefereeData] = useState<RefereeData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [loadingError, setLoadingError] = useState<string | null>(null);
+
+    const [weights, setWeights] = useState<StrictnessWeights>(DEFAULT_WEIGHTS);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const [selectedSeason, setSelectedSeason] = useState<string>('');
     const [selectedNationality, setSelectedNationality] = useState<string[]>([]);
@@ -71,7 +85,6 @@ export default function Dashboard() {
 
     const [isAgeChart, setIsAgeChart] = useState<boolean>(false);
 
-    // Two-league comparison state (used when viewing All Competitions)
     const [leagueA, setLeagueA] = useState<string>('Champions League');
     const [leagueB, setLeagueB] = useState<string>('Europa League');
 
@@ -96,7 +109,7 @@ export default function Dashboard() {
                 const { allData, initialSeasons } = await loadAllData(selectedCompetition.dataFolder);
 
                 if (allData.length > 0) {
-                    setAllRefereeData(allData);
+                    setRawRefereeData(allData);
                     setFilterOptions(prev => ({ ...prev, seasons: initialSeasons }));
 
                     const ages = allData.map(r => r.age).filter(a => a > 0);
@@ -132,10 +145,24 @@ export default function Dashboard() {
         fetchAndParseData();
     }, [selectedCompetition]);
 
-    useEffect(() => {
-        if (!selectedSeason || allRefereeData.length === 0) return;
+    const calculatedReferees = useMemo(() => {
+        return rawRefereeData.map(ref => ({
+            ...ref,
+            strictness_index: calculateStrictnessScore(
+                ref.yellow_cards,
+                ref.double_yellow_cards,
+                ref.red_cards,
+                ref.penalties,
+                ref.appearances,
+                weights
+            )
+        }));
+    }, [rawRefereeData, weights]);
 
-        const dataInSeason = allRefereeData.filter(r => r.season === selectedSeason);
+    useEffect(() => {
+        if (!selectedSeason || calculatedReferees.length === 0) return;
+
+        const dataInSeason = calculatedReferees.filter(r => r.season === selectedSeason);
 
         const ages = dataInSeason.map(r => r.age).filter(a => a > 0);
         if (ages.length > 0) {
@@ -160,12 +187,12 @@ export default function Dashboard() {
             }
         }
 
-    }, [selectedSeason, allRefereeData]);
+    }, [selectedSeason, calculatedReferees]);
 
     useEffect(() => {
-        if (!selectedSeason || allRefereeData.length === 0) return;
+        if (!selectedSeason || calculatedReferees.length === 0) return;
 
-        const dataInSeason = allRefereeData.filter(r => r.season === selectedSeason);
+        const dataInSeason = calculatedReferees.filter(r => r.season === selectedSeason);
 
         const { nationalities } = extractNationalityOptions(dataInSeason);
 
@@ -189,7 +216,7 @@ export default function Dashboard() {
             referees: referees
         }));
 
-    }, [selectedSeason, selectedNationality, allRefereeData, ageRange, appearancesRange]);
+    }, [selectedSeason, selectedNationality, calculatedReferees, ageRange, appearancesRange]);
 
 
     const handleCompetitionChange = (competition: CompetitionConfig) => {
@@ -247,51 +274,54 @@ export default function Dashboard() {
                 return [...prev, ...countryNames];
             }
         });
+        setSelectedReferees([]);
     };
 
-    // 1. HANDLER: Toggle Selection
-    // Passed to Scatter Plot to add/remove names from the list
     const handleRefereeToggle = (refereeName: string) => {
         setSelectedReferees(prev => {
-            if (prev.includes(refereeName)) {
-                return prev.filter(r => r !== refereeName); // Remove
+            const isAlreadySelected = prev.includes(refereeName);
+
+            if (!isAlreadySelected) {
+                return [...prev, refereeName];
             } else {
-                return [...prev, refereeName]; // Add
+                return prev.filter(r => r !== refereeName);
             }
         });
     };
 
-    // 2. DATA STREAM A: SCATTER DATA
-    // Shows ALL referees matching the context filters (Season, Nation, Age, Apps).
-    const scatterData = useMemo(() => {
-        return allRefereeData.filter(r => {
+    const handleWeightChange = (key: keyof StrictnessWeights, val: number) => {
+        setWeights(prev => ({ ...prev, [key]: val }));
+    };
+
+    const mapData = useMemo(() => {
+        return calculatedReferees.filter(r => {
             if (r.season !== selectedSeason) return false;
-            if (selectedNationality.length > 0 && !selectedNationality.includes(r.nationality)) return false;
-            
-            // Note: selectedReferees check is REMOVED from here
-            
+
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
             if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
 
             return true;
         });
-    }, [allRefereeData, selectedSeason, selectedNationality, ageRange, appearancesRange]);
+    }, [calculatedReferees, selectedSeason, ageRange, appearancesRange]);
 
-    // 3. DATA STREAM B: DISPLAYED DATA (For Bar Chart/Stats)
-    // If specific referees are selected, filter down to just them.
-    // Otherwise, show the full list (or let the component handle top 15).
+    const scatterData = useMemo(() => {
+        return calculatedReferees.filter(r => {
+            if (r.season !== selectedSeason) return false;
+            if (selectedNationality.length > 0 && !selectedNationality.includes(r.nationality)) return false;
+
+            if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
+            if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
+
+            return true;
+        });
+    }, [calculatedReferees, selectedSeason, selectedNationality, ageRange, appearancesRange]);
+
     const displayedData = useMemo(() => {
         if (selectedReferees.length === 0) {
             return scatterData;
         }
         return scatterData.filter(r => selectedReferees.includes(r.name));
     }, [scatterData, selectedReferees]);
-
-    // 4. HELPER: Get Nationalities for the Map
-    const highlightedNationalities = useMemo(() => {
-        if (selectedReferees.length === 0) return null;
-        return displayedData.map(r => r.nationality);
-    }, [displayedData, selectedReferees]);
 
     if (loading) {
         return (
@@ -320,7 +350,7 @@ export default function Dashboard() {
                             </Typography>
                         </Box>
 
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', alignItems: 'flex-end' }}>
                                 <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
                                     Active Filters
@@ -329,6 +359,16 @@ export default function Dashboard() {
                                     {selectedSeason} • {selectedNationality.length > 0 ? `${selectedNationality.length} Nations` : 'All Nations'} • {displayedData.length} Records
                                 </Typography>
                             </Box>
+
+                            <Tooltip title="Strictness Index Weights Settings">
+                                <IconButton
+                                    onClick={() => setIsSettingsOpen(true)}
+                                    sx={{ color: '#fff', border: '1px solid rgba(255,255,255,0.3)' }}
+                                >
+                                    <SettingsSuggestIcon />
+                                </IconButton>
+                            </Tooltip>
+
                             <IconButton
                                 onClick={handleMenuClick}
                                 size="large"
@@ -351,6 +391,59 @@ export default function Dashboard() {
                         </Box>
                     </Toolbar>
                 </AppBar>
+
+                <Dialog open={isSettingsOpen} onClose={() => setIsSettingsOpen(false)}>
+                    <DialogTitle>Configure Strictness Weights</DialogTitle>
+                    <DialogContent sx={{ minWidth: 400 }}>
+                        <Typography variant="body2" color="textSecondary" gutterBottom>
+                            Adjust the impact of each card type on the Strictness Index calculation.
+                        </Typography>
+
+                        <Box sx={{ mt: 3 }}>
+                            <Typography gutterBottom>Yellow Card (x{weights.yellow})</Typography>
+                            <Slider
+                                value={weights.yellow}
+                                min={0} max={5} step={0.5}
+                                valueLabelDisplay="auto"
+                                onChange={(_, v) => handleWeightChange('yellow', v as number)}
+                            />
+                        </Box>
+
+                        <Box sx={{ mt: 2 }}>
+                            <Typography gutterBottom>2nd Yellow Card (x{weights.doubleYellow})</Typography>
+                            <Slider
+                                value={weights.doubleYellow}
+                                min={0} max={10} step={0.5}
+                                valueLabelDisplay="auto"
+                                onChange={(_, v) => handleWeightChange('doubleYellow', v as number)}
+                            />
+                        </Box>
+
+                        <Box sx={{ mt: 2 }}>
+                            <Typography gutterBottom>Red Card (x{weights.red})</Typography>
+                            <Slider
+                                value={weights.red}
+                                min={0} max={10} step={0.5}
+                                valueLabelDisplay="auto"
+                                onChange={(_, v) => handleWeightChange('red', v as number)}
+                            />
+                        </Box>
+
+                        <Box sx={{ mt: 2 }}>
+                            <Typography gutterBottom>Penalty (x{weights.penalty})</Typography>
+                            <Slider
+                                value={weights.penalty}
+                                min={0} max={10} step={0.5}
+                                valueLabelDisplay="auto"
+                                onChange={(_, v) => handleWeightChange('penalty', v as number)}
+                            />
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setWeights(DEFAULT_WEIGHTS)} color="secondary">Reset Default</Button>
+                        <Button onClick={() => setIsSettingsOpen(false)} variant="contained">Close</Button>
+                    </DialogActions>
+                </Dialog>
 
                 <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
                     {loadingError && <Alert severity="error" sx={{ mb: 2 }}>{loadingError}</Alert>}
@@ -458,22 +551,6 @@ export default function Dashboard() {
                                         <Typography variant="caption" color="textSecondary">
                                             Displaying <b>{displayedData.length}</b> records
                                         </Typography>
-                                        <Tooltip
-                                            title={
-                                                <Box sx={{ p: 0.5 }}>
-                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-                                                        Strictness Calculation:
-                                                    </Typography>
-                                                    <Typography variant="caption" display="block">
-                                                        (1×Yellow + 3×2ndYellow + 5×Red + 3×Penalty) / Matches
-                                                    </Typography>
-                                                </Box>
-                                            }
-                                            arrow
-                                            placement="left"
-                                        >
-                                            <InfoOutlinedIcon fontSize="small" sx={{ color: 'text.secondary', cursor: 'help', opacity: 0.7 }} />
-                                        </Tooltip>
                                     </Stack>
                                 </Stack>
                             </Card>
@@ -512,8 +589,8 @@ export default function Dashboard() {
                                                     <RefereeScatterD3
                                                         data={scatterData}
                                                         isAgeMode={isAgeChart}
-                                                        selectedReferees={selectedReferees} // Pass selection state
-                                                        onRefereeToggle={handleRefereeToggle} // Pass toggle handler
+                                                        selectedReferees={selectedReferees}
+                                                        onRefereeToggle={handleRefereeToggle}
                                                     />
                                                 </Box>
                                             </CardContent>
@@ -533,7 +610,7 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <GeoMap
-                                                        data={scatterData}
+                                                        data={mapData}
                                                         selectedNationality={selectedNationality}
                                                         onCountryClick={handleCountryClick}
                                                     />
@@ -545,7 +622,7 @@ export default function Dashboard() {
                                 </Grid>
                             </Grid>
 
-                            {selectedCompetition.id === 0 && (
+                            {selectedReferees.length !== 1 && selectedCompetition.id === 0 && (
                                 <Grid container spacing={3} sx={{ mb: 3 }}>
                                     <Grid sx={{ width: '100%' }}>
                                         <Card elevation={3}>
@@ -584,7 +661,7 @@ export default function Dashboard() {
                                                 </Stack>
 
                                                 <Box sx={{ height: 420, mt: 1, position: 'relative' }}>
-                                                        <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
+                                                    <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
                                                 </Box>
                                             </CardContent>
                                         </Card>
@@ -593,28 +670,28 @@ export default function Dashboard() {
                             )}
 
                             {selectedReferees.length !== 1 && (
-                            <Grid container spacing={3} sx={{ mb: 3 }}>
-                                <Grid sx={{ width: '100%' }}>
-                                    <Card elevation={3}>
-                                        <CardContent>
-                                            <Typography variant="h6" color="primary" gutterBottom>
-                                                Top Referees by Strictness Index
-                                            </Typography>
-                                            <Box sx={{
-                                                height: 300,
-                                                border: '2px dashed #ccc',
-                                                borderRadius: 2,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                bgcolor: '#fafafa'
-                                            }}>
-                                                <RefereeGroupedBarChartD3 data={displayedData} />
-                                            </Box>
-                                        </CardContent>
-                                    </Card>
+                                <Grid container spacing={3} sx={{ mb: 3 }}>
+                                    <Grid sx={{ width: '100%' }}>
+                                        <Card elevation={3}>
+                                            <CardContent>
+                                                <Typography variant="h6" color="primary" gutterBottom>
+                                                    Top Referees by Strictness Index
+                                                </Typography>
+                                                <Box sx={{
+                                                    height: 300,
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: 2,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    bgcolor: '#fafafa'
+                                                }}>
+                                                    <RefereeGroupedBarChartD3 data={displayedData} />
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
                             )}
 
                             {selectedReferees.length === 1 && (
@@ -628,7 +705,7 @@ export default function Dashboard() {
                                                     </Typography>
                                                     <Box sx={{ height: 250, bgcolor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                         {(() => {
-                                                            const refereeHistory = allRefereeData.filter(d => d.name === selectedReferees[0]);
+                                                            const refereeHistory = calculatedReferees.filter(d => d.name === selectedReferees[0]);
 
                                                             if (!refereeHistory || refereeHistory.length === 0) {
                                                                 return <Typography>No historical data found.</Typography>;

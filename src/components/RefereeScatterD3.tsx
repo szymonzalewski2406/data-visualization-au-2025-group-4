@@ -6,7 +6,7 @@ interface Props {
     data: RefereeData[];
     isAgeMode: boolean;
     selectedReferees: string[];
-    onRefereeToggle: (name: string) => void; 
+    onRefereeToggle: (name: string) => void;
 
 }
 
@@ -57,9 +57,7 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
 
         const uniqueCompetitions = Array.from(new Set(data.map(d => d.competition)));
         const isMultiLeague = uniqueCompetitions.length > 1;
-
         const hasSelection = selectedReferees && selectedReferees.length > 0;
-
         const aggregatedData: Record<string, AggregatedReferee> = {};
 
         data.forEach(d => {
@@ -118,15 +116,10 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
         };
 
         const getColor = (d: RefereeData) => {
-        if (isMultiLeague) {
-            // Use the specific league branding
-            return LEAGUE_CONFIG[d.competition].color || "#999999"; 
-        } else {
-            const scale = d3.scaleLinear<string>()
+            const colorScale = d3.scaleLinear<string>()
                 .domain([2, 5, 8])
                 .range(SAFE_STRICTNESS_RANGE);
-            return scale(d.strictness_index);
-        }
+            return colorScale(d.strictness_index);
     };
         const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -216,7 +209,7 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
             .on("mousemove", (event) => {
                 if(tooltipRef.current && containerRef.current) {
                     const [x, y] = d3.pointer(event, containerRef.current);
-           
+
                     const containerWidth = dimensions.width;
                     const tooltipWidth = tooltipRef.current.offsetWidth; // Measures the actual tooltip size
 

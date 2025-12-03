@@ -34,8 +34,6 @@ const TwoLeagueScatter: React.FC<Props> = ({ data, leagueA, leagueB }) => {
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
 
-        // Normalize competition names so we can match selections like
-        // 'Champions League' with CSV values like 'Champions' (and vice-versa).
         const normalize = (s: string | undefined) => {
             if (!s) return '';
             const low = s.toLowerCase();
@@ -45,7 +43,6 @@ const TwoLeagueScatter: React.FC<Props> = ({ data, leagueA, leagueB }) => {
             return low.replace(/[^a-z]/g, '');
         };
 
-        // Aggregate per referee per normalized competition
         const refMap: Record<string, { [comp: string]: RefereeData }> = {};
 
         data.forEach(d => {
@@ -69,50 +66,115 @@ const TwoLeagueScatter: React.FC<Props> = ({ data, leagueA, leagueB }) => {
         const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
 
-        const xMin = 0;
-        const xMax = d3.max(plotData, d => d.a.strictness_index) ?? 10;
-        const yMin = 0;
-        const yMax = d3.max(plotData, d => d.b.strictness_index) ?? 10;
+        const allStrictness = [
+            ...plotData.map(d => d.a.strictness_index),
+            ...plotData.map(d => d.b.strictness_index)
+        ];
 
-        const xScale = d3.scaleLinear().domain([Math.max(0, xMin - 0.5), xMax + 0.5]).range([0, width]);
-        const yScale = d3.scaleLinear().domain([Math.max(0, yMin - 0.5), yMax + 0.5]).range([height, 0]);
+        const minVal = Math.floor(d3.min(allStrictness) || 2);
+        const maxVal = Math.ceil(d3.max(allStrictness) || 8);
+        const midVal = (minVal + maxVal) / 2;
+
+        const xScale = d3.scaleLinear().domain([minVal, maxVal]).range([0, width]);
+        const yScale = d3.scaleLinear().domain([minVal, maxVal]).range([height, 0]);
 
         const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // Grid
+        // Quadrant Backgrounds
+        const bgColors = {
+            strict: "#ffebee",
+            lenient: "#e8f5e9",
+            mixed: "#fff3e0"
+        };
+
+        // Top-Right (Strict in both)
+        g.append("rect")
+            .attr("x", xScale(midVal))
+            .attr("y", 0)
+            .attr("width", width - xScale(midVal))
+            .attr("height", yScale(midVal))
+            .attr("fill", bgColors.strict)
+            .attr("opacity", 0.5);
+
+        // Bottom-Left (Lenient in both)
+        g.append("rect")
+            .attr("x", 0)
+            .attr("y", yScale(midVal))
+            .attr("width", xScale(midVal))
+            .attr("height", height - yScale(midVal))
+            .attr("fill", bgColors.lenient)
+            .attr("opacity", 0.5);
+
+        // Top-Left (Mixed)
+        g.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", xScale(midVal))
+            .attr("height", yScale(midVal))
+            .attr("fill", bgColors.mixed)
+            .attr("opacity", 0.3);
+
+        // Bottom-Right (Mixed)
+        g.append("rect")
+            .attr("x", xScale(midVal))
+            .attr("y", yScale(midVal))
+            .attr("width", width - xScale(midVal))
+            .attr("height", height - yScale(midVal))
+            .attr("fill", bgColors.mixed)
+            .attr("opacity", 0.3);
+
         g.append('g')
             .attr('transform', `translate(0,${height})`)
-            .attr('opacity', 0.08)
+            .attr('opacity', 0.1)
             .call(d3.axisBottom(xScale).tickSize(-height).tickFormat(() => ''));
 
         g.append('g')
-            .attr('opacity', 0.08)
+            .attr('opacity', 0.1)
             .call(d3.axisLeft(yScale).tickSize(-width).tickFormat(() => ''));
 
-        // Axes
+        // Diagonal Line
+        g.append('line')
+            .attr('x1', 0)
+            .attr('y1', height)
+            .attr('x2', width)
+            .attr('y2', 0)
+            .attr('stroke', '#999')
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '5 5');
+
+        g.append("text")
+            .attr("x", width - 10)
+            .attr("y", 20)
+            .attr("text-anchor", "end")
+            .attr("fill", "#999")
+            .style("font-size", "10px")
+            .style("font-style", "italic")
+            .text("Equal Strictness Line");
+
         g.append('g')
             .attr('transform', `translate(0,${height})`)
             .call(d3.axisBottom(xScale));
 
         g.append('g').call(d3.axisLeft(yScale));
 
-        // Labels
         g.append('text')
             .attr('x', width / 2)
-            .attr('y', height + 45)
-            .attr('fill', '#666')
+            .attr('y', height + 40)
+            .attr('fill', '#444')
             .style('text-anchor', 'middle')
             .style('font-size', '12px')
-            .text(`${leagueA} Strictness Index`);
+            .style('font-weight', 'bold')
+            .text(`${leagueA} Strictness`);
 
         g.append('text')
             .attr('transform', 'rotate(-90)')
-            .attr('y', -55)
+            .attr('y', -50)
             .attr('x', -height / 2)
-            .attr('fill', '#666')
+            .attr('fill', '#444')
             .style('text-anchor', 'middle')
             .style('font-size', '12px')
-            .text(`${leagueB} Strictness Index`);
+            .style('font-weight', 'bold')
+            .text(`${leagueB} Strictness`);
 
         const tooltip = d3.select(tooltipRef.current);
 
@@ -122,18 +184,28 @@ const TwoLeagueScatter: React.FC<Props> = ({ data, leagueA, leagueB }) => {
             .attr('cx', d => xScale(d.a.strictness_index))
             .attr('cy', d => yScale(d.b.strictness_index))
             .attr('r', 6)
-            .attr('fill', '#1976d2')
-            .attr('opacity', 0.9)
-            .attr('stroke', '#222')
-            .attr('stroke-width', 0.8)
+            .attr('fill', '#2196f3')
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1.5)
             .style('cursor', 'pointer')
+            .style('filter', 'drop-shadow(0px 2px 2px rgba(0,0,0,0.2))')
             .on('mouseover', (event, d) => {
-                d3.select(event.currentTarget).transition().duration(150).attr('r', 10).attr('stroke-width', 1.8);
+                d3.select(event.currentTarget)
+                    .transition().duration(150)
+                    .attr('r', 10)
+                    .attr('fill', '#1565c0');
+
                 if (tooltipRef.current) {
                     tooltip.style('visibility', 'visible').html(`
-                        <div style="font-weight:bold; margin-bottom:6px;">${d.name}</div>
-                        <div style="font-size:0.9em; margin-bottom:4px;">${leagueA}: <strong>${d.a.strictness_index.toFixed(2)}</strong> (${d.a.appearances} apps)</div>
-                        <div style="font-size:0.9em;">${leagueB}: <strong>${d.b.strictness_index.toFixed(2)}</strong> (${d.b.appearances} apps)</div>
+                        <div style="font-weight:bold; margin-bottom:6px; font-size:13px;">${d.name}</div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11px;">
+                            <span style="color:#888">${leagueA}:</span> 
+                            <strong>${d.a.strictness_index.toFixed(2)}</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:11px;">
+                            <span style="color:#888">${leagueB}:</span> 
+                            <strong>${d.b.strictness_index.toFixed(2)}</strong>
+                        </div>
                     `);
                 }
             })
@@ -144,23 +216,12 @@ const TwoLeagueScatter: React.FC<Props> = ({ data, leagueA, leagueB }) => {
                 }
             })
             .on('mouseout', (event) => {
-                d3.select(event.currentTarget).transition().duration(150).attr('r', 6).attr('stroke-width', 0.8);
+                d3.select(event.currentTarget)
+                    .transition().duration(150)
+                    .attr('r', 6)
+                    .attr('fill', '#2196f3');
                 if (tooltipRef.current) tooltip.style('visibility', 'hidden');
             });
-
-        // diagonal reference line (y = x)
-        const lineData = [
-            { x: Math.min(xMin, yMin), y: Math.min(xMin, yMin) },
-            { x: Math.max(xMax, yMax), y: Math.max(xMax, yMax) }
-        ];
-        g.append('line')
-            .attr('x1', xScale(lineData[0].x))
-            .attr('y1', yScale(lineData[0].y))
-            .attr('x2', xScale(lineData[1].x))
-            .attr('y2', yScale(lineData[1].y))
-            .attr('stroke', '#999')
-            .attr('stroke-dasharray', '4 4')
-            .attr('opacity', 0.8);
 
     }, [data, leagueA, leagueB, dimensions]);
 
@@ -170,14 +231,16 @@ const TwoLeagueScatter: React.FC<Props> = ({ data, leagueA, leagueB }) => {
             <div ref={tooltipRef} style={{
                 position: 'absolute',
                 visibility: 'hidden',
-                backgroundColor: 'rgba(30,30,30,0.95)',
-                color: 'white',
+                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                color: '#333',
                 padding: '10px',
                 borderRadius: '6px',
                 fontSize: '12px',
                 pointerEvents: 'none',
                 zIndex: 20,
-                minWidth: '160px'
+                minWidth: '140px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: '1px solid #eee'
             }} />
         </div>
     );
