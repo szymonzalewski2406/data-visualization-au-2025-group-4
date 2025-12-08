@@ -17,8 +17,10 @@
 \usepackage{tabularx}
 \usepackage{enumitem}
 
-\title{Referee Strictness (Placeholder)}
-\author{Your Name(s)}
+\title{UEFA Competition Referee Analysis Tool \\ \large Group: 4}
+\author{
+	Fannar Freyr Jónuson \and Leo \and Petros \and Szymon
+}
 \date{\today}
 
 \begin{document}
@@ -101,20 +103,9 @@ By explicitly supporting the transition from a Summarized View (all leagues) to 
 \section{Related Work}
 % (Target Length: 0.5 page)
 % ---------------------------------
-Goal: show that we did our homework
-\begin{itemize}
-	\item \textbf{Existing Solutions:} Briefly mention if there are other football stats dashboards (e.g., Transfermarkt, FBref).
-	\item \textbf{The Gap:} Explain why those aren't enough. usually, they show raw tables (hard to read) or focus on players rather than referees. They might lack the cross-league comparison or the specific "Strictness" metric you calculated.
-	\item \textbf{Academic/Visual Inspiration: Did you see a specific scatterplot or dashboard in a paper or the "Student Projects" gallery that inspired your layout? Cite it here.}
-\end{itemize}
+The analysis of officiating behavior has historically focused on statistical regression models to detect bias rather than interactive exploration. Academic studies have extensively documented "home advantage" and "social pressure" on referees using static datasets \cite{Boyko01092007,DAWSON2010181}. However, in the public domain, stakeholders typically rely on databases like Transfermarkt or FBref [SOMEONE FIND THIS REFERENCE PLEASE]. While comprehensive, these platforms present data in dense, siloed tables that obscure trends and make cross-league comparison difficult.
 
-\subsection{Design and Task References}
-\begin{itemize}
-    \item Reference articles and papers that support the visualization \textbf{task}.
-    \item Reference \textbf{design references} or existing visualizations that influenced your approach.
-    \item Mention any articles or world events that are highlighted by the data.
-\end{itemize}
-
+Our project bridges this gap by applying Information Visualization principles to this domain. We drew inspiration from the "Overview first, zoom and filter" paradigm \cite{shneiderman} to structure our dashboard. For specific visual encodings, we adapted the "player radar" concept often used in industry analytics (e.g., StatsBomb) into a "Referee Passport". Notably, we utilized Waffle Charts instead of traditional Pie Charts for our "Card DNA" view. This decision is grounded in graphical perception research \cite{cleveland-McGill}, which demonstrates that human observers estimate proportions more accurately in grid-based layouts than via angular slices, particularly when comparing small values like red cards.
 
 % ---------------------------------
 \section{The Visualization Solution}
@@ -200,37 +191,49 @@ Goal: Walk the reader through a "story" to prove the tool works.
 \section{Limitations}
 % (Target Length: 0.5 page)
 % ---------------------------------
-Goal: Be honest about what is missing or could be better.
+While our visualization successfully enables the comparative analysis of referee strictness, it is subject to specific limitations regarding the underlying data and visual scalability.
 
-\begin{itemize}
-	\item \textbf{Data Limitations:} "Our data does not account for the severity of the foul, only the card given. A tactical yellow card looks the same as a violent yellow card in our data."
-	\item \textbf{Visual Limitations:} "When all seasons are selected, the scatterplot suffers from occlusion (too many dots overlapping)."
-	\item \textbf{Future Work:} "If we had more time, we would add a temporal view to show how a single referee's strictness changes over their career."
-	
-\end{itemize}
+\subsection*{Data \& Metric Limitations} 
+First, our "Strictness Score" algorithm is a linear weighted sum that does not capture the qualitative context of a foul. The data treats a "tactical" yellow card for time-wasting identically to a yellow card for a reckless tackle, meaning we cannot distinguish between strict rule enforcement and a loss of match control. Second, the model does not account for confounding external variables, such as the playing style of the teams involved; a referee may appear stricter simply because they officiated more aggressive teams. Finally, the geographic view suffers from sample size bias. Smaller nations often have only one international referee, meaning a single card-heavy performance can skew an entire country's color coding.
+
+\subsection*{Visual \& Technical Limitations} Visually, the "Global Overview" scatterplot suffers from occlusion when all seasons are active, as hundreds of data points cluster in the center, potentially hiding individual records. Additionally, while the user-configurable weights allow for flexibility, the default setting ($Yellow=1, Red=3$) imposes an initial analytical bias that may not reflect every user's perception of severity. Lastly, our temporal heatmaps show strictness per season but lack granular match sequencing, preventing users from seeing if a referee's behavior changes immediately following a controversial decision.
 % ---------------------------------
 \section{Division of Labor}
 % ---------------------------------
 Acknowledge all contributors and their specific roles.
 
-\begin{table}[ht]
+\begin{table}[ht!]
+
     \centering
+
     \caption{Project Contribution Matrix}
+
     \label{tab:contributions}
-    % We set the width to \textwidth.
-    % The first column is 'X' (auto-wrap), the others remain 'c' (centered).
-    \begin{tabularx}{\textwidth}{X c c c c}
+
+    \begin{tabular}{l c c c c}
+
         \toprule
-        \textbf{Task} & \textbf{Contributor 1} & \textbf{Contributor 2} & \textbf{Contributor 3} & \textbf{Contributor 4} \\
+
+\textbf{Task} & \textbf{Fannar} & \textbf{Leonard} & \textbf{Petros} & \textbf{Szymon} \\
+
         \midrule
-        Visualization Design (drawings/discussion) & X & & X & \\
-        Finding data & X & X & & \\
-        Data cleaning and prep & & X & & \\
-        Coding the visualization & X & X & X & X \\
-        Fielding feedback & & X & X & \\
-        Completing the report & X & & X & \\
+
+Visualization Design (drawings/discussion) & X & & X & \\
+
+Finding data & X & X & & \\
+
+Data cleaning and prep & & X & & \\
+
+Coding the visualization & X & X & X & X \\
+
+Fielding feedback & & X & X & \\
+
+Completing the report & X & & X & \\
+
         \bottomrule
-    \end{tabularx}
+
+    \end{tabular}
+
 \end{table}
 
 
