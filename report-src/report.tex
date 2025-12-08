@@ -15,6 +15,7 @@
 \usepackage{float}
 \usepackage[margin=1in]{geometry}
 \usepackage{tabularx}
+\usepackage{enumitem}
 
 \title{Referee Strictness (Placeholder)}
 \author{Your Name(s)}
@@ -27,13 +28,13 @@
 \section{Introduction}
 % (Target Length: 0.5 page)
 % ---------------------------------
-Introduce the problem domain (football referees from different competitions) and the main goals of the visualization. This section should set the stage for the rest of the report by capturing the main points from the subsequent sections (data source, task, and final solution).:
+In the ecosystem of elite football, UEFA competitions represent the pinnacle of the sport. Referees selected for these tournaments, the Champions League, Europa League, and Conference League, are tasked with managing games involving diverse playing styles, high cultural stakes, and immense pressure. A single decision in these continental matchups can determine not just the outcome of a match, but the financial and historical trajectory of a club. However, despite the elite status of these officials, the discourse surrounding their performance often remains subjective. Fans and pundits frequently debate whether referees adjust their strictness based on the prestige of the tournament: are they more lenient in the "showcase" Champions League compared to the lower-tier Conference League?
 
-\begin{itemize}
-	\item \textbf{The Problem:} Start by mentioning how referee decisions (cards and penalties) can drastically alter the outcome of high-stakes matches. Are Premier League referees actually more lenient than those in the Europa League? Is there consistency?
-	\item \textbf{The Motivation:} Explain that while fans often complain about bias or incompetence, there is a lack of accessible tools to compare referee performance objectively across borders.
-	\item \textbf{The Objective:} State that your visualization aims to allow users (fans, analysts, or the referees themselves) to explore these patterns, identify the "strictest" officials, and see if strictness correlates with age, nationality, or specific leagues. 
-\end{itemize}
+The motivation for this project stems from the difficulty in validating these perceptions. While raw disciplinary statistics exist, they are rarely presented in a way that allows for a fair comparison across the three distinct tiers of UEFA competition. A simple count of yellow cards is insufficient to judge a referee's performance without context; one must account for the number of appearances and the specific tournament level to understand the referee's true "personality." Furthermore, varying nationalities of referees add another layer of complexity, do officials from certain regions enforce the rules more strictly when performing on the European stage?
+
+To address this, our project develops an interactive visualization system that explores refereeing behaviors across the three major UEFA competitions spanning the 2021-2025 seasons. By synthesizing raw data (cards, penalties, appearances) into a derived "Strictness Score," we aim to quantify officiating patterns that are usually left to anecdote.
+
+The goal of this visualization is to allow users to investigate the consistency of referees across the UEFA hierarchy. It enables the exploration of key questions: Do specific referees become "stricter" as they move down the tiers from the Champions League to the Conference League? Are there visible correlations between a referee’s age or nationality and their likelihood to issue cards? By visualizing these metrics, we provide an objective, analytical lens on the men in the middle of Europe’s biggest matches.
 
 % ---------------------------------
 \section{The Visualization Task}
@@ -41,35 +42,61 @@ Introduce the problem domain (football referees from different competitions) and
 % ---------------------------------
 Goal: Define the data and the tasks formally (likely using Munzner’s What-Why-How framework if it was covered in your lectures).
 
+To design an effective visualization, we first analyzed the problem domain by abstracting the data into types and defining the abstract tasks the user needs to perform.
+
 \subsection{Data Abstraction (Lecture 5)}
+The underlying dataset is a tabular collection of disciplinary statistics for football referees officiating in UEFA competitions (Champions League, Europa League, and Conference League) across four seasons (2021–2025). The data consists of Items (individual referee records per season/league) and Attributes (characteristics of those records).
 
-\subsubsection*{Source and Rationale}
-Describe where the data was obtained. Justify the choice of this dataset.
+\subsubsection*{Categorical (Nominal)}
+	 \begin{itemize}
+		\item Name (Identifier).
+		\item Nationality (e.g., "English", "German").
+		\item League (The context of the Performance: UCL, UEL, UECL).
+	\end{itemize}
 
-\subsubsection*{Data Content: Attribute Types and Structure}
-Describe the data values and attribute space.
-\begin{itemize}
-    \item \textbf{Dependent Variables (Measures):} (e.g., age, yellow cards, double yellows, red cards, penalties). Define their \textbf{Type} (e.g., \textit{Discrete}).
-    \item \textbf{Independent Variables (Keys):} (e.g., Referee name, country, competitions Date/Year). Define their \textbf{Type}.
-    \item \textbf{Derived Attribute (strictness):} Strictness score, we must explain the strictness formula here. $$ \frac{\texttt{yc}+ 2 * \texttt{2yc} + 3 * \texttt{rc} + 5 * \texttt{p}}{\text{appearances}}$$
-\end{itemize}
+\subsubsection*{Quantitative (Ratio)}
+	\begin{itemize}
+		\item Age (Sequential data allowing for correlation analysis).
+		\item Appearances, Yellow Cards, Double Yellow Cards, Red Cards, Penalties (Counts start from zero).
+	\end{itemize}
 
-\subsection{Task Abstraction (Lecture 5)}
-\begin{itemize}
-	\item What are users trying to do?
-	\item High-level task: Explore and Compare (?) Frame the supported tasks using \textbf{Schneiderman's Mantra}
+\subsubsection*{Derived Attribute: The Strictness Score}
+Raw counts of cards are misleading without context (e.g., 5 red cards in 20 games is different from 5 red cards in 5 games). To solve this, we derived a quantitative attribute called Strictness Score. This provides a normalized single metric to rank officials.
+
+The formula is defined as a weighted sum of disciplinary actions divided by the number of appearances:
+
+\[\text{Strictness} = \frac{(W_y \times \text{Yellows}) + (W_{dy} \times \text{DoubleYellow}) + (W_r \times \text{Reds}) + (W_p \times \text{Penalties})}{\text{Appearances}}\]
+(Note: In our implementation, we assigned default weights based on the severity of the punishment, e.g., Yellow=1, DoubleYellow=3, Red=5, Penalty=3. However they are user adjustable.)
+
+\subsection{Task Abstraction}
+The visualization is designed to support three primary high-level goals: Discover (finding unknown patterns), Derive (generating the strictness metric), and Compare (evaluating differences).
+
+We broke these down into specific domain tasks:
+\begin{enumerate}
+	\item \textbf{Summarize \& Overview (Global Analysis):}
+	\begin{itemize}
+		\item Abstract Task: Summarize the distribution of strictness across the entire dataset.
+		\item User Goal: The user needs to see the "All 3 Leagues" view to understand the general baseline of officiating in Europe before drilling down. This answers the question: "What is the average strictness of a European referee regardless of the tournament?"
+	\end{itemize}
+	\item \textbf{Compare Distributions:}
+	\begin{itemize}
+		\item Abstract Task: Compare attributes between derived clusters.
+		\item User Goal: Compare the strictness levels between the Champions League and the Conference League. Are referees significantly harsher in lower-tier competitions?
+	\end{itemize}
+	\item \textbf{Identify Extremes (Outliers):}
 		\begin{itemize}
-    \item \textbf{Overview:} What initial view gives the general scope?
-    \item \textbf{Zoom and Filter:} How can users narrow down the data?
-    \item \textbf{Details on Demand:} How are specific strictness details revealed (e.g., via tooltips)?
-\end{itemize}
-	\item Specific tasks: 
-		\begin{itemize}
-			\item \textbf{Identify outliers}: Who is the strictest referee in 2024?
-			\item \textbf{Compare distributions:} Is the Premier League generally stricter than the Conference league?
-			\item \textbf{Correlate:} Does strictness increase with referee age? experience?
+			\item Abstract Task: Identify items with extreme values.
+			\item User Goal: Spot the single "strictest" referee in the dataset or find a referee who gave an unusually high number of penalties in a single season.
 		\end{itemize}
-\end{itemize}
+	\item \textbf{Correlate Attributes:}
+		\begin{itemize}
+			\item Abstract Task: Lookup and Correlate quantitative values.
+			\item User Goal: Determine if Age correlates with Strictness. (e.g., "Do referees mellow out as they get older?").
+		\end{itemize}
+\end{enumerate}
+
+By explicitly supporting the transition from a Summarized View (all leagues) to a Filtered View (specific league), the tool allows the user to verify if global trends hold true in local contexts
+
 % ---------------------------------
 \section{Related Work}
 % (Target Length: 0.5 page)
@@ -93,30 +120,70 @@ Goal: show that we did our homework
 \section{The Visualization Solution}
 % (Target Length: 1.5 pages)
 % ---------------------------------
-Goal: This is the core of the report. Justify your design choices using "First Principles" (perception, color theory, marks \& channels).
+Our solution is implemented as a single-page React application using D3.js for rendering complex vector graphics and Material UI for the control interface. The design follows Shneiderman’s Information Seeking Mantra: "Overview first, zoom and filter, then details-on-demand."
 
 \subsection{Overview}
  Briefly describe the layout (e.g., "A dashboard consisting of a main scatterplot, a filtering sidebar, and a details-on-demand panel").
 
+ The dashboard is divided into three logical zones:
+ \begin{enumerate}
+	 \item \textbf{Global Controls (Top Bar):} A persistent control panel allows users to filter the dataset by \textbf{Season} (2021-2025), \textbf{Nationality}, \textbf{Referee Name}, \textbf{Age Range}, and \textbf{Experience (Appearances)}. A global settings dialog allows users to adjust the weights of the "Strictness Formula" dynamically, empowering them to define what "strict" means to them (e.g., weighting red cards higher than penalties).
+	 \item \textbf{Macroscopic Views (The Overview):} The upper section features two coordinated views:
+		 \begin{itemize}
+			 \item \textbf{Geographic Strictness Map:} A choropleth map showing average strictness per country.
+
+			 \item \textbf{Population Scatterplot:} A distribution plot placing every referee on an Age/Experience vs. Strictness plane.
+		 \end{itemize}
+	 \item \textbf{Microscopic/Comparative Views (Details-on-Demand):} The lower section adapts based on the user's selection:
+		 \begin{itemize}
+			 \item No Selection: Shows general trends.
+			 \item Multi-Selection: Activates the \textbf{League Comparison} Scatter (League X vs. League Y).
+			 \item Single Selection: Activates the \textbf{Referee Passport} (Heatmap + Waffle Chart) for deep profiling.
+		 \end{itemize}
+ \end{enumerate}
+
 \subsection{Design Decisions \& Justification}
+We grounded our design choices in visualization theory, specifically focusing on effective mark and channel usage.
 
-\subsubsection*{Marks and Channels}
-\begin{itemize}
-	\item Example: "We used points in a scatterplot to represent individual referees. We mapped the vertical position ($y$-axis) to the 'Strictness Score' because position is the most accurate visual channel for quantitative comparisons."
-	\item Example: "We used Color Hue to distinguish between Leagues (Premier vs. Europa) because nominal data requires distinct hues."
-\end{itemize}
+\begin{enumerate}[label=\Alph*.]
+	\item \textbf{Strictness Encoding (The "Unifying Thread")} Since "Strictness" is a diverging quantitative attribute (ranging from "Lenient" to "Strict"), we consistently encoded it using a Diverging Color Scale (Blue $\rightarrow$ Yellow $\rightarrow$ Red).
+		\begin{itemize}
+			\item Justification: Blue represents leniency (cool/calm), while Red represents strictness (danger/cards). This semantic mapping reduces the cognitive load for football fans who already associate red with punishment.
+		\end{itemize}
+	\item \textbf{The Geographic View}
+		\begin{itemize}
+			\item \textbf{Encoding:} We used a choropleth map where countries are colored by the average strictness of their referees.
 
-\subsubsection*{Interaction}
-\begin{itemize}
-	\item \textbf{Filtering:} Explain how users can filter by Season (2021-2025) or Nationality. Why is this necessary? (To reduce clutter/occlusion).
-	\item \textbf{Details on Demand:} Explain what happens when a user hovers over a referee (tooltips showing exact card counts).
-\end{itemize}
+			\item \textbf{Interaction:} We implemented Linked Filtering. Clicking a country (e.g., Spain) acts as a global filter, instantly updating the scatterplots to show only Spanish referees.
 
-\subsubsection*{Handling the Formula}
-How is the strictness visualized? Is it a bar chart? A heat map? Justify why that chart type fits the data best.
+			\item \textbf{Handling Sparsity:} To avoid misleading averages from countries with only 1 referee, we added a "Minimum Referees" slider and a "Region Mode" toggle (aggregating countries into regions like "Nordic" or "Balkans"). This addresses the Modifiable Areal Unit Problem (MAUP).	
+		\end{itemize}
+	\item \textbf{The Correlation View}
+		\begin{itemize}
+			\item Marks \& Channels: Each referee is a point.
+				\begin{itemize}
+					\item \textbf{X-Position:} Mapped to Experience (Appearances) or Age (user-toggled). We chose position because it is the strongest channel for quantitative comparison.
+					\item \textbf{Y-Position:} Mapped to Strictness Index.
+					\item \textbf{Color:} Mapped to Strictness (redundant encoding to reinforce the pattern).	
+				\end{itemize}
+			\item \textbf{Occlusion Handling:} Non-selected referees are rendered with low opacity (0.3), while selected referees use high opacity (1.0) and a stroke border. This "Focus+Context" technique ensures the user can see their selection within the global distribution.
+		\end{itemize}
+	\item \textbf{The Cross-League Comparison}
+		\begin{itemize}
+			\item \textbf{Problem:} Users want to know if a referee changes their behavior between leagues (e.g., "Are they stricter in the Champions League than the Europa League?").
+			\item \textbf{Solution:} A scatterplot where X = League A Strictness and Y = League B Strictness.
+			\item \textbf{Reference Line:} We added a $y=x$ diagonal line. Points above the line indicate referees who are stricter in League B; points below are stricter in League A. This geometric aid allows for instant assessment of bias.
+		\end{itemize}
+	\item \textbf{Single Referee Profiling} When a single referee is selected, we provide a "Visual Identity Card":
+		\begin{enumerate}
+			\item \textbf{The "Passport" (Heatmap):} A matrix view (Rows: Competitions, Columns: Seasons) colored by strictness. This reveals temporal trends (e.g., "They were lenient in 2021 but strict in 2023").
 
-\subsubsection*{Implementation}
-(As per the professor's note, if we did something cool technically, like custom D3.js force simulations or heavy Python pre-processing, mention it here!)
+			\item \textbf{The "Card DNA" (Waffle Chart):} A 10 x 10 grid representing the percentage split of disciplinary actions (Yellows vs. Reds vs. Double Yellows).
+				\begin{itemize}
+					\item Justification: We chose a Waffle Chart over a Pie Chart because square grids are easier for the human eye to compare in terms of area and proportions.
+				\end{itemize}
+		\end{enumerate}
+\end{enumerate}
 
 \section{Use Case}
 % (Target Length: 1 page)
