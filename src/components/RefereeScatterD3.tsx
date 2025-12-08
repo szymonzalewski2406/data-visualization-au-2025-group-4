@@ -7,7 +7,6 @@ interface Props {
     isAgeMode: boolean;
     selectedReferees: string[];
     onRefereeToggle: (name: string) => void;
-
 }
 
 interface AggregatedReferee extends RefereeData {
@@ -44,16 +43,30 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
     }, []);
 
     useEffect(() => {
+        // 1. Remove "data.length === 0" from here so we don't return too early
         if (
             !data ||
-            data.length === 0 ||
             !svgRef.current ||
             dimensions.width === 0 ||
             dimensions.height === 0
         ) return;
 
         const svg = d3.select(svgRef.current);
+        
+        // 2. Clear the chart regardless of whether there is data
         svg.selectAll("*").remove();
+
+        // 3. NOW check if data is empty. If so, return here (leaving a blank cleared chart)
+        if (data.length === 0) {
+            // Optional: Add a "No Data" label if you want
+            svg.append("text")
+                .attr("x", dimensions.width / 2)
+                .attr("y", dimensions.height / 2)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#999")
+                .text("No data matches filters");
+            return;
+        }
 
         const uniqueCompetitions = Array.from(new Set(data.map(d => d.competition)));
         const isMultiLeague = uniqueCompetitions.length > 1;
@@ -120,7 +133,7 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
                 .domain([2, 5, 8])
                 .range(SAFE_STRICTNESS_RANGE);
             return colorScale(d.strictness_index);
-    };
+        };
         const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
         g.append("g")
@@ -175,7 +188,7 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
             .attr("stroke-width", d => selectedReferees.includes(d.name) ? 2 : 1)
             .attr("r", d => selectedReferees.includes(d.name) ? 8 : 6)
             .style("cursor", "pointer")
-            .style("pointer-events", "all") // Force events to capture
+            .style("pointer-events", "all") 
             .on("click", (event, d) => {
                 event.stopPropagation();
                 onRefereeToggle(d.name);
@@ -211,7 +224,7 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
                     const [x, y] = d3.pointer(event, containerRef.current);
 
                     const containerWidth = dimensions.width;
-                    const tooltipWidth = tooltipRef.current.offsetWidth; // Measures the actual tooltip size
+                    const tooltipWidth = tooltipRef.current.offsetWidth; 
 
                     let leftPos = x + 15;
 
