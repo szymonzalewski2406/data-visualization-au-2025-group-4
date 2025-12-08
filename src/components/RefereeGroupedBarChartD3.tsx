@@ -54,15 +54,29 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
   }, []);
 
   useEffect(() => {
-    if (!data || data.length === 0 || !svgRef.current || dimensions.width === 0) return;
+    // 1. Remove "data.length === 0" check here
+    if (!data || !svgRef.current || dimensions.width === 0) return;
+
+    const svg = d3.select(svgRef.current);
+    
+    // 2. Clear previous content
+    svg.selectAll("*").remove();
+
+    // 3. Stop if no data
+    if (data.length === 0) {
+        svg.append("text")
+             .attr("x", dimensions.width / 2)
+             .attr("y", dimensions.height / 2)
+             .attr("text-anchor", "middle")
+             .attr("fill", "#999")
+             .text("No data available");
+        return;
+    }
 
     const topRefs = [...data]
         .filter(d => d.appearances > 1)
         .sort((a, b) => b.strictness_index - a.strictness_index)
         .slice(0, 10);
-
-    const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove();
 
     const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const width = dimensions.width - margin.left - margin.right;
