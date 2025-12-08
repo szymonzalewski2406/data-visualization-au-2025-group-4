@@ -1,0 +1,152 @@
+\documentclass{article} % Use the required template class (e.g., IEEE, ACM, or simple article)
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{amsmath}
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}		% Can be removed after putting your text content
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{doi}
+\usepackage{float}
+\usepackage[margin=1in]{geometry}
+
+\title{Referee Strictness (Placeholder)}
+\author{Your Name(s)}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% ---------------------------------
+\section{Introduction}
+% (Target Length: 0.5 page)
+% ---------------------------------
+Introduce the problem domain (airplane safety and casualties) and the main goals of the visualization. This section should set the stage for the rest of the report by capturing the main points from the subsequent sections (data source, task, and final solution).:
+
+% ---------------------------------
+\section{The Visualization Task}
+% (Target Length: 1 page)
+% ---------------------------------
+
+\subsection{Data Abstraction (Lecture 5)}
+
+\subsubsection{Source and Rationale}
+Describe where the data was obtained. Justify the choice of this dataset, explicitly \textbf{referencing the article where Boeing gutted its engineering department} as a key motivation for the analysis.
+
+\subsubsection{Data Content: Attribute Types and Structure}
+Describe the data values and attribute space.
+\begin{itemize}
+    \item \textbf{Dependent Variables (Measures):} (e.g., Number of Casualties, Crash Count). Define their \textbf{Type} (e.g., \textit{Continuous, Discrete}).
+    \item \textbf{Independent Variables (Keys):} (e.g., Aircraft Model, Airline, Date/Year). Define their \textbf{Type}.
+    \item \textbf{Structure:} Define the main data structure (e.g., tabular, relational). Explicitly mention the \textbf{Calendar} structure for time-based analysis.
+\end{itemize}
+
+\subsubsection{Data Context and Validity}
+Define the data domain and reference space.
+\begin{itemize}
+    \item \textbf{Extent of Validity:} Discuss the temporal or spatial scope of the data (e.g., \textit{Point, Local, Global}).
+    \item \textbf{Interpolation:} State whether interpolation is used or why it is not applicable.
+    \item \textbf{Topology:} Describe the topology (e.g., spatial coordinates, connectivity) relevant to the data, even if not visualized geographically.
+\end{itemize}
+
+\subsection{Task Abstraction (Lecture 5)}
+
+\subsubsection{Task Goal and Framework}
+State the main goal of the visualization in concrete terms. Frame the supported tasks using \textbf{Shneiderman's Mantra}:
+\begin{itemize}
+    \item \textbf{Overview:} What initial view gives the general scope?
+    \item \textbf{Zoom and Filter:} How can users narrow down the data?
+    \item \textbf{Details on Demand:} How are specific strictness details revealed (e.g., via tooltips)?
+\end{itemize}
+
+\subsubsection{Task Taxonomy and Polarity}
+
+\subsubsection{Potato Notation}
+Provide \textbf{Potato Notation} (or a similar clear visual/textual breakdown) for the primary tasks completed in the visualization, ensuring each view supports at least one specific task.
+
+% ---------------------------------
+\section{Related Work}
+% (Target Length: 0.5 page)
+% ---------------------------------
+
+\subsection{Design and Task References}
+\begin{itemize}
+    \item Reference articles and papers that support the visualization \textbf{task}.
+    \item Reference \textbf{design references} or existing visualizations that influenced your approach.
+    \item Mention any articles or world events that are highlighted by the data.
+\end{itemize}
+
+\subsection{Benchmarking}
+If you reference other visualizations and claim an improvement, you \textbf{must use benchmarking} (Lecture 5 terminology) to justify how your solution is better, especially if the compared visualizations use the same dataset.
+
+% ---------------------------------
+\section{The Visualization Solution}
+% (Target Length: 1.5 pages)
+% ---------------------------------
+
+\subsection{Design Evolution and Iterations}
+Briefly cover \textbf{previous design iterations} that were discarded and why (e.g., problems with an initial \textbf{Map background}, difficulty handling outliers without a \textbf{Log scale}).
+
+\subsection{General Layout and First Principles Justification}
+Describe the overall structure of the interactive visualization. Justify design decisions using \textbf{first principles from lectures}.
+
+\subsection{Detailed View Analysis and Justification}
+Go through each major page or view of the visualization.
+
+\subsection{Color Choices and Efficiency}
+% ---------------------------------
+\section{Use Case}
+% (Target Length: 1 page)
+% ---------------------------------
+Provide a detailed example case demonstrating how the visualization assists users in supported tasks.
+% ---------------------------------
+\section{Limitations}
+% (Target Length: 0.5 page)
+% ---------------------------------
+Acknowledge the shortcomings of the project.
+% ---------------------------------
+\section{Division of Labor}
+% ---------------------------------
+Acknowledge all contributors and their specific roles.
+
+\begin{table}[h]
+    \centering
+    \caption{Project Contribution Matrix}
+    \label{tab:contributions}
+    \begin{tabular}{l c c c}
+        \toprule
+        \textbf{Task} & \textbf{Contributor 1} & \textbf{Contributor 2} & \textbf{Contributor 3} \\
+        \midrule
+        Visualization Design (drawings/discussion) & X & & X \\
+        Finding data & X & X & \\
+        Data cleaning and prep & & X & \\
+        Coding the visualization & X & X & X \\
+        Fielding feedback & & X & X \\
+        Completing the report & X & & X \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+% ---------------------------------
+\bibliographystyle{plain} % Use the required bibliography style (e.g., IEEEtran, acm)
+\section{Bibliography}
+% (Target Length: 0.5 page)
+% ---------------------------------
+
+\bibliography{references} % Assumes your BibTeX file is named 'references.bib'
+
+% List of required citation categories:
+% 1. Data set source.
+% 2. Principles/Frameworks (Mackinlay, Shneiderman, Gestalt).
+% 3. Gotz and Zhou (2008) Task Taxonomy reference.
+% 4. Article on Boeing's engineering department.
+% 5. Color picker source.
+% 6. Design/Benchmarking references.
+
+\end{document}
