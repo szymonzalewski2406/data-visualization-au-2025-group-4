@@ -59,6 +59,8 @@ aggregated_regions['tc_per_appearance'] = aggregated_regions['total_cards'] / ag
 aggregated_regions['appearances_per_referee'] = aggregated_regions['appearances'] / aggregated_regions['referees']
 aggregated_regions['strictness'] = (aggregated_regions['yellow_cards'] + (3 * aggregated_regions['double_yellow_cards']) + (5 * aggregated_regions['red_cards']) + (3 * aggregated_regions['penalties'])) / aggregated_regions['appearances']
 
+print(aggregated_regions.head())
+
 # YELLOW PER APPEARANCE
 plt.figure(figsize=(12, 6))
 plt.bar(aggregated_regions.index, aggregated_regions['yc_per_appearance'])
@@ -123,8 +125,6 @@ plt.xlabel('Regions')
 plt.ylabel('Appearances')
 plt.title('Appearances per referee')
 plt.savefig('src/utils/python/plots/appearances_per_referee')
-
-print(aggregated_regions.head())
 
 # STRICTNESS PER REGION
 plt.figure(figsize=(12, 6))
