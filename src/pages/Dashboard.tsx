@@ -61,6 +61,7 @@ import RefereeWaffleChart from "../components/RefereeWaffleChart";
 import RefereePassportHeatmap from "../components/RefereePassportHeatmap";
 import TwoLeagueScatter from "../components/TwoLeagueScatter";
 
+import UpsetPlot from '../components/UpsetPlot';
 export default function Dashboard() {
     const [selectedCompetition, setSelectedCompetition] = useState<CompetitionConfig>(DEFAULT_COMPETITION);
     const currentTheme: Theme = selectedCompetition.theme as Theme;
@@ -87,6 +88,8 @@ export default function Dashboard() {
 
     const [leagueA, setLeagueA] = useState<string>('Champions League');
     const [leagueB, setLeagueB] = useState<string>('Europa League');
+
+    const [upsetThreshold, setUpsetThreshold] = useState<number>(6);
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         seasons: [],
@@ -662,6 +665,35 @@ export default function Dashboard() {
                                                 <Box sx={{ height: 420, mt: 1, position: 'relative' }}>
                                                     <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
                                                 </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
+                            )}
+
+                            {selectedReferees.length === 0 && selectedCompetition.id === 0 && (
+                                <Grid container spacing={3} sx={{ mb: 3 }}>
+                                    <Grid sx={{ width: '100%' }}>
+                                        <Card elevation={3}>
+                                            <CardContent>
+                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                                                    <Typography variant="h6" color="primary">
+                                                        Strict Referee Intersections
+                                                    </Typography>
+                                                    <Box sx={{ width: 200 }}>
+                                                        <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+                                                            Strictness Threshold: {upsetThreshold.toFixed(1)}
+                                                        </Typography>
+                                                        <Slider
+                                                            value={upsetThreshold}
+                                                            onChange={(_, v) => setUpsetThreshold(v as number)}
+                                                            min={0} max={10} step={0.5}
+                                                            valueLabelDisplay="auto"
+                                                            size="small"
+                                                        />
+                                                    </Box>
+                                                </Stack>
+                                                <Box sx={{ height: 350, mt: 1, position: 'relative' }}><UpsetPlot data={displayedData} threshold={upsetThreshold} /></Box>
                                             </CardContent>
                                         </Card>
                                     </Grid>
