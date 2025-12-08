@@ -510,7 +510,7 @@ export default function Dashboard() {
 
                                         <Box sx={{ width: 150 }}>
                                             <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
-                                                Apps: {appearancesRange[0]} - {appearancesRange[1]}
+                                                Apps: {appearancesRange[0]} - {appearancesRange[1]} (per referee)
                                             </Typography>
                                             <Slider
                                                 value={appearancesRange}
@@ -618,8 +618,6 @@ export default function Dashboard() {
                                             </CardContent>
                                         </Card>
                                     </Box>
-
-                                    
                                 </Grid>
                             </Grid>
 

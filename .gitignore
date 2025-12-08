@@ -7,3 +7,12 @@ node_modules/
 .idea/
 .env
 backup
+
+report.aux
+report.fdb_latexmk
+report.fls
+report.log
+report.out
+report.synctex.gz
+report.bbl
+report.blg

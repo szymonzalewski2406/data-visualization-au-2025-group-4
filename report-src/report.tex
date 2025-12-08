@@ -1,0 +1,186 @@
+\documentclass{article} % Use the required template class (e.g., IEEE, ACM, or simple article)
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{amsmath}
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}		% Can be removed after putting your text content
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{doi}
+\usepackage{float}
+\usepackage[margin=1in]{geometry}
+\usepackage{tabularx}
+
+\title{Referee Strictness (Placeholder)}
+\author{Your Name(s)}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% ---------------------------------
+\section{Introduction}
+% (Target Length: 0.5 page)
+% ---------------------------------
+Introduce the problem domain (football referees from different competitions) and the main goals of the visualization. This section should set the stage for the rest of the report by capturing the main points from the subsequent sections (data source, task, and final solution).:
+
+\begin{itemize}
+	\item \textbf{The Problem:} Start by mentioning how referee decisions (cards and penalties) can drastically alter the outcome of high-stakes matches. Are Premier League referees actually more lenient than those in the Europa League? Is there consistency?
+	\item \textbf{The Motivation:} Explain that while fans often complain about bias or incompetence, there is a lack of accessible tools to compare referee performance objectively across borders.
+	\item \textbf{The Objective:} State that your visualization aims to allow users (fans, analysts, or the referees themselves) to explore these patterns, identify the "strictest" officials, and see if strictness correlates with age, nationality, or specific leagues. 
+\end{itemize}
+
+% ---------------------------------
+\section{The Visualization Task}
+% (Target Length: 1 page)
+% ---------------------------------
+Goal: Define the data and the tasks formally (likely using Munzner’s What-Why-How framework if it was covered in your lectures).
+
+\subsection{Data Abstraction (Lecture 5)}
+
+\subsubsection*{Source and Rationale}
+Describe where the data was obtained. Justify the choice of this dataset.
+
+\subsubsection*{Data Content: Attribute Types and Structure}
+Describe the data values and attribute space.
+\begin{itemize}
+    \item \textbf{Dependent Variables (Measures):} (e.g., age, yellow cards, double yellows, red cards, penalties). Define their \textbf{Type} (e.g., \textit{Discrete}).
+    \item \textbf{Independent Variables (Keys):} (e.g., Referee name, country, competitions Date/Year). Define their \textbf{Type}.
+    \item \textbf{Derived Attribute (strictness):} Strictness score, we must explain the strictness formula here. $$ \frac{\texttt{yc}+ 2 * \texttt{2yc} + 3 * \texttt{rc} + 5 * \texttt{p}}{\text{appearances}}$$
+\end{itemize}
+
+\subsection{Task Abstraction (Lecture 5)}
+\begin{itemize}
+	\item What are users trying to do?
+	\item High-level task: Explore and Compare (?) Frame the supported tasks using \textbf{Schneiderman's Mantra}
+		\begin{itemize}
+    \item \textbf{Overview:} What initial view gives the general scope?
+    \item \textbf{Zoom and Filter:} How can users narrow down the data?
+    \item \textbf{Details on Demand:} How are specific strictness details revealed (e.g., via tooltips)?
+\end{itemize}
+	\item Specific tasks: 
+		\begin{itemize}
+			\item \textbf{Identify outliers}: Who is the strictest referee in 2024?
+			\item \textbf{Compare distributions:} Is the Premier League generally stricter than the Conference league?
+			\item \textbf{Correlate:} Does strictness increase with referee age? experience?
+		\end{itemize}
+\end{itemize}
+% ---------------------------------
+\section{Related Work}
+% (Target Length: 0.5 page)
+% ---------------------------------
+Goal: show that we did our homework
+\begin{itemize}
+	\item \textbf{Existing Solutions:} Briefly mention if there are other football stats dashboards (e.g., Transfermarkt, FBref).
+	\item \textbf{The Gap:} Explain why those aren't enough. usually, they show raw tables (hard to read) or focus on players rather than referees. They might lack the cross-league comparison or the specific "Strictness" metric you calculated.
+	\item \textbf{Academic/Visual Inspiration: Did you see a specific scatterplot or dashboard in a paper or the "Student Projects" gallery that inspired your layout? Cite it here.}
+\end{itemize}
+
+\subsection{Design and Task References}
+\begin{itemize}
+    \item Reference articles and papers that support the visualization \textbf{task}.
+    \item Reference \textbf{design references} or existing visualizations that influenced your approach.
+    \item Mention any articles or world events that are highlighted by the data.
+\end{itemize}
+
+
+% ---------------------------------
+\section{The Visualization Solution}
+% (Target Length: 1.5 pages)
+% ---------------------------------
+Goal: This is the core of the report. Justify your design choices using "First Principles" (perception, color theory, marks \& channels).
+
+\subsection{Overview}
+ Briefly describe the layout (e.g., "A dashboard consisting of a main scatterplot, a filtering sidebar, and a details-on-demand panel").
+
+\subsection{Design Decisions \& Justification}
+
+\subsubsection*{Marks and Channels}
+\begin{itemize}
+	\item Example: "We used points in a scatterplot to represent individual referees. We mapped the vertical position ($y$-axis) to the 'Strictness Score' because position is the most accurate visual channel for quantitative comparisons."
+	\item Example: "We used Color Hue to distinguish between Leagues (Premier vs. Europa) because nominal data requires distinct hues."
+\end{itemize}
+
+\subsubsection*{Interaction}
+\begin{itemize}
+	\item \textbf{Filtering:} Explain how users can filter by Season (2021-2025) or Nationality. Why is this necessary? (To reduce clutter/occlusion).
+	\item \textbf{Details on Demand:} Explain what happens when a user hovers over a referee (tooltips showing exact card counts).
+\end{itemize}
+
+\subsubsection*{Handling the Formula}
+How is the strictness visualized? Is it a bar chart? A heat map? Justify why that chart type fits the data best.
+
+\subsubsection*{Implementation}
+(As per the professor's note, if we did something cool technically, like custom D3.js force simulations or heavy Python pre-processing, mention it here!)
+
+\section{Use Case}
+% (Target Length: 1 page)
+% ---------------------------------
+Goal: Walk the reader through a "story" to prove the tool works.
+\begin{itemize}
+	\item Scenario: "Let's assume a user wants to find out if English referees are stricter when refereeing in Europe compared to the Premier League."
+	\item Step 1: The user selects "Nationality: English" from the dropdown.
+	\item Step 2: The user looks at the "League" distribution.
+	\item Insight: "The visualization reveals that Referee X has a strictness score of 4.5 in the Europa League but only 2.0 in the Premier League."
+	\item Conclusion: Include a screenshot of your visualization showing this specific state. This is crucial—show, don't just tell.
+\end{itemize}
+% ---------------------------------
+\section{Limitations}
+% (Target Length: 0.5 page)
+% ---------------------------------
+Goal: Be honest about what is missing or could be better.
+
+\begin{itemize}
+	\item \textbf{Data Limitations:} "Our data does not account for the severity of the foul, only the card given. A tactical yellow card looks the same as a violent yellow card in our data."
+	\item \textbf{Visual Limitations:} "When all seasons are selected, the scatterplot suffers from occlusion (too many dots overlapping)."
+	\item \textbf{Future Work:} "If we had more time, we would add a temporal view to show how a single referee's strictness changes over their career."
+	
+\end{itemize}
+% ---------------------------------
+\section{Division of Labor}
+% ---------------------------------
+Acknowledge all contributors and their specific roles.
+
+\begin{table}[ht]
+    \centering
+    \caption{Project Contribution Matrix}
+    \label{tab:contributions}
+    % We set the width to \textwidth.
+    % The first column is 'X' (auto-wrap), the others remain 'c' (centered).
+    \begin{tabularx}{\textwidth}{X c c c c}
+        \toprule
+        \textbf{Task} & \textbf{Contributor 1} & \textbf{Contributor 2} & \textbf{Contributor 3} & \textbf{Contributor 4} \\
+        \midrule
+        Visualization Design (drawings/discussion) & X & & X & \\
+        Finding data & X & X & & \\
+        Data cleaning and prep & & X & & \\
+        Coding the visualization & X & X & X & X \\
+        Fielding feedback & & X & X & \\
+        Completing the report & X & & X & \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+
+% ---------------------------------
+\bibliographystyle{plain} % Use the required bibliography style (e.g., IEEEtran, acm)
+\section{Bibliography}
+% (Target Length: 0.5 page)
+% ---------------------------------
+
+\bibliography{references} % Assumes your BibTeX file is named 'references.bib'
+
+% List of required citation categories:
+% 1. Data set source.
+% 2. Principles/Frameworks (Mackinlay, Shneiderman, Gestalt).
+% 3. Gotz and Zhou (2008) Task Taxonomy reference.
+% 4. Article on Boeing's engineering department.
+% 5. Color picker source.
+% 6. Design/Benchmarking references.
+
+\end{document}
