@@ -54,15 +54,11 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
   }, []);
 
   useEffect(() => {
-    // 1. Remove "data.length === 0" check here
     if (!data || !svgRef.current || dimensions.width === 0) return;
 
     const svg = d3.select(svgRef.current);
-    
-    // 2. Clear previous content
     svg.selectAll("*").remove();
 
-    // 3. Stop if no data
     if (data.length === 0) {
         svg.append("text")
              .attr("x", dimensions.width / 2)
@@ -73,10 +69,53 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
         return;
     }
 
-    const topRefs = [...data]
-        .filter(d => d.appearances > 1)
+    // --- AGGREGATION LOGIC START ---
+    // Combine records for the same referee (e.g. across different leagues)
+    const aggregatedMap = new Map<string, RefereeData>();
+
+    data.forEach(d => {
+        if (aggregatedMap.has(d.name)) {
+            const existing = aggregatedMap.get(d.name)!;
+            const totalApps = existing.appearances + d.appearances;
+            
+            // Weighted average for strictness index
+            const newStrictness = ((existing.strictness_index * existing.appearances) + 
+                                  (d.strictness_index * d.appearances)) / totalApps;
+
+            aggregatedMap.set(d.name, {
+                ...existing,
+                appearances: totalApps,
+                yellow_cards: existing.yellow_cards + d.yellow_cards,
+                double_yellow_cards: existing.double_yellow_cards + d.double_yellow_cards,
+                red_cards: existing.red_cards + d.red_cards,
+                penalties: existing.penalties + d.penalties,
+                strictness_index: newStrictness
+            });
+        } else {
+            aggregatedMap.set(d.name, { ...d });
+        }
+    });
+
+    const aggregatedData = Array.from(aggregatedMap.values());
+    // --- AGGREGATION LOGIC END ---
+
+    // Now filter and sort the aggregated data
+    // Changed filter to >= 1 based on your preference, or keep > 1 if strict
+    const topRefs = aggregatedData
+        .filter(d => d.appearances >= 1) 
         .sort((a, b) => b.strictness_index - a.strictness_index)
         .slice(0, 10);
+
+    // If aggregation results in no data (unlikely if input has data), handle it
+    if (topRefs.length === 0) {
+        svg.append("text")
+             .attr("x", dimensions.width / 2)
+             .attr("y", dimensions.height / 2)
+             .attr("text-anchor", "middle")
+             .attr("fill", "#999")
+             .text("No referees meet the appearance criteria");
+        return;
+    }
 
     const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const width = dimensions.width - margin.left - margin.right;
@@ -98,6 +137,7 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
 
     const yMax = d3.max(topRefs, d => {
       const perGameValues = keys.map(key => {
+        if (d.appearances === 0) return 0; // Prevent divide by zero
         if (key === 'yellow') return d.yellow_cards / d.appearances;
         if (key === 'double') return d.double_yellow_cards / d.appearances;
         if (key === 'red') return d.red_cards / d.appearances;
@@ -130,9 +170,9 @@ const RefereeGroupedBarChartD3: React.FC<Props> = ({ data }) => {
         .selectAll("rect")
         .data(d => keys.map(key => ({
           key,
-          value: (key === 'yellow' ? d.yellow_cards :
+          value: d.appearances > 0 ? (key === 'yellow' ? d.yellow_cards :
               key === 'double' ? d.double_yellow_cards :
-                  key === 'red' ? d.red_cards : d.penalties) / d.appearances,
+                  key === 'red' ? d.red_cards : d.penalties) / d.appearances : 0,
           refName: d.name
         })))
         .join("rect")
