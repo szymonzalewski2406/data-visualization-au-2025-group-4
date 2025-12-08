@@ -255,16 +255,16 @@ const UpsetPlot: React.FC<Props> = ({ data, threshold }) => {
     const leftGroup = svg.append('g').attr('transform', `translate(0, ${margin.top + topChartHeight + 10})`);
 
     // Left X-axis
-    leftGroup.append('g')
+/*     leftGroup.append('g')
       .attr('transform', `translate(${margin.left - xLeft.range()[1] - 40}, ${matrixHeight - 10})`)
       .call(d3.axisBottom(xLeft).ticks(3))
-      .call(g => g.select('.domain').remove());
+      .call(g => g.select('.domain').remove()); */
 
 
     
     leftGroup.append('text')
     .attr('x', margin.left - xLeft.range()[1] - 40 + xLeft.range()[1] / 2) // center under axis
-    .attr('y', matrixHeight + 25) // a bit below the axis ticks
+    .attr('y', matrixHeight) // a bit below the axis ticks
     .attr('text-anchor', 'middle')
     .attr('font-size', '12px')
     .attr('font-weight', 'bold')
