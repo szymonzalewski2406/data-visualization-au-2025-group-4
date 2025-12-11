@@ -8,9 +8,11 @@ interface Props {
     data: RefereeData[];
     selectedNationality: string[];
     onCountryClick: (nationalities: string[]) => void;
+    viewMode: 'countries' | 'regions';
+    onViewModeChange: (mode: 'countries' | 'regions') => void;
 }
 
-const nationalityToISO2: Record<string, string> = {
+export const nationalityToISO2: Record<string, string> = {
     'England': 'GB', 'France': 'FR', 'Germany': 'DE', 'Italy': 'IT', 'Spain': 'ES',
     'Poland': 'PL', 'Portugal': 'PT', 'Netherlands': 'NL', 'Switzerland': 'CH',
     'Belgium': 'BE', 'Austria': 'AT', 'Sweden': 'SE', 'Norway': 'NO', 'Denmark': 'DK',
@@ -25,7 +27,7 @@ const nationalityToISO2: Record<string, string> = {
     'Kazakhstan': 'KZ', 'Northern Ireland': 'GB'
 };
 
-const REGIONS: Record<string, string[]> = {
+export const REGIONS: Record<string, string[]> = {
     'Nordic': ['NO', 'SE', 'DK', 'FI', 'IS', 'FO'],
     'British Isles': ['GB', 'IE'],
     'Western Europe': ['FR', 'DE', 'NL', 'BE', 'CH', 'AT', 'LU'],
@@ -35,7 +37,7 @@ const REGIONS: Record<string, string[]> = {
     'Eastern Europe': ['RO', 'BG', 'RS', 'BA', 'ME', 'MK', 'AL', 'MD', 'UA', 'RU', 'BY', 'GE', 'AM', 'AZ', 'KZ']
 };
 
-const ISO_TO_REGION: Record<string, string> = {};
+export const ISO_TO_REGION: Record<string, string> = {};
 Object.entries(REGIONS).forEach(([region, isos]) => {
     isos.forEach(iso => ISO_TO_REGION[iso] = region);
 });
@@ -49,15 +51,14 @@ for (const nationality in nationalityToISO2) {
     iso2ToNationalities[iso].push(nationality);
 }
 
-const STRICTNESS_COLORS = ["#8de4d3","#a0d66f", "#1c5e39" ];
+export const STRICTNESS_COLORS = ["#8de4d3","#a0d66f", "#1c5e39" ];
 const BORDER_COLOR = '#666';
 
-const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) => {
+const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick, viewMode, onViewModeChange }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [minReferees, setMinReferees] = useState<number>(1);
-    const [viewMode, setViewMode] = useState<'countries' | 'regions'>('countries');
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -410,7 +411,7 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) 
                     exclusive
                     onChange={(_, newMode) => {
                         if (newMode) {
-                            setViewMode(newMode);
+                            onViewModeChange(newMode);
                             onCountryClick([]);
                         }
                     }}

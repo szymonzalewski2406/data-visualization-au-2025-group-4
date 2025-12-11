@@ -7,6 +7,8 @@ interface Props {
     isAgeMode: boolean;
     selectedReferees: string[];
     onRefereeToggle: (name: string) => void;
+    regionColorMap?: Record<string, string>;
+    nationalityToRegion?: Record<string, string>;
 }
 
 interface AggregatedReferee extends RefereeData {
@@ -21,7 +23,7 @@ const LEAGUE_CONFIG: { [key: string]: { label: string; color: string } } = {
 
 const SAFE_STRICTNESS_RANGE = ["#8de4d3","#a0d66f", "#1c5e39" ];
 
-const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, onRefereeToggle }) => {
+const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, onRefereeToggle, regionColorMap, nationalityToRegion }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const tooltipRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -129,11 +131,37 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
         };
 
         const getColor = (d: RefereeData) => {
+            if (regionColorMap && nationalityToRegion) {
+                const region = nationalityToRegion[d.nationality];
+                if (region && regionColorMap[region]) {
+                    return regionColorMap[region];
+                }
+            }
+
             const colorScale = d3.scaleLinear<string>()
                 .domain([2, 5, 8])
                 .range(SAFE_STRICTNESS_RANGE);
             return colorScale(d.strictness_index);
         };
+
+        const regionsDomain = [
+            'Nordic', 'British Isles', 'Western Europe', 'Southern Europe',
+            'Central Europe', 'Baltic States', 'Eastern Europe'
+        ];
+        const symbolScale = d3.scaleOrdinal<string, any>()
+            .domain(regionsDomain)
+            .range(d3.symbols);
+
+        const getSymbolType = (d: RefereeData) => {
+            if (regionColorMap && nationalityToRegion) {
+                const region = nationalityToRegion[d.nationality];
+                if (region) return symbolScale(region);
+            }
+            return d3.symbolCircle;
+        };
+
+        const symbolGenerator = d3.symbol();
+
         const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
         g.append("g")
@@ -173,11 +201,17 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
 
         const tooltip = d3.select(tooltipRef.current);
 
-        g.selectAll("circle")
+        g.selectAll("path.referee-dot")
             .data(plotData)
-            .join("circle")
-            .attr("cx", (d) => xScale(xValue(d)))
-            .attr("cy", (d) => yScale(d.strictness_index))
+            .join("path")
+            .attr("class", "referee-dot")
+            .attr("transform", d => `translate(${xScale(xValue(d))},${yScale(d.strictness_index)})`)
+            .attr("d", d => {
+                const type = getSymbolType(d);
+                const isSelected = selectedReferees.includes(d.name);
+                const size = isSelected ? 200 : 113; // approx r=8 vs r=6
+                return symbolGenerator.type(type).size(size)();
+            })
             .attr("fill", (d) => {
                 const baseColor = getColor(d);
                 if (!hasSelection) return baseColor;
@@ -186,7 +220,6 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
             .attr("opacity", d => (hasSelection && !selectedReferees.includes(d.name)) ? 0.3 : 0.9)
             .attr("stroke", d => selectedReferees.includes(d.name) ? "#000" : "#333")
             .attr("stroke-width", d => selectedReferees.includes(d.name) ? 2 : 1)
-            .attr("r", d => selectedReferees.includes(d.name) ? 8 : 6)
             .style("cursor", "pointer")
             .style("pointer-events", "all") 
             .on("click", (event, d) => {
@@ -194,9 +227,10 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
                 onRefereeToggle(d.name);
             })
             .on("mouseover", (event, d) => {
+                const type = getSymbolType(d);
                 d3.select(event.currentTarget)
                     .transition().duration(200)
-                    .attr("r", 12)
+                    .attr("d", symbolGenerator.type(type).size(450)()) // approx r=12
                     .attr("stroke-width", 2);
 
                 if (tooltipRef.current) {
@@ -237,15 +271,65 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
                     .style("left", leftPos + "px");
                 }
             })
-            .on("mouseout", (event) => {
+            .on("mouseout", (event, d) => {
+                const type = getSymbolType(d);
+                const isSelected = selectedReferees.includes(d.name);
+                const size = isSelected ? 200 : 113;
                 d3.select(event.currentTarget)
                     .transition().duration(200)
-                    .attr("r", 6)
-                    .attr("stroke-width", 1);
+                    .attr("d", symbolGenerator.type(type).size(size)())
+                    .attr("stroke-width", isSelected ? 2 : 1);
                 if (tooltipRef.current) tooltip.style("visibility", "hidden");
             });
 
-    }, [data, isAgeMode, dimensions, selectedReferees]);
+        if (regionColorMap && nationalityToRegion) {
+            const activeRegions = new Set<string>();
+            plotData.forEach(d => {
+                const region = nationalityToRegion[d.nationality];
+                if (region) activeRegions.add(region);
+            });
+
+            const visibleRegions = regionsDomain.filter(r => activeRegions.has(r));
+
+            const legendWidth = 120;
+            const itemHeight = 20;
+            const padding = 10;
+            const legendHeight = visibleRegions.length * itemHeight + padding * 2;
+
+            const legendG = g.append("g")
+                .attr("class", "legend")
+                .attr("transform", `translate(${width - legendWidth - 10}, 10)`);
+
+            legendG.append("rect")
+                .attr("width", legendWidth)
+                .attr("height", legendHeight)
+                .attr("fill", "rgba(255, 255, 255, 0.85)")
+                .attr("stroke", "#ccc")
+                .attr("rx", 4);
+
+            visibleRegions.forEach((region, i) => {
+                const type = symbolScale(region);
+                const color = regionColorMap[region] || "#999";
+                const y = padding + i * itemHeight + itemHeight / 2;
+
+                legendG.append("path")
+                    .attr("transform", `translate(15, ${y})`)
+                    .attr("d", d3.symbol().type(type).size(50)())
+                    .attr("fill", color)
+                    .attr("stroke", "#333")
+                    .attr("stroke-width", 1);
+
+                legendG.append("text")
+                    .attr("x", 30)
+                    .attr("y", y)
+                    .attr("dy", "0.32em")
+                    .style("font-size", "10px")
+                    .style("fill", "#333")
+                    .text(region);
+            });
+        }
+
+    }, [data, isAgeMode, dimensions, selectedReferees, regionColorMap, nationalityToRegion]);
 
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>

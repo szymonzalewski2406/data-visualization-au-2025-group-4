@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import * as d3 from 'd3';
 import { RefereeData } from "../interfaces/RefereeData";
 import {
     extractNationalityOptions,
@@ -57,7 +58,7 @@ import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import { FilterOptions } from "../interfaces/FilterOptions";
 
 import RefereeScatterD3 from '../components/RefereeScatterD3';
-import GeoMap from "../components/GeoMap";
+import GeoMap, { nationalityToISO2, ISO_TO_REGION, STRICTNESS_COLORS } from "../components/GeoMap";
 import RefereeGroupedBarChartD3 from '../components/RefereeGroupedBarChartD3';
 import RefereeWaffleChart from "../components/RefereeWaffleChart";
 import RefereePassportHeatmap from "../components/RefereePassportHeatmap";
@@ -90,6 +91,8 @@ export default function Dashboard() {
 
     const [leagueA, setLeagueA] = useState<string>('Champions League');
     const [leagueB, setLeagueB] = useState<string>('Europa League');
+
+    const [geoViewMode, setGeoViewMode] = useState<'countries' | 'regions'>('countries');
 
     const [comparisonView, setComparisonView] = useState<'scatter' | 'upset'>('upset');
 
@@ -338,6 +341,69 @@ export default function Dashboard() {
         }
         return scatterData.filter(r => selectedReferees.includes(r.name));
     }, [scatterData, selectedReferees]);
+
+    const regionColorMap = useMemo(() => {
+        if (geoViewMode !== 'regions') return undefined;
+
+        // Calculate stats per region from mapData (consistent with GeoMap)
+        const uniqueReferees: Record<string, { nationality: string; totalStrictnessPoints: number; totalAppearances: number }> = {};
+        mapData.forEach(d => {
+            if (!uniqueReferees[d.name]) {
+                uniqueReferees[d.name] = {
+                    nationality: d.nationality,
+                    totalStrictnessPoints: 0,
+                    totalAppearances: 0
+                };
+            }
+            uniqueReferees[d.name].totalStrictnessPoints += (d.strictness_index * d.appearances);
+            uniqueReferees[d.name].totalAppearances += d.appearances;
+        });
+
+        const regionStats: Record<string, { sum: number; count: number }> = {};
+        Object.values(uniqueReferees).forEach(ref => {
+            const iso = nationalityToISO2[ref.nationality];
+            const region = ISO_TO_REGION[iso];
+            if (region) {
+                if (!regionStats[region]) regionStats[region] = { sum: 0, count: 0 };
+                const personalStrictness = ref.totalAppearances > 0 ? ref.totalStrictnessPoints / ref.totalAppearances : 0;
+                regionStats[region].sum += personalStrictness;
+                regionStats[region].count += 1;
+            }
+        });
+
+        const regionAvgs: Record<string, number> = {};
+        const averages: number[] = [];
+        Object.entries(regionStats).forEach(([region, stats]) => {
+            const avg = stats.sum / stats.count;
+            regionAvgs[region] = avg;
+            averages.push(avg);
+        });
+
+        const minStrict = d3.min(averages) ?? 0;
+        const maxStrict = d3.max(averages) ?? 1;
+        const midStrict = (minStrict + maxStrict) / 2;
+
+        const colorScale = d3.scaleLinear<string>()
+            .domain([minStrict, midStrict, maxStrict])
+            .range(STRICTNESS_COLORS)
+            .clamp(true);
+
+        const map: Record<string, string> = {};
+        Object.entries(regionAvgs).forEach(([region, avg]) => {
+            map[region] = colorScale(avg);
+        });
+        return map;
+    }, [geoViewMode, mapData]);
+
+    const nationalityToRegion = useMemo(() => {
+        const map: Record<string, string> = {};
+        Object.keys(nationalityToISO2).forEach(nat => {
+            const iso = nationalityToISO2[nat];
+            const region = ISO_TO_REGION[iso];
+            if (region) map[nat] = region;
+        });
+        return map;
+    }, []);
 
     if (loading) {
         return (
@@ -594,6 +660,8 @@ export default function Dashboard() {
                                                         data={mapData}
                                                         selectedNationality={selectedNationality}
                                                         onCountryClick={handleCountryClick}
+                                                        viewMode={geoViewMode}
+                                                        onViewModeChange={setGeoViewMode}
                                                     />
                                                 </Box>
 
@@ -634,6 +702,8 @@ export default function Dashboard() {
                                                         isAgeMode={isAgeChart}
                                                         selectedReferees={selectedReferees}
                                                         onRefereeToggle={handleRefereeToggle}
+                                                        regionColorMap={regionColorMap}
+                                                        nationalityToRegion={nationalityToRegion}
                                                     />
                                                 </Box>
                                             </CardContent>
