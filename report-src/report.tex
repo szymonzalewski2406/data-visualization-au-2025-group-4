@@ -19,7 +19,7 @@
 
 \title{UEFA Competition Referee Analysis Tool \\ \large Group: 4}
 \author{
-	Fannar Freyr Jónuson \and Leonard Hastrup \and Petros \and Szymon Zalewski
+	Fannar Freyr Jónuson \and Leonard Hastrup \and Petros Tsitsekidis \and Szymon Zalewski
 }
 \date{\today}
 
@@ -41,7 +41,7 @@ The goal of this visualization is to allow users to investigate the consistency 
 \section{The Visualization Task}
 % (Target Length: 1 page)
 % ---------------------------------
-Goal: Define the data and the tasks formally (likely using Munzner's What-Why-How framework if it was covered in your lectures).
+%Goal: Define the data and the tasks formally (likely using Munzner's What-Why-How framework if it was covered in your lectures).
 
 To design an effective visualization, we utilized the nested model for visualization design \cite{nested-model}. First, we analyzed the problem domain by abstracting the data into types and defining the abstract tasks the user needs to perform.
 
@@ -146,7 +146,7 @@ We grounded our design choices in visualization theory, specifically focusing on
 
 			\item \textbf{Interaction:} We implemented Linked Filtering. Clicking a country (e.g., Spain) acts as a global filter, instantly updating the scatterplots to show only Spanish referees.
 
-			\item \textbf{Handling Sparsity:} To avoid misleading averages from countries with only 1 referee, we added a "Minimum Referees" slider and a "Region Mode" toggle (aggregating countries into regions like "Nordic" or "Balkans"). This addresses the Modifiable Areal Unit Problem (MAUP).	
+			\item \textbf{Handling Sparsity:} To avoid misleading averages from countries with only 1 referee, we added a "Minimum Referees" slider and a "Region Mode" toggle (aggregating countries into regions like "Nordic" or "Eastern Europe"). 
 		\end{itemize}
 	\item \textbf{The Correlation View}
 		\begin{itemize}
