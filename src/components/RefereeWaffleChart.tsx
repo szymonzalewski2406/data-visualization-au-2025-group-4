@@ -10,6 +10,7 @@ const COLORS = {
     yellow: "#FFD700",
     double: "#FF8C00",
     red: "#D32F2F",
+    penalty: "#2C3E50",
     empty: "#e0e0e0"
 };
 
@@ -17,6 +18,7 @@ const LABELS = {
     yellow: "Yellow Cards",
     double: "2nd Yellows",
     red: "Red Cards",
+    penalty: "Penalties",
     empty: "None",
 };
 
@@ -25,36 +27,44 @@ const RefereeWaffleChart: React.FC<Props> = ({ data }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { gridData, counts, percentages } = useMemo(() => {
-        const totalCards = data.yellow_cards + data.double_yellow_cards + data.red_cards;
+        const totalCards = data.yellow_cards + data.double_yellow_cards + data.red_cards + data.penalties;
 
         if (totalCards === 0) {
             return {
                 gridData: Array(100).fill({ type: 'empty', index: 0 }),
-                counts: { yellow: 0, double: 0, red: 0, total: 0 },
-                percentages: { yellow: 0, double: 0, red: 0 }
+                counts: { yellow: 0, double: 0, red: 0, penalty: 0, total: 0 },
+                percentages: { yellow: 0, double: 0, red: 0, penalty: 0 }
             };
         }
 
         let redBlocks = Math.round((data.red_cards / totalCards) * 100);
         let doubleBlocks = Math.round((data.double_yellow_cards / totalCards) * 100);
+        let penaltyBlocks = Math.round((data.penalties / totalCards) * 100);
 
         if (data.red_cards > 0 && redBlocks === 0) redBlocks = 1;
         if (data.double_yellow_cards > 0 && doubleBlocks === 0) doubleBlocks = 1;
+        if (data.penalties > 0 && penaltyBlocks === 0) penaltyBlocks = 1;
 
-        let yellowBlocks = 100 - redBlocks - doubleBlocks;
+        let yellowBlocks = 100 - redBlocks - doubleBlocks - penaltyBlocks;
 
         if (yellowBlocks < 0) {
             yellowBlocks = 0;
             const remainder = 100 - yellowBlocks;
-            const sumSmall = redBlocks + doubleBlocks;
-            redBlocks = Math.floor(redBlocks / sumSmall * remainder);
-            doubleBlocks = remainder - redBlocks;
+            const sumSmall = redBlocks + doubleBlocks + penaltyBlocks;
+            
+            const redRatio = redBlocks / sumSmall;
+            const doubleRatio = doubleBlocks / sumSmall;
+            
+            redBlocks = Math.floor(redRatio * remainder);
+            doubleBlocks = Math.floor(doubleRatio * remainder);
+            penaltyBlocks = remainder - redBlocks - doubleBlocks;
         }
 
         const grid = [
             ...Array(yellowBlocks).fill('yellow'),
             ...Array(doubleBlocks).fill('double'),
-            ...Array(redBlocks).fill('red')
+            ...Array(redBlocks).fill('red'),
+            ...Array(penaltyBlocks).fill('penalty')
         ];
 
         while (grid.length < 100) grid.push('yellow');
@@ -66,12 +76,14 @@ const RefereeWaffleChart: React.FC<Props> = ({ data }) => {
                 yellow: data.yellow_cards,
                 double: data.double_yellow_cards,
                 red: data.red_cards,
+                penalty: data.penalties,
                 total: totalCards
             },
             percentages: {
                 yellow: yellowBlocks,
                 double: doubleBlocks,
-                red: redBlocks
+                red: redBlocks,
+                penalty: penaltyBlocks
             }
         };
     }, [data]);
@@ -134,7 +146,7 @@ const RefereeWaffleChart: React.FC<Props> = ({ data }) => {
                 })}
             </svg>
 
-            <div style={{ marginTop: '15px', display: 'flex', gap: '15px', fontSize: '12px', color: '#555' }}>
+            <div style={{ marginTop: '15px', display: 'flex', gap: '15px', fontSize: '12px', color: '#555', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <div style={{ width: 10, height: 10, background: COLORS.yellow, borderRadius: 2 }}></div>
                     <span>Yellow ({percentages.yellow}%)</span>
@@ -146,6 +158,10 @@ const RefereeWaffleChart: React.FC<Props> = ({ data }) => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <div style={{ width: 10, height: 10, background: COLORS.red, borderRadius: 2 }}></div>
                     <span>Red ({percentages.red}%)</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <div style={{ width: 10, height: 10, background: COLORS.penalty, borderRadius: 2 }}></div>
+                    <span>Pens ({percentages.penalty}%)</span>
                 </div>
             </div>
 
