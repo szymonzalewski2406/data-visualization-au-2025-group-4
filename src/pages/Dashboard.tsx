@@ -91,7 +91,7 @@ export default function Dashboard() {
     const [leagueA, setLeagueA] = useState<string>('Champions League');
     const [leagueB, setLeagueB] = useState<string>('Europa League');
 
-    const [comparisonView, setComparisonView] = useState<'scatter' | 'upset'>('scatter');
+    const [comparisonView, setComparisonView] = useState<'scatter' | 'upset'>('upset');
 
     const [upsetThreshold, setUpsetThreshold] = useState<number>(6);
 
@@ -467,14 +467,14 @@ export default function Dashboard() {
 
                     {dataLoaded && (
                         <>
-                            <Card sx={{ mb: 3, p: 2 }}>
+                            <Card sx={{ mb: 3, p: 2, position: 'sticky', top: 0, zIndex: 1000 }}>
                                 <Stack
                                     direction={{ xs: 'column', lg: 'row' }}
                                     spacing={3}
                                     alignItems="center"
                                     justifyContent="space-between"
                                 >
-                                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ flexGrow: 1, width: '100%' }} alignItems="center">
+                                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} useFlexGap sx={{ flexGrow: 1, width: '100%', flexWrap: 'wrap' }} alignItems="center">
                                         <Box sx={{ minWidth: 150 }}>
                                             <FormControl fullWidth size="small">
                                                 <InputLabel>Season</InputLabel>
@@ -498,7 +498,8 @@ export default function Dashboard() {
                                                     value={selectedNationality}
                                                     onChange={handleNationalityChange}
                                                     input={<OutlinedInput label="Nationality" />}
-                                                    renderValue={(selected) => selected.join(', ')}
+                                                    renderValue={(selected) => selected.length > 2 ? `${selected.length} Selected` : selected.join(', ')}
+                                                    MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
                                                 >
                                                     {filterOptions.nationalities.map((nat) => (
                                                         <MenuItem key={nat} value={nat}>
@@ -546,7 +547,11 @@ export default function Dashboard() {
                                                     value={selectedReferees}
                                                     onChange={handleRefereeChange}
                                                     input={<OutlinedInput label="Referees" />}
-                                                    renderValue={(selected) => areAllRefereesSelected ? 'All referees' : selected.join(', ')}
+                                                    renderValue={(selected) => {
+                                                        if (areAllRefereesSelected) return 'All referees';
+                                                        return selected.length > 1 ? `${selected.length} Selected` : selected.join(', ');
+                                                    }}
+                                                    MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
                                                 >
                                                     <MenuItem value="all">
                                                         <Checkbox checked={areAllRefereesSelected} />
