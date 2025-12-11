@@ -19,7 +19,7 @@
 
 \title{UEFA Competition Referee Analysis Tool \\ \large Group: 4}
 \author{
-	Fannar Freyr Jónuson \and Leo \and Petros \and Szymon Zalewski
+	Fannar Freyr Jónuson \and Leonard Hastrup \and Petros \and Szymon Zalewski
 }
 \date{\today}
 
@@ -28,7 +28,6 @@
 
 % ---------------------------------
 \section{Introduction}
-% (Target Length: 0.5 page)
 % ---------------------------------
 In the ecosystem of elite football, UEFA competitions represent the pinnacle of the sport. Referees selected for these tournaments, the Champions League, Europa League, and Conference League, are tasked with managing games involving diverse playing styles, high cultural stakes, and immense pressure. A single decision in these continental matchups can determine not just the outcome of a match, but the financial and historical trajectory of a club. However, despite the elite status of these officials, the discourse surrounding their performance often remains subjective. Fans and pundits frequently debate whether referees adjust their strictness based on the prestige of the tournament: are they more lenient in the "showcase" Champions League compared to the lower-tier Conference League?
 
@@ -36,18 +35,18 @@ The motivation for this project stems from the difficulty in validating these pe
 
 To address this, our project develops an interactive visualization system that explores refereeing behaviors across the three major UEFA competitions spanning the 2021-2025 seasons. By synthesizing raw data (cards, penalties, appearances) into a derived "Strictness Score," we aim to quantify officiating patterns that are usually left to anecdote.
 
-The goal of this visualization is to allow users to investigate the consistency of referees across the UEFA hierarchy. It enables the exploration of key questions: Do specific referees become "stricter" as they move down the tiers from the Champions League to the Conference League? Are there visible correlations between a referee’s age or nationality and their likelihood to issue cards? By visualizing these metrics, we provide an objective, analytical lens on the men in the middle of Europe’s biggest matches.
+The goal of this visualization is to allow users to investigate the consistency of referees across the UEFA hierarchy. It enables the exploration of key questions: Do specific referees become "stricter" as they move down the tiers from the Champions League to the Conference League? Are there visible correlations between a referee's age or nationality and their likelihood to issue cards? By visualizing these metrics, we provide an objective, analytical lens on the men in the middle of Europe's biggest matches.
 
 % ---------------------------------
 \section{The Visualization Task}
 % (Target Length: 1 page)
 % ---------------------------------
-Goal: Define the data and the tasks formally (likely using Munzner’s What-Why-How framework if it was covered in your lectures).
+Goal: Define the data and the tasks formally (likely using Munzner's What-Why-How framework if it was covered in your lectures).
 
-To design an effective visualization, we first analyzed the problem domain by abstracting the data into types and defining the abstract tasks the user needs to perform.
+To design an effective visualization, we utilized the nested model for visualization design \cite{nested-model}. First, we analyzed the problem domain by abstracting the data into types and defining the abstract tasks the user needs to perform.
 
-\subsection{Data Abstraction (Lecture 5)}
-The underlying dataset is a tabular collection of disciplinary statistics for football referees officiating in UEFA competitions (Champions League, Europa League, and Conference League) across four seasons (2021–2025). The data consists of Items (individual referee records per season/league) and Attributes (characteristics of those records).
+\subsection{Data Abstraction}
+The underlying dataset is a tabular collection of disciplinary statistics for football referees officiating in UEFA competitions (Champions League, Europa League, and Conference League) across four seasons (2021-2025). The data consists of Items (individual referee records per season/league) and Attributes (characteristics of those records).
 
 \subsubsection*{Categorical (Nominal)}
 	 \begin{itemize}
@@ -111,7 +110,7 @@ Our project bridges this gap by applying Information Visualization principles to
 \section{The Visualization Solution}
 % (Target Length: 1.5 pages)
 % ---------------------------------
-Our solution is implemented as a single-page React application using D3.js for rendering complex vector graphics and Material UI for the control interface. The design follows Shneiderman’s Information Seeking Mantra: "Overview first, zoom and filter, then details-on-demand."
+Our solution is implemented as a single-page React application using D3.js for rendering complex vector graphics and Material UI for the control interface. The design follows Shneiderman's Information Seeking Mantra: "Overview first, zoom and filter, then details-on-demand. \cite{shneiderman}"
 
 \subsection{Overview}
  Briefly describe the layout (e.g., "A dashboard consisting of a main scatterplot, a filtering sidebar, and a details-on-demand panel").
@@ -187,6 +186,14 @@ Goal: Walk the reader through a "story" to prove the tool works.
 	\item Insight: "The visualization reveals that Referee X has a strictness score of 4.5 in the Europa League but only 2.0 in the Premier League."
 	\item Conclusion: Include a screenshot of your visualization showing this specific state. This is crucial—show, don't just tell.
 \end{itemize}
+
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{path/to/screenshot.png}
+    \caption{Visualization showing the strictness discrepancy for English referees.}
+    \label{fig:usecase}
+\end{figure}
+
 % ---------------------------------
 \section{Limitations}
 % (Target Length: 0.5 page)
@@ -200,15 +207,12 @@ First, our "Strictness Score" algorithm is a linear weighted sum that does not c
 % ---------------------------------
 \section{Division of Labor}
 % ---------------------------------
-Acknowledge all contributors and their specific roles.
-
-Fannar took part in the visualisation design, and designed and implemented the scatterplot and the grouped bar chart and their interactions.
-
-Leonard took part in visualisation design and implemented/designed the choropleth map and upset plot together with their interactions.
-
-Petros took part in the data collection, data preprocessing, exploratory data analysis, and worked on general issues that popped up in the integration of different visualisation components. 
-
-Szymon created the initial project structure including layout, took part in visualization designed and implemented referee specific charts (Referee Passport and Card DNA). Also was involved in additional improvements and fixes that were needed during the project work and after feedback.
+\begin{itemize}
+	\item \textbf{Fannar} took part in the visualisation design, and designed and implemented the scatterplot and the grouped bar chart and their interactions.
+	\item \textbf{Leonard} took part in visualisation design and implemented/designed the choropleth map and upset plot together with their interactions.
+	\item \textbf{Petros} took part in the data collection, data preprocessing, exploratory data analysis, and worked on general issues that popped up in the integration of different visualisation components. 
+	\item \textbf{Szymon} created the initial project structure including layout, took part in visualization designed and implemented referee specific charts (Referee Passport and Card DNA). Also was involved in additional improvements and fixes that were needed during the project work and after feedback.
+\end{itemize}
 
 
 % ---------------------------------
