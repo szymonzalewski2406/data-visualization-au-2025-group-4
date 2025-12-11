@@ -136,43 +136,48 @@ Our solution is implemented as a single-page React application using D3.js for r
 We grounded our design choices in visualization theory, specifically focusing on effective mark and channel usage.
 
 \begin{enumerate}[label=\Alph*.]
-	\item \textbf{Strictness Encoding (The "Unifying Thread")} Since "Strictness" is a diverging quantitative attribute (ranging from "Lenient" to "Strict"), we consistently encoded it using a Diverging Color Scale (Blue $\rightarrow$ Yellow $\rightarrow$ Red).
-		\begin{itemize}
-			\item Justification: Blue represents leniency (cool/calm), while Red represents strictness (danger/cards). This semantic mapping reduces the cognitive load for football fans who already associate red with punishment.
-		\end{itemize}
-	\item \textbf{The Geographic View}
-		\begin{itemize}
-			\item \textbf{Encoding:} We used a choropleth map where countries are colored by the average strictness of their referees.
+    \item \textbf{Strictness Encoding (Geographic \& Correlation Views)} 
+    For the quantitative "Strictness" attribute in our main overview displays, we utilized a \textbf{Sequential Single-Hue Color Scale} (Light Aqua \texttt{\#8de4d3} $\rightarrow$ Medium Green \texttt{\#a0d66f} $\rightarrow$ Dark Green \texttt{\#1c5e39}).
+        \begin{itemize}
+            \item \textbf{Justification:} We transitioned to a colorblind-safe sequential scale to improve accessibility. Since strictness is a magnitude, we utilize \textbf{luminance} to encode value: lighter shades represent leniency, while darker shades represent high strictness. This ensures the pattern is visible to all users, avoiding common red-green deficiencies.
+        \end{itemize}
 
-			\item \textbf{Interaction:} We implemented Linked Filtering. Clicking a country (e.g., Spain) acts as a global filter, instantly updating the scatterplots to show only Spanish referees.
+    \item \textbf{The Geographic View}
+        \begin{itemize}
+            \item \textbf{Encoding:} We used a choropleth map where countries are colored by the average strictness of their referees (using the sequential green scale).
 
-			\item \textbf{Handling Sparsity:} To avoid misleading averages from countries with only 1 referee, we added a "Minimum Referees" slider and a "Region Mode" toggle (aggregating countries into regions like "Nordic" or "Eastern Europe"). 
-		\end{itemize}
-	\item \textbf{The Correlation View}
-		\begin{itemize}
-			\item Marks \& Channels: Each referee is a point.
-				\begin{itemize}
-					\item \textbf{X-Position:} Mapped to Experience (Appearances) or Age (user-toggled). We chose position because it is the strongest channel for quantitative comparison.
-					\item \textbf{Y-Position:} Mapped to Strictness Index.
-					\item \textbf{Color:} Mapped to Strictness (redundant encoding to reinforce the pattern).	
-				\end{itemize}
-			\item \textbf{Occlusion Handling:} Non-selected referees are rendered with low opacity (0.3), while selected referees use high opacity (1.0) and a stroke border. This "Focus+Context" technique ensures the user can see their selection within the global distribution.
-		\end{itemize}
-	\item \textbf{The Cross-League Comparison}
-		\begin{itemize}
-			\item \textbf{Problem:} Users want to know if a referee changes their behavior between leagues (e.g., "Are they stricter in the Champions League than the Europa League?").
-			\item \textbf{Solution:} A scatterplot where X = League A Strictness and Y = League B Strictness.
-			\item \textbf{Reference Line:} We added a $y=x$ diagonal line. Points above the line indicate referees who are stricter in League B; points below are stricter in League A. This geometric aid allows for instant assessment of bias.
-		\end{itemize}
-	\item \textbf{Single Referee Profiling} When a single referee is selected, we provide a "Visual Identity Card":
-		\begin{enumerate}
-			\item \textbf{The "Passport" (Heatmap):} A matrix view (Rows: Competitions, Columns: Seasons) colored by strictness. This reveals temporal trends (e.g., "They were lenient in 2021 but strict in 2023").
+            \item \textbf{Interaction:} We implemented Linked Filtering. Clicking a country (e.g., Spain) acts as a global filter, instantly updating the scatterplots to show only Spanish referees.
 
-			\item \textbf{The "Card DNA" (Waffle Chart):} A 10 x 10 grid representing the percentage split of disciplinary actions (Yellows vs. Reds vs. Double Yellows).
-				\begin{itemize}
-					\item Justification: We chose a Waffle Chart over a Pie Chart because square grids are easier for the human eye to compare in terms of area and proportions.
-				\end{itemize}
-		\end{enumerate}
+            \item \textbf{Handling Sparsity:} To avoid misleading averages from countries with only 1 referee, we added a "Minimum Referees" slider and a "Region Mode" toggle (aggregating countries into regions like "Nordic" or "Eastern Europe"). 
+        \end{itemize}
+
+    \item \textbf{The Correlation View}
+        \begin{itemize}
+            \item Marks \& Channels: Each referee is a point.
+                \begin{itemize}
+                    \item \textbf{X-Position:} Mapped to Experience (Appearances) or Age (user-toggled). We chose position because it is the strongest channel for quantitative comparison.
+                    \item \textbf{Y-Position:} Mapped to Strictness Index.
+                    \item \textbf{Color:} Mapped to Strictness (redundant encoding to reinforce the pattern).   
+                \end{itemize}
+            \item \textbf{Occlusion Handling:} Non-selected referees are rendered with low opacity (0.3), while selected referees use high opacity (1.0) and a stroke border. This "Focus+Context" technique ensures the user can see their selection within the global distribution.
+        \end{itemize}
+
+    \item \textbf{The Cross-League Comparison}
+        \begin{itemize}
+            \item \textbf{Problem:} Users want to know if a referee changes their behavior between leagues (e.g., "Are they stricter in the Champions League than the Europa League?").
+            \item \textbf{Solution:} A scatterplot where X = League A Strictness and Y = League B Strictness.
+            \item \textbf{Reference Line:} We added a $y=x$ diagonal line. Points above the line indicate referees who are stricter in League B; points below are stricter in League A. This geometric aid allows for instant assessment of bias.
+        \end{itemize}
+
+    \item \textbf{Single Referee Profiling} When a single referee is selected, we provide a "Visual Identity Card":
+        \begin{enumerate}
+            \item \textbf{The "Passport" (Heatmap):} A matrix view (Rows: Competitions, Columns: Seasons) colored by strictness. This reveals temporal trends (e.g., "They were lenient in 2021 but strict in 2023").
+
+            \item \textbf{The "Card DNA" (Waffle Chart):} A 10 x 10 grid representing the percentage split of disciplinary actions.
+                \begin{itemize}
+                    \item \textbf{Justification:} Unlike the strictness views, we retained the \textbf{semantic categorical colors} (Yellow for cautions, Red for dismissals) here. We chose a Waffle Chart over a Pie Chart because square grids allow for more accurate area comparison, while the semantic colors ensure immediate recognition of specific card types without needing to reference the abstract strictness scale.
+                \end{itemize}
+        \end{enumerate}
 \end{enumerate}
 
 \section{Use Case}
