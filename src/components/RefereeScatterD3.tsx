@@ -19,7 +19,7 @@ const LEAGUE_CONFIG: { [key: string]: { label: string; color: string } } = {
     "Conference": { label: "Conference League", color: "#03b721" }
 };
 
-const SAFE_STRICTNESS_RANGE = ["#2c7bb6", "#ffffbf", "#d7191c"];
+const SAFE_STRICTNESS_RANGE = ["#8de4d3","#a0d66f", "#1c5e39" ];
 
 const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, onRefereeToggle }) => {
     const svgRef = useRef<SVGSVGElement>(null);
