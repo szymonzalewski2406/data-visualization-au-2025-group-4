@@ -49,7 +49,7 @@ for (const nationality in nationalityToISO2) {
     iso2ToNationalities[iso].push(nationality);
 }
 
-const STRICTNESS_COLORS = ["#2c7bb6", "#ffffbf", "#d7191c"];
+const STRICTNESS_COLORS = ["#8de4d3","#a0d66f", "#1c5e39" ];
 const BORDER_COLOR = '#666';
 
 const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick }) => {

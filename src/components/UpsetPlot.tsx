@@ -217,7 +217,7 @@ const UpsetPlot: React.FC<Props> = ({ data, threshold }) => {
       const activeIndices = d.key.split('').map((c: string, i: number) => (c === '1' ? i : -1)).filter((i: number) => i !== -1);
 
       if (activeIndices.length > 1) {
-        const yCoords = activeIndices.map(i => yMatrix(sets[i].name)! + yMatrix.bandwidth() / 2);
+        const yCoords = activeIndices.map((i: number) => yMatrix(sets[i].name)! + yMatrix.bandwidth() / 2);
         g.append('line')
           .attr('y1', d3.min(yCoords)!)
           .attr('y2', d3.max(yCoords)!)
