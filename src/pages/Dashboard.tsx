@@ -42,7 +42,9 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Button
+    Button,
+    ToggleButton,
+    ToggleButtonGroup
 } from "@mui/material";
 import {
     COMPETITIONS,
@@ -88,6 +90,8 @@ export default function Dashboard() {
 
     const [leagueA, setLeagueA] = useState<string>('Champions League');
     const [leagueB, setLeagueB] = useState<string>('Europa League');
+
+    const [comparisonView, setComparisonView] = useState<'scatter' | 'upset'>('scatter');
 
     const [upsetThreshold, setUpsetThreshold] = useState<number>(6);
 
@@ -294,6 +298,15 @@ export default function Dashboard() {
 
     const handleWeightChange = (key: keyof StrictnessWeights, val: number) => {
         setWeights(prev => ({ ...prev, [key]: val }));
+    };
+
+    const handleComparisonViewChange = (
+        event: React.MouseEvent<HTMLElement>,
+        newView: 'scatter' | 'upset' | null,
+    ) => {
+        if (newView !== null) {
+            setComparisonView(newView);
+        }
     };
 
     const mapData = useMemo(() => {
@@ -631,69 +644,72 @@ export default function Dashboard() {
                                             <CardContent>
                                                 <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
                                                     <Typography variant="h6" color="primary">
-                                                        Compare Leagues: Strictness (X vs Y)
+                                                        {comparisonView === 'scatter' ? 'Compare Leagues: Strictness (X vs Y)' : 'Strict Referee Intersections'}
                                                     </Typography>
                                                     <Stack direction="row" spacing={2} alignItems="center">
-                                                        <FormControl size="small" sx={{ minWidth: 180 }}>
-                                                            <InputLabel>League X</InputLabel>
-                                                            <Select
-                                                                value={leagueA}
-                                                                label="League A"
-                                                                onChange={(e) => setLeagueA(e.target.value)}
-                                                            >
-                                                                {COMPETITIONS.filter(c => c.id !== 0).map(c => (
-                                                                    <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
-                                                                ))}
-                                                            </Select>
-                                                        </FormControl>
+                                                        {comparisonView === 'scatter' ? (
+                                                            <>
+                                                                <FormControl size="small" sx={{ minWidth: 180 }}>
+                                                                    <InputLabel>League X</InputLabel>
+                                                                    <Select
+                                                                        value={leagueA}
+                                                                        label="League A"
+                                                                        onChange={(e) => setLeagueA(e.target.value)}
+                                                                    >
+                                                                        {COMPETITIONS.filter(c => c.id !== 0).map(c => (
+                                                                            <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
+                                                                        ))}
+                                                                    </Select>
+                                                                </FormControl>
 
-                                                        <FormControl size="small" sx={{ minWidth: 180 }}>
-                                                            <InputLabel>League Y</InputLabel>
-                                                            <Select
-                                                                value={leagueB}
-                                                                label="League B"
-                                                                onChange={(e) => setLeagueB(e.target.value)}
-                                                            >
-                                                                {COMPETITIONS.filter(c => c.id !== 0).map(c => (
-                                                                    <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
-                                                                ))}
-                                                            </Select>
-                                                        </FormControl>
+                                                                <FormControl size="small" sx={{ minWidth: 180 }}>
+                                                                    <InputLabel>League Y</InputLabel>
+                                                                    <Select
+                                                                        value={leagueB}
+                                                                        label="League B"
+                                                                        onChange={(e) => setLeagueB(e.target.value)}
+                                                                    >
+                                                                        {COMPETITIONS.filter(c => c.id !== 0).map(c => (
+                                                                            <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
+                                                                        ))}
+                                                                    </Select>
+                                                                </FormControl>
+                                                            </>
+                                                        ) : (
+                                                            <Box sx={{ width: 200 }}>
+                                                                <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+                                                                    Strictness Threshold: {upsetThreshold.toFixed(1)}
+                                                                </Typography>
+                                                                <Slider
+                                                                    value={upsetThreshold}
+                                                                    onChange={(_, v) => setUpsetThreshold(v as number)}
+                                                                    min={0} max={10} step={0.5}
+                                                                    valueLabelDisplay="auto"
+                                                                    size="small"
+                                                                />
+                                                            </Box>
+                                                        )}
+
+                                                        <ToggleButtonGroup
+                                                            value={comparisonView}
+                                                            exclusive
+                                                            onChange={handleComparisonViewChange}
+                                                            size="small"
+                                                            sx={{ height: 40 }}
+                                                        >
+                                                            <ToggleButton value="scatter">Scatter</ToggleButton>
+                                                            <ToggleButton value="upset">Upset</ToggleButton>
+                                                        </ToggleButtonGroup>
                                                     </Stack>
                                                 </Stack>
 
                                                 <Box sx={{ height: 420, mt: 1, position: 'relative' }}>
-                                                    <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
+                                                    {comparisonView === 'scatter' ? (
+                                                        <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
+                                                    ) : (
+                                                        <UpsetPlot data={displayedData} threshold={upsetThreshold} />
+                                                    )}
                                                 </Box>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                </Grid>
-                            )}
-
-                            {selectedReferees.length === 0 && selectedCompetition.id === 0 && (
-                                <Grid container spacing={3} sx={{ mb: 3 }}>
-                                    <Grid sx={{ width: '100%' }}>
-                                        <Card elevation={3}>
-                                            <CardContent>
-                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                                                    <Typography variant="h6" color="primary">
-                                                        Strict Referee Intersections
-                                                    </Typography>
-                                                    <Box sx={{ width: 200 }}>
-                                                        <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
-                                                            Strictness Threshold: {upsetThreshold.toFixed(1)}
-                                                        </Typography>
-                                                        <Slider
-                                                            value={upsetThreshold}
-                                                            onChange={(_, v) => setUpsetThreshold(v as number)}
-                                                            min={0} max={10} step={0.5}
-                                                            valueLabelDisplay="auto"
-                                                            size="small"
-                                                        />
-                                                    </Box>
-                                                </Stack>
-                                                <Box sx={{ height: 350, mt: 1, position: 'relative' }}><UpsetPlot data={displayedData} threshold={upsetThreshold} /></Box>
                                             </CardContent>
                                         </Card>
                                     </Grid>
