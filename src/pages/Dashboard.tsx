@@ -98,7 +98,7 @@ export default function Dashboard() {
 
     const [selectedIntersectionKey, setSelectedIntersectionKey] = useState<string | undefined>();
 
-    const [upsetThreshold, setUpsetThreshold] = useState<number>(6);
+    const [upsetThreshold, setUpsetThreshold] = useState<number>(0);
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         seasons: [],
@@ -337,6 +337,18 @@ export default function Dashboard() {
         setAgeRange(minMaxAge);
         setAppearancesRange(minMaxAppearances);
     };
+
+    const mapHighlightedNationalities = useMemo(() => {
+        if (selectedReferees.length > 0) {
+            const nats = new Set<string>();
+            selectedReferees.forEach(name => {
+                const ref = calculatedReferees.find(r => r.name === name);
+                if (ref) nats.add(ref.nationality);
+            });
+            return Array.from(nats);
+        }
+        return selectedNationality;
+    }, [selectedReferees, selectedNationality, calculatedReferees]);
 
     const mapData = useMemo(() => {
         return calculatedReferees.filter(r => {
@@ -698,8 +710,9 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <GeoMap
-                                                        data={displayedData}
-                                                        selectedNationality={selectedNationality}
+                                                        data={mapData}
+                                                        filteredData={displayedData}
+                                                        selectedNationality={mapHighlightedNationalities}
                                                         onCountryClick={handleCountryClick}
                                                         viewMode={geoViewMode}
                                                         onViewModeChange={setGeoViewMode}

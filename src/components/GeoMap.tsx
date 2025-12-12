@@ -6,6 +6,7 @@ import { RefereeData } from '../interfaces/RefereeData';
 
 interface Props {
     data: RefereeData[];
+    filteredData?: RefereeData[];
     selectedNationality: string[];
     onCountryClick: (nationalities: string[]) => void;
     viewMode: 'countries' | 'regions';
@@ -54,7 +55,7 @@ for (const nationality in nationalityToISO2) {
 export const STRICTNESS_COLORS = ["#8de4d3","#a0d66f", "#1c5e39" ];
 const BORDER_COLOR = '#666';
 
-const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick, viewMode, onViewModeChange }) => {
+const GeoMap: React.FC<Props> = ({ data, filteredData, selectedNationality, onCountryClick, viewMode, onViewModeChange }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -89,65 +90,71 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick, vi
         const projection = d3.geoMercator().fitSize([width, height], europeGeoJson as any);
         const path = d3.geoPath().projection(projection);
 
-        const uniqueReferees: Record<string, { nationality: string; totalStrictnessPoints: number; totalAppearances: number }> = {};
-        data.forEach(d => {
-            if (!uniqueReferees[d.name]) {
-                uniqueReferees[d.name] = {
-                    nationality: d.nationality,
-                    totalStrictnessPoints: 0,
-                    totalAppearances: 0
-                };
-            }
-            uniqueReferees[d.name].totalStrictnessPoints += (d.strictness_index * d.appearances);
-            uniqueReferees[d.name].totalAppearances += d.appearances;
-        });
-
-        const statsByISO2: Record<string, { strictnessSum: number; refereeCount: number }> = {};
-        Object.values(uniqueReferees).forEach(ref => {
-            const iso2 = nationalityToISO2[ref.nationality] || ref.nationality;
-            const personalStrictness = ref.totalAppearances > 0
-                ? ref.totalStrictnessPoints / ref.totalAppearances
-                : 0;
-
-            if (!statsByISO2[iso2]) statsByISO2[iso2] = { strictnessSum: 0, refereeCount: 0 };
-            statsByISO2[iso2].strictnessSum += personalStrictness;
-            statsByISO2[iso2].refereeCount += 1;
-        });
-
-        const finalMetrics: Record<string, { avgStrictness: number; count: number; label: string }> = {};
-        const strictnessValues: number[] = [];
-
-        if (viewMode === 'countries') {
-            Object.keys(statsByISO2).forEach(iso => {
-                const avg = statsByISO2[iso].strictnessSum / statsByISO2[iso].refereeCount;
-                const count = statsByISO2[iso].refereeCount;
-                finalMetrics[iso] = { avgStrictness: avg, count, label: iso };
-                strictnessValues.push(avg);
-            });
-        } else {
-            const statsByRegion: Record<string, { strictnessSum: number; refereeCount: number }> = {};
-
-            Object.keys(statsByISO2).forEach(iso => {
-                const region = ISO_TO_REGION[iso] || 'Other';
-                if (!statsByRegion[region]) statsByRegion[region] = { strictnessSum: 0, refereeCount: 0 };
-
-                statsByRegion[region].strictnessSum += statsByISO2[iso].strictnessSum;
-                statsByRegion[region].refereeCount += statsByISO2[iso].refereeCount;
-            });
-
-            Object.keys(statsByISO2).forEach(iso => {
-                const region = ISO_TO_REGION[iso];
-                if (region && statsByRegion[region]) {
-                    const avg = statsByRegion[region].strictnessSum / statsByRegion[region].refereeCount;
-                    const count = statsByRegion[region].refereeCount;
-                    finalMetrics[iso] = { avgStrictness: avg, count, label: region };
-                    strictnessValues.push(avg);
+        const processData = (dataset: RefereeData[]) => {
+            const uniqueReferees: Record<string, { nationality: string; totalStrictnessPoints: number; totalAppearances: number }> = {};
+            dataset.forEach(d => {
+                if (!uniqueReferees[d.name]) {
+                    uniqueReferees[d.name] = {
+                        nationality: d.nationality,
+                        totalStrictnessPoints: 0,
+                        totalAppearances: 0
+                    };
                 }
+                uniqueReferees[d.name].totalStrictnessPoints += (d.strictness_index * d.appearances);
+                uniqueReferees[d.name].totalAppearances += d.appearances;
             });
-        }
 
-        const minStrict = d3.min(strictnessValues) ?? 0;
-        const maxStrict = d3.max(strictnessValues) ?? 1;
+            const statsByISO2: Record<string, { strictnessSum: number; refereeCount: number }> = {};
+            Object.values(uniqueReferees).forEach(ref => {
+                const iso2 = nationalityToISO2[ref.nationality] || ref.nationality;
+                const personalStrictness = ref.totalAppearances > 0
+                    ? ref.totalStrictnessPoints / ref.totalAppearances
+                    : 0;
+
+                if (!statsByISO2[iso2]) statsByISO2[iso2] = { strictnessSum: 0, refereeCount: 0 };
+                statsByISO2[iso2].strictnessSum += personalStrictness;
+                statsByISO2[iso2].refereeCount += 1;
+            });
+
+            const metrics: Record<string, { avgStrictness: number; count: number; label: string }> = {};
+            const values: number[] = [];
+
+            if (viewMode === 'countries') {
+                Object.keys(statsByISO2).forEach(iso => {
+                    const avg = statsByISO2[iso].strictnessSum / statsByISO2[iso].refereeCount;
+                    const count = statsByISO2[iso].refereeCount;
+                    metrics[iso] = { avgStrictness: avg, count, label: iso };
+                    values.push(avg);
+                });
+            } else {
+                const statsByRegion: Record<string, { strictnessSum: number; refereeCount: number }> = {};
+
+                Object.keys(statsByISO2).forEach(iso => {
+                    const region = ISO_TO_REGION[iso] || 'Other';
+                    if (!statsByRegion[region]) statsByRegion[region] = { strictnessSum: 0, refereeCount: 0 };
+
+                    statsByRegion[region].strictnessSum += statsByISO2[iso].strictnessSum;
+                    statsByRegion[region].refereeCount += statsByISO2[iso].refereeCount;
+                });
+
+                Object.keys(statsByISO2).forEach(iso => {
+                    const region = ISO_TO_REGION[iso];
+                    if (region && statsByRegion[region]) {
+                        const avg = statsByRegion[region].strictnessSum / statsByRegion[region].refereeCount;
+                        const count = statsByRegion[region].refereeCount;
+                        metrics[iso] = { avgStrictness: avg, count, label: region };
+                        values.push(avg);
+                    }
+                });
+            }
+            return { metrics, values };
+        };
+
+        const { metrics: backgroundMetrics, values: bgValues } = processData(data);
+        const { metrics: foregroundMetrics } = filteredData ? processData(filteredData) : { metrics: backgroundMetrics };
+
+        const minStrict = d3.min(bgValues) ?? 0;
+        const maxStrict = d3.max(bgValues) ?? 1;
         const midStrict = (minStrict + maxStrict) / 2;
 
         const strictnessColorScale = d3.scaleLinear<string>()
@@ -177,9 +184,13 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick, vi
             .style('cursor', 'pointer')
             .attr('fill', (d: any) => {
                 const iso = d.properties.ISO2;
-                const metrics = finalMetrics[iso];
+                const fg = foregroundMetrics[iso];
+                const bg = backgroundMetrics[iso];
+                
+                const useFg = fg && fg.count > 0;
+                const metrics = useFg ? fg : bg;
 
-                if (!metrics || metrics.count < minReferees) return '#eee';
+                if (!metrics || (!useFg && metrics.count < minReferees)) return '#eee';
 
                 if (selectedNationality.length > 0) {
                     if (viewMode === 'countries') {
@@ -239,9 +250,13 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick, vi
             })
             .on('mouseover', function(_, d: any) {
                 const iso = d.properties.ISO2;
-                const metrics = finalMetrics[iso];
+                const fg = foregroundMetrics[iso];
+                const bg = backgroundMetrics[iso];
+                
+                const useFg = fg && fg.count > 0;
+                const metrics = useFg ? fg : bg;
 
-                if (metrics && metrics.count >= minReferees) {
+                if (metrics && (useFg || metrics.count >= minReferees)) {
                     d3.select(this).attr('stroke', '#000').attr('stroke-width', 1.5);
 
                     const countryName = d.properties.NAME || d.properties.name || iso;
@@ -293,9 +308,13 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick, vi
             })
             .on('click', function(_, d: any) {
                 const iso = d.properties.ISO2;
-                const metrics = finalMetrics[iso];
+                const fg = foregroundMetrics[iso];
+                const bg = backgroundMetrics[iso];
+                
+                const useFg = fg && fg.count > 0;
+                const metrics = useFg ? fg : bg;
 
-                if (metrics && metrics.count >= minReferees) {
+                if (metrics && (useFg || metrics.count >= minReferees)) {
                     if (viewMode === 'regions') {
                         const regionName = ISO_TO_REGION[iso];
                         const targetIsos = Object.keys(ISO_TO_REGION).filter(k => ISO_TO_REGION[k] === regionName);
@@ -365,7 +384,7 @@ const GeoMap: React.FC<Props> = ({ data, selectedNationality, onCountryClick, vi
         return () => {
             tooltip.remove();
         };
-    }, [data, dimensions, selectedNationality, onCountryClick, minReferees, viewMode]);
+    }, [data, filteredData, dimensions, selectedNationality, onCountryClick, minReferees, viewMode]);
 
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
