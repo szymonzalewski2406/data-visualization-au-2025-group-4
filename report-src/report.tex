@@ -110,21 +110,20 @@ Our project bridges this gap by applying Information Visualization principles to
 \section{The Visualization Solution}
 % (Target Length: 1.5 pages)
 % ---------------------------------
-Our solution is implemented as a single-page React application using D3.js for rendering complex vector graphics and Material UI for the control interface. The design follows Shneiderman's Information Seeking Mantra: "Overview first, zoom and filter, then details-on-demand. \cite{shneiderman}"
+Our solution is implemented as a single-page React application using D3.js for rendering complex vector graphics and Material UI for the control interface. The design follows Shneiderman's Information Seeking Mantra: "Overview first, zoom and filter, then details-on-demand \cite{shneiderman}". All of these components are linked together such that when the user chooses a subset of the data, then that same subset is displayed on the rest of the views.
 
 \subsection{Overview}
- Briefly describe the layout (e.g., "A dashboard consisting of a main scatterplot, a filtering sidebar, and a details-on-demand panel").
-
  The dashboard is divided into three logical zones:
  \begin{enumerate}
 	 \item \textbf{Global Controls (Top Bar):} A persistent control panel allows users to filter the dataset by \textbf{Season} (2021-2025), \textbf{Nationality}, \textbf{Referee Name}, \textbf{Age Range}, and \textbf{Experience (Appearances)}. A global settings dialog allows users to adjust the weights of the "Strictness Formula" dynamically, empowering them to define what "strict" means to them (e.g., weighting red cards higher than penalties).
-	 \item \textbf{Macroscopic Views (The Overview):} The upper section features two coordinated views:
+	 \item \textbf{Macroscopic Views (The Overview):} For the general overview of how the data distributes between the different leagues, we have chosen to place an upset plot at the top. This gives the user direct access to which subsets it is possible to look into, when comparing the different leagues to eachother.
+	 \item \textbf{Comparative View} The next section features two coordinated views:
 		 \begin{itemize}
 			 \item \textbf{Geographic Strictness Map:} A choropleth map showing average strictness per country.
 
 			 \item \textbf{Population Scatterplot:} A distribution plot placing every referee on an Age/Experience vs. Strictness plane.
 		 \end{itemize}
-	 \item \textbf{Microscopic/Comparative Views (Details-on-Demand):} The lower section adapts based on the user's selection:
+	 \item \textbf{Microscopic (Details-on-Demand):} The lower section adapts based on the user's selection:
 		 \begin{itemize}
 			 \item No Selection: Shows general trends.
 			 \item Multi-Selection: Activates the \textbf{League Comparison} Scatter (League X vs. League Y).
@@ -183,15 +182,7 @@ We grounded our design choices in visualization theory, specifically focusing on
 \section{Use Case}
 % (Target Length: 1 page)
 % ---------------------------------
-Goal: Walk the reader through a "story" to prove the tool works.
-\begin{itemize}
-	\item Scenario: "Let's assume a user wants to find out if English referees are stricter when refereeing in Europe compared to the Premier League."
-	\item Step 1: The user selects "Nationality: English" from the dropdown.
-	\item Step 2: The user looks at the "League" distribution.
-	\item Insight: "The visualization reveals that Referee X has a strictness score of 4.5 in the Europa League but only 2.0 in the Premier League."
-	\item Conclusion: Include a screenshot of your visualization showing this specific state. This is crucial—show, don't just tell.
-\end{itemize}
-
+The user starts at the upset plot then sees that there is 60 referees, who have data from all three different leagues. This is something they find quite interesting, so the click on it and thus filters that data for the rest of the dashboard. They then go down to the choropleth map, and finds it interesting there are large countries like Russia that is not in this subset, prompting them to analyze Russian referees further. They thus click on Russia, and back in at the upset plot concludes that they represented in the champions league. Next observation is that Russia's strictness is comparable to other countries, so maybe this is a general thing for Eastern Europe. They thus switch to the region view, and wants to compare eastern and western europe to eachother. At first glance western europe seems more lenient, but looking at the scatterplot, this is likely caused by the low number of apperances for the very strict referees. They thus alter the minimum appearances and sees that they are in fact quite similiar to eachother. Then going further with the minimum appearnces they can thus see that there generally is a higher amount of reappeances for western referees. Which they then can continue to drill down on, also altering the strictness level to get a better idea of the tendency of the regions, also altering the strictness level to get a better idea of the tendency of the regions.
 \begin{figure}[ht]
     \centering
     % \includegraphics[width=0.8\textwidth]{path/to/screenshot.png}
@@ -208,7 +199,8 @@ While our visualization successfully enables the comparative analysis of referee
 \subsection*{Data \& Metric Limitations} 
 First, our "Strictness Score" algorithm is a linear weighted sum that does not capture the qualitative context of a foul. The data treats a "tactical" yellow card for time-wasting identically to a yellow card for a reckless tackle, meaning we cannot distinguish between strict rule enforcement and a loss of match control. Second, the model does not account for confounding external variables, such as the playing style of the teams involved; a referee may appear stricter simply because they officiated more aggressive teams. Finally, the geographic view suffers from sample size bias. Smaller nations often have only one international referee, meaning a single card-heavy performance can skew an entire country's color coding.
 
-\subsection*{Visual \& Technical Limitations} Visually, the "Global Overview" scatterplot suffers from occlusion when all seasons are active, as hundreds of data points cluster in the center, potentially hiding individual records. Additionally, while the user-configurable weights allow for flexibility, the default setting ($Yellow=1, Red=3$) imposes an initial analytical bias that may not reflect every user's perception of severity. Lastly, our temporal heatmaps show strictness per season but lack granular match sequencing, preventing users from seeing if a referee's behavior changes immediately following a controversial decision.
+\subsection*{Visual \& Technical Limitations} Visually, the scatterplot suffers from occlusion when all seasons are active, as hundreds of data points cluster in the center, potentially hiding individual records. Additionally, while the user-configurable weights allow for flexibility, the default setting imposes an initial analytical bias that may not reflect every user's perception of severity. Lastly, our temporal heatmaps show strictness per season but lack granular match sequencing, preventing users from seeing if a referee's behavior changes immediately following a controversial decision.
+
 % ---------------------------------
 \section{Division of Labor}
 % ---------------------------------
