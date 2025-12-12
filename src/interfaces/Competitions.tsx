@@ -20,7 +20,7 @@ export interface CompetitionConfig {
 export const COMPETITIONS: CompetitionConfig[] = [
     {
         id: 0,
-        name: 'All Competitions',
+        name: 'UEFA Competions Referee Analysis Tool',
         logoPath: uefaLogo,
         dataFolder: 'uefa_combined',
         theme: allCompetitionsTheme,

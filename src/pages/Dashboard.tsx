@@ -79,6 +79,8 @@ export default function Dashboard() {
 
     const [selectedSeason, setSelectedSeason] = useState<string>('');
     const [selectedNationality, setSelectedNationality] = useState<string[]>([]);
+    const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
+    const [availableLeagues, setAvailableLeagues] = useState<string[]>([]);
     const [selectedReferees, setSelectedReferees] = useState<string[]>([]);
 
     const [ageRange, setAgeRange] = useState<number[]>([20, 60]);
@@ -206,9 +208,16 @@ export default function Dashboard() {
 
         const dataInSeason = calculatedReferees.filter(r => r.season === selectedSeason);
 
-        const { nationalities } = extractNationalityOptions(dataInSeason);
+        const leagues = Array.from(new Set(dataInSeason.map(r => r.competition))).sort();
+        setAvailableLeagues(leagues);
 
         let dataFiltered = dataInSeason;
+
+        if (selectedLeagues.length > 0) {
+            dataFiltered = dataFiltered.filter(r => selectedLeagues.includes(r.competition));
+        }
+
+        const { nationalities } = extractNationalityOptions(dataFiltered);
 
         if (selectedNationality.length > 0) {
             dataFiltered = dataFiltered.filter(r => selectedNationality.includes(r.nationality));
@@ -228,13 +237,14 @@ export default function Dashboard() {
             referees: referees
         }));
 
-    }, [selectedSeason, selectedNationality, calculatedReferees, ageRange, appearancesRange]);
+    }, [selectedSeason, selectedNationality, calculatedReferees, ageRange, appearancesRange, selectedLeagues]);
 
 
     const handleCompetitionChange = (competition: CompetitionConfig) => {
         if (competition.id !== selectedCompetition.id) {
             setSelectedCompetition(competition);
             setSelectedNationality([]);
+            setSelectedLeagues([]);
             setSelectedReferees([]);
             setSelectedIntersectionKey(undefined);
         }
@@ -244,6 +254,14 @@ export default function Dashboard() {
     const handleSeasonChange = (event: SelectChangeEvent<string>) => {
         setSelectedSeason(event.target.value);
         setSelectedNationality([]);
+        setSelectedLeagues([]);
+        setSelectedReferees([]);
+        setSelectedIntersectionKey(undefined);
+    };
+
+    const handleLeagueChange = (event: SelectChangeEvent<string[]>) => {
+        const { target: { value } } = event;
+        setSelectedLeagues(typeof value === 'string' ? value.split(',') : value);
         setSelectedReferees([]);
         setSelectedIntersectionKey(undefined);
     };
@@ -333,6 +351,7 @@ export default function Dashboard() {
     const handleClearFilters = () => {
         setSelectedNationality([]);
         setSelectedReferees([]);
+        setSelectedLeagues([]);
         setSelectedIntersectionKey(undefined);
         setAgeRange(minMaxAge);
         setAppearancesRange(minMaxAppearances);
@@ -353,17 +372,19 @@ export default function Dashboard() {
     const mapData = useMemo(() => {
         return calculatedReferees.filter(r => {
             if (r.season !== selectedSeason) return false;
+            if (selectedLeagues.length > 0 && !selectedLeagues.includes(r.competition)) return false;
 
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
             if (r.appearances < appearancesRange[0] || r.appearances > appearancesRange[1]) return false;
 
             return true;
         });
-    }, [calculatedReferees, selectedSeason, ageRange, appearancesRange]);
+    }, [calculatedReferees, selectedSeason, ageRange, appearancesRange, selectedLeagues]);
 
     const scatterData = useMemo(() => {
         return calculatedReferees.filter(r => {
             if (r.season !== selectedSeason) return false;
+            if (selectedLeagues.length > 0 && !selectedLeagues.includes(r.competition)) return false;
             if (selectedNationality.length > 0 && !selectedNationality.includes(r.nationality)) return false;
 
             if (r.age > 0 && (r.age < ageRange[0] || r.age > ageRange[1])) return false;
@@ -371,7 +392,7 @@ export default function Dashboard() {
 
             return true;
         });
-    }, [calculatedReferees, selectedSeason, selectedNationality, ageRange, appearancesRange]);
+    }, [calculatedReferees, selectedSeason, selectedNationality, ageRange, appearancesRange, selectedLeagues]);
 
     const filteredData = useMemo(() => {
         if (selectedReferees.length === 0) {
@@ -596,6 +617,27 @@ export default function Dashboard() {
 
                                         <Box sx={{ minWidth: 150 }}>
                                             <FormControl fullWidth size="small" disabled={!selectedSeason}>
+                                                <InputLabel>League</InputLabel>
+                                                <Select
+                                                    multiple
+                                                    value={selectedLeagues}
+                                                    onChange={handleLeagueChange}
+                                                    input={<OutlinedInput label="League" />}
+                                                    renderValue={(selected) => selected.length > 1 ? `${selected.length} Selected` : selected.join(', ')}
+                                                    MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
+                                                >
+                                                    {availableLeagues.map((league) => (
+                                                        <MenuItem key={league} value={league}>
+                                                            <Checkbox checked={selectedLeagues.indexOf(league) > -1} />
+                                                            <ListItemText primary={league} />
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Box>
+
+                                        <Box sx={{ minWidth: 150 }}>
+                                            <FormControl fullWidth size="small" disabled={!selectedSeason}>
                                                 <InputLabel>Nationality</InputLabel>
                                                 <Select
                                                     multiple
@@ -680,6 +722,7 @@ export default function Dashboard() {
                                             disabled={
                                                 selectedNationality.length === 0 &&
                                                 selectedReferees.length === 0 &&
+                                                selectedLeagues.length === 0 &&
                                                 ageRange[0] === minMaxAge[0] &&
                                                 ageRange[1] === minMaxAge[1] &&
                                                 appearancesRange[0] === minMaxAppearances[0] &&
@@ -694,78 +737,6 @@ export default function Dashboard() {
                                     </Stack>
                                 </Stack>
                             </Card>
-
-                            <Grid container spacing={3} sx={{ mb: 3 }}>
-                                <Grid sx={{ width: '100%', display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
-                                    <Box sx={{ flex: 1 }}>
-                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
-                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
-                                                <Typography variant="h6" color="primary" gutterBottom>
-                                                    Geographic Strictness
-                                                </Typography>
-                                                <Box sx={{
-                                                    flexGrow: 1,
-                                                    width: '100%',
-                                                    minHeight: 0,
-                                                    position: 'relative'
-                                                }}>
-                                                    <GeoMap
-                                                        data={mapData}
-                                                        filteredData={filteredData}
-                                                        selectedNationality={mapHighlightedNationalities}
-                                                        onCountryClick={handleCountryClick}
-                                                        viewMode={geoViewMode}
-                                                        onViewModeChange={setGeoViewMode}
-                                                    />
-                                                </Box>
-
-                                            </CardContent>
-                                        </Card>
-                                    </Box>
-                                    <Box sx={{ flex: 1 }}>
-                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
-                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-
-                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                                                    <Typography variant="h6" color="primary">
-                                                        {isAgeChart ? "Age vs. Strictness Analysis" : "Experience vs. Strictness Analysis"}
-                                                    </Typography>
-
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Switch
-                                                                checked={isAgeChart}
-                                                                onChange={handleChartToggle}
-                                                                color="primary"
-                                                                size="small"
-                                                            />
-                                                        }
-                                                        label={<Typography variant="caption">Age Analysis</Typography>}
-                                                        labelPlacement="start"
-                                                    />
-                                                </Stack>
-
-                                                <Box sx={{
-                                                    flexGrow: 1,
-                                                    width: '100%',
-                                                    minHeight: 0,
-                                                    position: 'relative'
-                                                }}>
-                                                    <RefereeScatterD3
-                                                        data={scatterData}
-                                                        isAgeMode={isAgeChart}
-                                                        selectedReferees={selectedReferees}
-                                                        onRefereeToggle={handleRefereeToggle}
-                                                        regionColorMap={regionColorMap}
-                                                        nationalityToRegion={nationalityToRegion}
-                                                        threshold={upsetThreshold}
-                                                    />
-                                                </Box>
-                                            </CardContent>
-                                        </Card>
-                                    </Box>
-                                </Grid>
-                            </Grid>
 
                             {selectedReferees.length !== 1 && selectedCompetition.id === 0 && (
                                 <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -849,6 +820,78 @@ export default function Dashboard() {
                                     </Grid>
                                 </Grid>
                             )}
+
+                            <Grid container spacing={3} sx={{ mb: 3 }}>
+                                <Grid sx={{ width: '100%', display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
+                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
+                                                <Typography variant="h6" color="primary" gutterBottom>
+                                                    Geographic Strictness
+                                                </Typography>
+                                                <Box sx={{
+                                                    flexGrow: 1,
+                                                    width: '100%',
+                                                    minHeight: 0,
+                                                    position: 'relative'
+                                                }}>
+                                                    <GeoMap
+                                                        data={mapData}
+                                                        filteredData={filteredData}
+                                                        selectedNationality={mapHighlightedNationalities}
+                                                        onCountryClick={handleCountryClick}
+                                                        viewMode={geoViewMode}
+                                                        onViewModeChange={setGeoViewMode}
+                                                    />
+                                                </Box>
+
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Card elevation={3} sx={{ height: 550, display: 'flex', flexDirection: 'column' }}>
+                                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+
+                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                                                    <Typography variant="h6" color="primary">
+                                                        {isAgeChart ? "Age vs. Strictness Analysis" : "Experience vs. Strictness Analysis"}
+                                                    </Typography>
+
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Switch
+                                                                checked={isAgeChart}
+                                                                onChange={handleChartToggle}
+                                                                color="primary"
+                                                                size="small"
+                                                            />
+                                                        }
+                                                        label={<Typography variant="caption">Age Analysis</Typography>}
+                                                        labelPlacement="start"
+                                                    />
+                                                </Stack>
+
+                                                <Box sx={{
+                                                    flexGrow: 1,
+                                                    width: '100%',
+                                                    minHeight: 0,
+                                                    position: 'relative'
+                                                }}>
+                                                    <RefereeScatterD3
+                                                        data={scatterData}
+                                                        isAgeMode={isAgeChart}
+                                                        selectedReferees={selectedReferees}
+                                                        onRefereeToggle={handleRefereeToggle}
+                                                        regionColorMap={regionColorMap}
+                                                        nationalityToRegion={nationalityToRegion}
+                                                        threshold={upsetThreshold}
+                                                    />
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
+                                </Grid>
+                            </Grid>
 
                             {selectedReferees.length !== 1 && (
                                 <Grid container spacing={3} sx={{ mb: 3 }}>
