@@ -373,7 +373,7 @@ export default function Dashboard() {
         });
     }, [calculatedReferees, selectedSeason, selectedNationality, ageRange, appearancesRange]);
 
-    const displayedData = useMemo(() => {
+    const filteredData = useMemo(() => {
         if (selectedReferees.length === 0) {
             return scatterData;
         }
@@ -476,7 +476,7 @@ export default function Dashboard() {
                                     Active Filters
                                 </Typography>
                                 <Typography variant="body2" sx={{ color: '#fff', fontWeight: 'bold' }}>
-                                    {selectedSeason} • {selectedNationality.length > 0 ? `${selectedNationality.length} Nations` : 'All Nations'} • {displayedData.length} Records
+                                    {selectedSeason} • {selectedNationality.length > 0 ? `${selectedNationality.length} Nations` : 'All Nations'} • {filteredData.length} Records
                                 </Typography>
                             </Box>
 
@@ -689,7 +689,7 @@ export default function Dashboard() {
                                             Clear Filters
                                         </Button>
                                         <Typography variant="caption" color="textSecondary">
-                                            Displaying <b>{displayedData.length}</b> records
+                                            Displaying <b>{filteredData.length}</b> records
                                         </Typography>
                                     </Stack>
                                 </Stack>
@@ -711,7 +711,7 @@ export default function Dashboard() {
                                                 }}>
                                                     <GeoMap
                                                         data={mapData}
-                                                        filteredData={displayedData}
+                                                        filteredData={filteredData}
                                                         selectedNationality={mapHighlightedNationalities}
                                                         onCountryClick={handleCountryClick}
                                                         viewMode={geoViewMode}
@@ -866,7 +866,7 @@ export default function Dashboard() {
                                                     justifyContent: 'center',
                                                     bgcolor: '#fafafa'
                                                 }}>
-                                                    <RefereeGroupedBarChartD3 data={displayedData} />
+                                                    <RefereeGroupedBarChartD3 data={filteredData} />
                                                 </Box>
                                             </CardContent>
                                         </Card>
@@ -905,7 +905,7 @@ export default function Dashboard() {
                                                     </Typography>
                                                     <Box sx={{ height: 250, bgcolor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                         {(() => {
-                                                            const refData = displayedData.find(d => d.name === selectedReferees[0]);
+                                                            const refData = filteredData.find(d => d.name === selectedReferees[0]);
                                                             return refData ? <RefereeWaffleChart data={refData} /> : <Typography>No Data</Typography>;
                                                         })()}
                                                     </Box>
