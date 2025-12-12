@@ -6,6 +6,8 @@ import { RefereeData } from '../interfaces/RefereeData';
 interface Props {
   data: RefereeData[];
   threshold: number;
+  onIntersectionSelect: (refereeNames: string[], key: string) => void;
+  selectedIntersectionKey?: string;
 }
 
 const COMPETITION_ORDER = ["Champions League", "Europa League", "Conference League"];
@@ -20,7 +22,7 @@ const normalizeCompetition = (name: string): string => {
 const ellipsize = (text: string, maxChars: number) =>
   text.length > maxChars ? text.slice(0, Math.max(0, maxChars - 1)) + "…" : text;
 
-const UpsetPlot: React.FC<Props> = ({ data, threshold }) => {
+const UpsetPlot: React.FC<Props> = ({ data, threshold, onIntersectionSelect, selectedIntersectionKey }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -142,11 +144,14 @@ const UpsetPlot: React.FC<Props> = ({ data, threshold }) => {
       .attr('y', d => yTop(d.size))
       .attr('width', xTop.bandwidth())
       .attr('height', d => topChartHeight - yTop(d.size))
-      .attr('fill', '#4682B4')
+      .attr('fill', d => d.key === selectedIntersectionKey ? '#2a4d69' : '#4682B4')
       .attr('rx', 2)
       .style('cursor', 'pointer')
+      .on('click', (event, d) => {
+        onIntersectionSelect(d.referees, d.key);
+      })
       .on('mouseover', (event, d) => {
-        d3.select(event.currentTarget).attr('fill', '#2a4d69');
+        d3.select(event.currentTarget).attr('fill', '#1e3a52');
         const refereeList = d.referees.length > 10
           ? `${d.referees.slice(0, 10).join('<br>')}...and ${d.referees.length - 10} more`
           : d.referees.join('<br>');
@@ -166,7 +171,7 @@ const UpsetPlot: React.FC<Props> = ({ data, threshold }) => {
         tooltip.style('left', `${clampedX}px`).style('top', `${clampedY}px`);
       })
       .on('mouseout', (event) => {
-        d3.select(event.currentTarget).attr('fill', '#4682B4');
+        d3.select(event.currentTarget).attr('fill', event.key === selectedIntersectionKey ? '#2a4d69' : '#4682B4');
         tooltip.style('visibility', 'hidden');
       });
 
@@ -343,7 +348,7 @@ leftGroup.selectAll('.size-label')
 
 
 
-  }, [intersections, sets, dimensions]);
+  }, [intersections, sets, dimensions, onIntersectionSelect, selectedIntersectionKey]);
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>

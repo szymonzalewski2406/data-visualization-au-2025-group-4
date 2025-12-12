@@ -96,6 +96,8 @@ export default function Dashboard() {
 
     const [comparisonView, setComparisonView] = useState<'scatter' | 'upset'>('upset');
 
+    const [selectedIntersectionKey, setSelectedIntersectionKey] = useState<string | undefined>();
+
     const [upsetThreshold, setUpsetThreshold] = useState<number>(6);
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -234,6 +236,7 @@ export default function Dashboard() {
             setSelectedCompetition(competition);
             setSelectedNationality([]);
             setSelectedReferees([]);
+            setSelectedIntersectionKey(undefined);
         }
         handleMenuClose();
     };
@@ -242,6 +245,7 @@ export default function Dashboard() {
         setSelectedSeason(event.target.value);
         setSelectedNationality([]);
         setSelectedReferees([]);
+        setSelectedIntersectionKey(undefined);
     };
 
     const handleNationalityChange = (event: SelectChangeEvent<string[]>) => {
@@ -250,10 +254,12 @@ export default function Dashboard() {
 
         setSelectedNationality(newVal);
         setSelectedReferees([]);
+        setSelectedIntersectionKey(undefined);
     };
 
     const handleRefereeChange = (event: SelectChangeEvent<string[]>) => {
         const { target: { value } } = event;
+        setSelectedIntersectionKey(undefined);
         if (value.includes('all')) {
             setSelectedReferees(
                 selectedReferees.length === filterOptions.referees.length ? [] : filterOptions.referees
@@ -285,9 +291,11 @@ export default function Dashboard() {
             }
         });
         setSelectedReferees([]);
+        setSelectedIntersectionKey(undefined);
     };
 
     const handleRefereeToggle = (refereeName: string) => {
+        setSelectedIntersectionKey(undefined);
         setSelectedReferees(prev => {
             const isAlreadySelected = prev.includes(refereeName);
 
@@ -310,6 +318,24 @@ export default function Dashboard() {
         if (newView !== null) {
             setComparisonView(newView);
         }
+    };
+
+    const handleIntersectionSelect = (refereeNames: string[], key: string) => {
+        if (selectedIntersectionKey === key) {
+            setSelectedReferees([]);
+            setSelectedIntersectionKey(undefined);
+        } else {
+            setSelectedReferees(refereeNames);
+            setSelectedIntersectionKey(key);
+        }
+    };
+
+    const handleClearFilters = () => {
+        setSelectedNationality([]);
+        setSelectedReferees([]);
+        setSelectedIntersectionKey(undefined);
+        setAgeRange(minMaxAge);
+        setAppearancesRange(minMaxAppearances);
     };
 
     const mapData = useMemo(() => {
@@ -634,7 +660,22 @@ export default function Dashboard() {
                                         </Box>
                                     </Stack>
 
-                                    <Stack direction="row" alignItems="center" spacing={1} sx={{ flexShrink: 0 }}>
+                                    <Stack direction="row" alignItems="center" spacing={2} sx={{ flexShrink: 0 }}>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={handleClearFilters}
+                                            disabled={
+                                                selectedNationality.length === 0 &&
+                                                selectedReferees.length === 0 &&
+                                                ageRange[0] === minMaxAge[0] &&
+                                                ageRange[1] === minMaxAge[1] &&
+                                                appearancesRange[0] === minMaxAppearances[0] &&
+                                                appearancesRange[1] === minMaxAppearances[1]
+                                            }
+                                        >
+                                            Clear Filters
+                                        </Button>
                                         <Typography variant="caption" color="textSecondary">
                                             Displaying <b>{displayedData.length}</b> records
                                         </Typography>
@@ -657,7 +698,7 @@ export default function Dashboard() {
                                                     position: 'relative'
                                                 }}>
                                                     <GeoMap
-                                                        data={mapData}
+                                                        data={displayedData}
                                                         selectedNationality={selectedNationality}
                                                         onCountryClick={handleCountryClick}
                                                         viewMode={geoViewMode}
@@ -780,9 +821,13 @@ export default function Dashboard() {
 
                                                 <Box sx={{ height: 420, mt: 1, position: 'relative' }}>
                                                     {comparisonView === 'scatter' ? (
-                                                        <TwoLeagueScatter data={displayedData} leagueA={leagueA} leagueB={leagueB} />
+                                                        <TwoLeagueScatter data={scatterData} leagueA={leagueA} leagueB={leagueB} />
                                                     ) : (
-                                                        <UpsetPlot data={displayedData} threshold={upsetThreshold} />
+                                                        <UpsetPlot
+                                                            data={scatterData}
+                                                            threshold={upsetThreshold}
+                                                            onIntersectionSelect={handleIntersectionSelect}
+                                                            selectedIntersectionKey={selectedIntersectionKey} />
                                                     )}
                                                 </Box>
                                             </CardContent>
