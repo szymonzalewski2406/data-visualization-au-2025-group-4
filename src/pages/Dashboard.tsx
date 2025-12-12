@@ -758,6 +758,7 @@ export default function Dashboard() {
                                                         onRefereeToggle={handleRefereeToggle}
                                                         regionColorMap={regionColorMap}
                                                         nationalityToRegion={nationalityToRegion}
+                                                        threshold={upsetThreshold}
                                                     />
                                                 </Box>
                                             </CardContent>

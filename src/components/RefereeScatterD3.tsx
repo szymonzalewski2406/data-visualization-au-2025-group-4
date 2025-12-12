@@ -9,6 +9,7 @@ interface Props {
     onRefereeToggle: (name: string) => void;
     regionColorMap?: Record<string, string>;
     nationalityToRegion?: Record<string, string>;
+    threshold?: number;
 }
 
 interface AggregatedReferee extends RefereeData {
@@ -23,7 +24,7 @@ const LEAGUE_CONFIG: { [key: string]: { label: string; color: string } } = {
 
 const SAFE_STRICTNESS_RANGE = ["#8de4d3","#a0d66f", "#1c5e39" ];
 
-const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, onRefereeToggle, regionColorMap, nationalityToRegion }) => {
+const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, onRefereeToggle, regionColorMap, nationalityToRegion, threshold }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const tooltipRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -199,6 +200,32 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
             .style("font-size", "12px")
             .text("Strictness Index");
 
+        // Draw threshold line
+        if (threshold !== undefined && threshold > 0) {
+            const yPos = yScale(threshold);
+
+            if (yPos >= 0 && yPos <= height) {
+                g.append("line")
+                    .attr("x1", 0)
+                    .attr("x2", width)
+                    .attr("y1", yPos)
+                    .attr("y2", yPos)
+                    .attr("stroke", "#000000ff")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-dasharray", "6,4")
+                    .style("pointer-events", "none");
+
+                g.append("text")
+                    .attr("x", width - 5)
+                    .attr("y", yPos - 5)
+                    .attr("text-anchor", "end")
+                    .attr("fill", "#000000ff")
+                    .style("font-size", "11px")
+                    .style("font-weight", "bold")
+                    .text(`Threshold: ${threshold}`);
+            }
+        }
+
         const tooltip = d3.select(tooltipRef.current);
 
         g.selectAll("path.referee-dot")
@@ -329,7 +356,7 @@ const RefereeScatterD3: React.FC<Props> = ({ data, isAgeMode, selectedReferees, 
             });
         }
 
-    }, [data, isAgeMode, dimensions, selectedReferees, regionColorMap, nationalityToRegion]);
+    }, [data, isAgeMode, dimensions, selectedReferees, regionColorMap, nationalityToRegion, threshold]);
 
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
