@@ -67,6 +67,7 @@ Raw counts of cards are misleading without context (e.g., 5 red cards in 20 game
 The formula is defined as a weighted sum of disciplinary actions divided by the number of appearances:
 
 \[\text{Strictness} = \frac{(W_y \times \text{Yellows}) + (W_{dy} \times \text{DoubleYellow}) + (W_r \times \text{Reds}) + (W_p \times \text{Penalties})}{\text{Appearances}}\]
+
 (Note: In our implementation, we assigned default weights based on the severity of the punishment, e.g., Yellow=1, DoubleYellow=3, Red=5, Penalty=3. However they are user adjustable.)
 
 \subsection{Task Abstraction}
@@ -102,7 +103,7 @@ By explicitly supporting the transition from a Summarized View (all leagues) to 
 \section{Related Work}
 % (Target Length: 0.5 page)
 % ---------------------------------
-The analysis of officiating behavior has historically focused on statistical regression models to detect bias rather than interactive exploration. Academic studies have extensively documented "home advantage" and "social pressure" on referees using static datasets \cite{Boyko01092007,DAWSON2010181}. However, in the public domain, stakeholders typically rely on databases like Transfermarkt or FBref [SOMEONE FIND THIS REFERENCE PLEASE]. While comprehensive, these platforms present data in dense, siloed tables that obscure trends and make cross-league comparison difficult.
+The analysis of officiating behavior has historically focused on statistical regression models to detect bias rather than interactive exploration. Academic studies have extensively documented "home advantage" and "social pressure" on referees using static datasets \cite{Boyko01092007,DAWSON2010181}. However, in the public domain, stakeholders typically rely on databases like Transfermarkt \footnote{https://www.transfermarkt.com/} or FBref \footnote{https://fbref.com/en/}. While comprehensive, these platforms present data in dense, siloed tables that obscure trends and make cross-league comparison difficult.
 
 Our project bridges this gap by applying Information Visualization principles to this domain. We drew inspiration from the "Overview first, zoom and filter" paradigm \cite{shneiderman} to structure our dashboard. For specific visual encodings, we adapted the "player radar" concept often used in industry analytics (e.g., StatsBomb) into a "Referee Passport". Notably, we utilized Waffle Charts instead of traditional Pie Charts for our "Card DNA" view. This decision is grounded in graphical perception research \cite{cleveland-McGill}, which demonstrates that human observers estimate proportions more accurately in grid-based layouts than via angular slices, particularly when comparing small values like red cards.
 
@@ -182,11 +183,18 @@ We grounded our design choices in visualization theory, specifically focusing on
 \section{Use Case}
 % (Target Length: 1 page)
 % ---------------------------------
-The user starts at the upset plot then sees that there is 60 referees, who have data from all three different leagues. This is something they find quite interesting, so the click on it and thus filters that data for the rest of the dashboard. They then go down to the choropleth map, and finds it interesting there are large countries like Russia that is not in this subset, prompting them to analyze Russian referees further. They thus click on Russia, and back in at the upset plot concludes that they represented in the champions league. Next observation is that Russia's strictness is comparable to other countries, so maybe this is a general thing for Eastern Europe. They thus switch to the region view, and wants to compare eastern and western europe to eachother. At first glance western europe seems more lenient, but looking at the scatterplot, this is likely caused by the low number of apperances for the very strict referees. They thus alter the minimum appearances and sees that they are in fact quite similiar to eachother. Then going further with the minimum appearnces they can thus see that there generally is a higher amount of reappeances for western referees. Which they then can continue to drill down on, also altering the strictness level to get a better idea of the tendency of the regions, also altering the strictness level to get a better idea of the tendency of the regions.
+The exploration begins at the upset plot, where the user identifies a core group of 60 referees who officiate across all three UEFA leagues. Intrigued by this intersection, the user selects this subset, effectively filtering the data across all linked views. 
+
+Turning to the choropleth map, the user notices a conspicuous absence of referees from major nations, such as Russia, within this subset. To investigate this anomaly, they select Russia to isolate its officials. The updated upset plot reveals that Russian referees in this dataset were primarily restricted to the Champions League. 
+
+Observing that Russia's average strictness is comparable to other nations, the user hypothesizes a broader regional trend and switches the map to "Region Mode" to compare Eastern and Western Europe. Initially, Western Europe appears significantly more lenient. However, cross-referencing with the scatterplot reveals that this average is skewed by strict referees with very few appearances. 
+
+By increasing the "Minimum Appearances" threshold, the user corrects for this sample size bias, revealing that strictness levels between the two regions are in fact statistically comparable. Further increasing the appearance threshold highlights a different disparity: Western referees tend to accumulate significantly higher match counts than their Eastern counterparts. The user continues this drill-down analysis by dynamically adjusting the strictness weights to verify if these regional tendencies hold true under different definitions of severity.
+
 \begin{figure}[ht]
     \centering
-    % \includegraphics[width=0.8\textwidth]{path/to/screenshot.png}
-    \caption{Visualization showing the strictness discrepancy for English referees.}
+    \includegraphics[width=0.8\textwidth]{eastern-vs-western.png}
+    \caption{Visualization showing the comparison of Eastern vs. Western European referees with a minimum appearance of 4.}
     \label{fig:usecase}
 \end{figure}
 
